@@ -1,0 +1,98 @@
+##############################################################################
+# IBM Cloud Provider
+##############################################################################
+
+provider ibm {
+  ibmcloud_api_key      = var.ibmcloud_api_key
+  region                = var.region
+  ibmcloud_timeout      = 60
+}
+
+##############################################################################
+
+
+##############################################################################
+# Resource Group where VPC is created
+##############################################################################
+
+data ibm_resource_group resource_group {
+  name = var.resource_group
+}
+
+##############################################################################
+
+
+##############################################################################
+# Create VPCs
+##############################################################################
+
+locals {
+  # Conver VPC List to Map
+  vpc_map = {
+      for vpc_network in var.vpcs:
+      (vpc_network.prefix) => vpc_network
+  }
+}
+
+module vpc {
+    source   = "./vpc"
+    for_each = local.vpc_map
+
+    resource_group_id           = data.ibm_resource_group.resource_group.id
+    region                      = var.region
+    prefix                      = "${var.prefix}-${each.value.prefix}"
+    vpc_name                    = "vpc"
+    classic_access              = each.value.classic_access
+    use_manual_address_prefixes = each.value.use_manual_address_prefixes
+    default_network_acl_name    = each.value.default_network_acl_name
+    default_security_group_name = each.value.default_security_group_name
+    default_routing_table_name  = each.value.default_routing_table_name
+    address_prefixes            = each.value.address_prefixes
+    network_acls                = each.value.network_acls
+    use_public_gateways         = each.value.use_public_gateways
+    subnets                     = each.value.subnets
+}
+
+##############################################################################
+
+
+##############################################################################
+# Create VSI
+##############################################################################
+
+locals {
+  # Convert list to map
+  vsi_map = {
+    for vsi_group in var.vsi:
+    (vsi_group.name) => merge(vsi_group, {
+      # Add VPC ID
+      vpc_id  = module.vpc[vsi_group.vpc_name].vpc_id
+      subnets = [
+        # Add subnets to list if they are contained in the subnet list, prepends prefixes
+        for subnet in module.vpc[vsi_group.vpc_name].subnet_zone_list:
+        subnet if contains([
+          # Create modified list of names
+          for name in vsi_group.subnet_names:
+          "${var.prefix}-${vsi_group.vpc_name}-${name}"
+        ], subnet.name)
+      ]
+    })
+  }
+}
+
+module vsi {
+  source            = "./vsi"
+  for_each          = local.vsi_map
+  resource_group_id = data.ibm_resource_group.resource_group.id
+  prefix            ="${var.prefix}-${each.value.name}"
+  vpc_id            = module.vpc[each.value.vpc_name].vpc_id
+  subnets           = each.value.subnets
+  image             = each.value.image_name
+  ssh_public_key    = each.value.ssh_public_key
+  machine_type      = each.value.machine_type
+  vsi_per_subnet    = each.value.vsi_per_subnet
+  security_group    = each.value.security_group
+  load_balancers    = each.value.load_balancers
+}
+
+##############################################################################
