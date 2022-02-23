@@ -35,7 +35,7 @@ locals {
 }
 
 module vpc {
-    source   = "./vpc"
+    source   = "github.com/Cloud-Schematics/multizone-vpc-module.git"
     for_each = local.vpc_map
 
     resource_group_id           = data.ibm_resource_group.resource_group.id
