@@ -44,6 +44,12 @@ variable "resource_group" {
   }
 }
 
+variable "tags" {
+  description = "List of tags to apply to resources created by this module."
+  type        = list(string)
+  default     = []
+}
+
 ##############################################################################
 
 
@@ -389,32 +395,164 @@ variable "vsi" {
           pool_member_port  = 80
         }
       ]
+    }
+  ]
+}
+
+##############################################################################
+
+
+##############################################################################
+# VPE Variables
+##############################################################################
+
+variable "security_groups" {
+  description = "Security groups for VPE"
+  type = list(
+    object({
+      name     = string
+      vpc_name = string
+      rules = list(
+        object({
+          name      = string
+          direction = string
+          source    = string
+          tcp = optional(
+            object({
+              port_max = number
+              port_min = number
+            })
+          )
+          udp = optional(
+            object({
+              port_max = number
+              port_min = number
+            })
+          )
+          icmp = optional(
+            object({
+              type = number
+              code = number
+            })
+          )
+        })
+      )
+    })
+  )
+
+  default = [
+    {
+      name     = "workload-vpe"
+      vpc_name = "workload"
+      rules = [
+        {
+          name      = "allow-all-inbound"
+          source    = "0.0.0.0/0"
+          direction = "inbound"
+        },
+        {
+          name      = "allow-all-outbound"
+          source    = "0.0.0.0/0"
+          direction = "outbound"
+        }
+      ]
+    }
+  ]
+
+  validation {
+    error_message = "Each security group rule must have a unique name."
+    condition = length([
+      for security_group in var.security_groups :
+      true if length(distinct(security_group.rules.*.name)) != length(security_group.rules.*.name)
+    ]) == 0
+  }
+
+  validation {
+    error_message = "Security group rules can only use one of the following blocks: `tcp`, `udp`, `icmp`."
+    condition = length(
+      [
+        for group in var.security_groups :
+        true if length(
+          distinct(
+            flatten([
+              for rule in group.rules :
+              true if length(
+                [
+                  for type in ["tcp", "udp", "icmp"] :
+                  true if rule[type] != null
+                ]
+              ) > 1
+            ])
+          )
+        ) != 0
+      ]
+    ) == 0
+  }
+
+  validation {
+    error_message = "Security group rule direction can only be `inbound` or `outbound`."
+    condition = length(
+      [
+        for group in var.security_groups :
+        true if length(
+          distinct(
+            flatten([
+              for rule in group.rules :
+              false if !contains(["inbound", "outbound"], rule.direction)
+            ])
+          )
+        ) != 0
+      ]
+    ) == 0
+  }
+
+}
+
+variable "virtual_private_endpoints" {
+  description = "Object describing VPE to be created"
+  type = list(
+    object({
+      service_name = string
+      service_crn  = string
+      vpcs = list(
+        object({
+          name                = string
+          subnets             = list(string)
+          security_group_name = optional(string)
+        })
+      )
+    })
+  )
+  default = [
+    {
+      service_name = "dbaas"
+      service_crn  = "1234"
+      vpcs = [
+        {
+          name                = "management"
+          subnets             = ["subnet-a", "subnet-c"]
+          security_group_name = "workload-vpe"
+        },
+        {
+          name    = "workload"
+          subnets = ["subnet-b"]
+        }
+      ]
     },
     {
-      name           = "workload-vsi"
-      vpc_name       = "workload"
-      subnet_names   = ["subnet-a", "subnet-b", "subnet-c"]
-      image_name     = "ibm-centos-7-6-minimal-amd64-2"
-      machine_type   = "bx2-8x32"
-      vsi_per_subnet = 1
-      security_group = {
-        name = "test"
-        rules = [
-          {
-            name      = "allow-all-inbound"
-            source    = "0.0.0.0/0"
-            direction = "inbound"
-          },
-          {
-            name      = "allow-all-outbound"
-            source    = "0.0.0.0/0"
-            direction = "outbound"
-          }
-        ]
-      }
-      load_balancers = []
+      service_name = "rabbitmq"
+      service_crn  = "1234"
+      vpcs = [
+        {
+          name    = "management"
+          subnets = ["subnet-a", "subnet-c"]
+        },
+        {
+          name    = "workload"
+          subnets = ["subnet-b"]
+        }
+      ]
     }
-
   ]
 }
 

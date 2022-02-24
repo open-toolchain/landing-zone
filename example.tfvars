@@ -115,7 +115,7 @@ vpcs = [
     }
   }
 ]
-ssh_public_key=""
+ssh_public_key = ""
 vsi = [
   {
     name           = "test-vsi"
