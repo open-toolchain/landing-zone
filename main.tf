@@ -107,4 +107,24 @@ module "vsi" {
   load_balancers    = each.value.load_balancers
 }
 
+locals {
+  vsi_list = flatten([
+    for compute in module.vsi :
+    compute.list
+  ])
+  instance_map = {
+    for instance in local.vsi_list :
+    (instance.name) => instance.ipv4_address
+  }
+}
+
+resource "ibm_is_flow_log" "flow_logs" {
+  for_each       = var.flow_logs.use ? local.instance_map : {}
+  name           = "${each.key}-logs"
+  target         = each.value
+  active         = var.flow_logs.active
+  storage_bucket = var.flow_logs.cos_bucket_name
+  resource_group = data.ibm_resource_group.resource_group.id
+}
+
 ##############################################################################

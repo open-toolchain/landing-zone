@@ -395,8 +395,61 @@ variable "vsi" {
           pool_member_port  = 80
         }
       ]
+    },
+    {
+      name           = "workload-vsi"
+      vpc_name       = "workload"
+      subnet_names   = ["subnet-a", "subnet-b", "subnet-c"]
+      image_name     = "ibm-centos-7-6-minimal-amd64-2"
+      machine_type   = "bx2-8x32"
+      vsi_per_subnet = 1
+      security_group = {
+        name = "test"
+        rules = [
+          {
+            name      = "allow-all-inbound"
+            source    = "0.0.0.0/0"
+            direction = "inbound"
+          },
+          {
+            name      = "allow-all-outbound"
+            source    = "0.0.0.0/0"
+            direction = "outbound"
+          }
+        ]
+      }
+      load_balancers = [
+        {
+          name              = "workload"
+          type              = "public"
+          listener_port     = 80
+          listener_protocol = "http"
+          connection_limit  = 0
+          algorithm         = "round_robin"
+          protocol          = "http"
+          health_delay      = 10
+          health_retries    = 10
+          health_timeout    = 5
+          health_type       = "http"
+          pool_member_port  = 80
+        }
+      ]
     }
   ]
+}
+
+variable "flow_logs" {
+  description = "List of variables for flow log to connect to each VSI instance. Set `use` to false to disable flow logs."
+  type = object({
+    cos_bucket_name = string
+    active          = bool
+    use             = bool
+  })
+  default = {
+    cos_bucket_name = "jv-dev-bucket"
+    active          = true
+    use             = true
+  }
 }
 
 ##############################################################################
