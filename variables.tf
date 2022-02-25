@@ -5,20 +5,20 @@
 
 # Uncomment this variable if running locally
 variable "ibmcloud_api_key" {
-  description = "The IBM Cloud platform API key needed to deploy IAM enabled resources"
+  description = "The IBM Cloud platform API key needed to deploy IAM enabled resources."
   type        = string
   sensitive   = true
 }
 
 # Comment out if not running in schematics
-variable "TF_VERSION" {
-  default     = "1.0"
-  type        = string
-  description = "The version of the Terraform engine that's used in the Schematics workspace."
-}
+# variable "TF_VERSION" {
+#   default     = "1.0"
+#   type        = string
+#   description = "The version of the Terraform engine that's used in the Schematics workspace."
+# }
 
 variable "prefix" {
-  description = "A unique identifier need to provision resources. Must begin with a letter"
+  description = "A unique identifier for resources. Must begin with a letter. This prefix will be prepended to any resources provisioned by this template."
   type        = string
   default     = "gcat-multizone-schematics"
 
@@ -29,18 +29,18 @@ variable "prefix" {
 }
 
 variable "region" {
-  description = "Region where VPC will be created"
+  description = "Region where VPC will be created. To find your VPC region, use `ibmcloud is regions` command to find available regions."
   type        = string
   default     = "us-south"
 }
 
 variable "resource_group" {
-  description = "Name of resource group where all infrastructure will be provisioned. "
+  description = "Name of resource group where all infrastructure will be provisioned."
   type        = string
 
   validation {
     error_message = "Unique ID must begin and end with a letter and contain only letters, numbers, and - characters."
-    condition     = can(regex("^([a-z]|[a-z][-a-z0-9]*[a-z0-9])$", var.resource_group))
+    condition     = can(regex("^([A-z]|[a-z][-a-z0-9]*[a-z0-9])$", var.resource_group))
   }
 }
 
@@ -58,7 +58,7 @@ variable "tags" {
 ##############################################################################
 
 variable "vpcs" {
-  description = "A map describing VPCs to be created in this repo"
+  description = "A map describing VPCs to be created in this repo."
   type = list(
     object({
       prefix                      = string # VPC prefix
@@ -76,9 +76,8 @@ variable "vpcs" {
       )
       network_acls = list(
         object({
-          name                = string
-          network_connections = optional(list(string))
-          add_cluster_rules   = optional(bool)
+          name              = string
+          add_cluster_rules = optional(bool)
           rules = list(
             object({
               name        = string
@@ -259,6 +258,25 @@ variable "vpcs" {
 
 
 ##############################################################################
+# Flow Logs Variables
+##############################################################################
+
+variable "flow_logs" {
+  description = "List of variables for flow log to connect to each VSI instance. Set `use` to false to disable flow logs."
+  type = object({
+    cos_bucket_name = string
+    active          = bool
+  })
+  default = {
+    cos_bucket_name = "jv-dev-bucket"
+    active          = true
+  }
+}
+
+##############################################################################
+
+
+##############################################################################
 # Transit Gateway
 ##############################################################################
 
@@ -299,6 +317,7 @@ variable "vsi" {
       image_name      = string
       machine_type    = string
       vsi_per_subnet  = number
+      user_data       = optional(string)
       security_groups = optional(list(string))
       security_group = optional(
         object({
@@ -330,6 +349,15 @@ variable "vsi" {
           )
         })
       )
+      block_storage_volumes = optional(list(
+        object({
+          name           = string
+          profile        = string
+          capacity       = optional(number)
+          iops           = optional(number)
+          encryption_key = optional(string)
+        })
+      ))
       load_balancers = list(
         object({
           name              = string
@@ -401,49 +429,16 @@ variable "vsi" {
           }
         ]
       }
+      block_storage_volumes = [{
+        name    = "one"
+        profile = "general-purpose"
+        }, {
+        name    = "two"
+        profile = "general-purpose"
+      }]
       load_balancers = [
         {
           name              = "test"
-          type              = "public"
-          listener_port     = 80
-          listener_protocol = "http"
-          connection_limit  = 0
-          algorithm         = "round_robin"
-          protocol          = "http"
-          health_delay      = 10
-          health_retries    = 10
-          health_timeout    = 5
-          health_type       = "http"
-          pool_member_port  = 80
-        }
-      ]
-    },
-    {
-      name            = "workload-vsi"
-      vpc_name        = "workload"
-      subnet_names    = ["subnet-a", "subnet-b", "subnet-c"]
-      image_name      = "ibm-centos-7-6-minimal-amd64-2"
-      security_groups = ["workload-vpe"]
-      machine_type    = "bx2-8x32"
-      vsi_per_subnet  = 1
-      security_group = {
-        name = "test"
-        rules = [
-          {
-            name      = "allow-all-inbound"
-            source    = "0.0.0.0/0"
-            direction = "inbound"
-          },
-          {
-            name      = "allow-all-outbound"
-            source    = "0.0.0.0/0"
-            direction = "outbound"
-          }
-        ]
-      }
-      load_balancers = [
-        {
-          name              = "workload"
           type              = "public"
           listener_port     = 80
           listener_protocol = "http"
@@ -461,19 +456,7 @@ variable "vsi" {
   ]
 }
 
-variable "flow_logs" {
-  description = "List of variables for flow log to connect to each VSI instance. Set `use` to false to disable flow logs."
-  type = object({
-    cos_bucket_name = string
-    active          = bool
-    use             = bool
-  })
-  default = {
-    cos_bucket_name = "jv-dev-bucket"
-    active          = true
-    use             = true
-  }
-}
+
 
 ##############################################################################
 
@@ -595,14 +578,14 @@ variable "virtual_private_endpoints" {
   description = "Object describing VPE to be created"
   type = list(
     object({
-      service_name = string
-      service_crn  = string
+      service_name         = string
+      service_crn          = string
+      cloud_object_storage = optional(bool)
       vpcs = list(
         object({
-          name                 = string
-          subnets              = list(string)
-          security_group_name  = optional(string)
-          cloud_object_storage = optional(bool)
+          name                = string
+          subnets             = list(string)
+          security_group_name = optional(string)
         })
       )
     })

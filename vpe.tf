@@ -9,7 +9,7 @@ locals {
       for vpcs in service.vpcs :
       {
         connection_name     = "${service.service_name}-${vpcs.name}"
-        crn                 = service.cloud_object_storage ? "crn:v1:bluemix:public:cloud-object-storage:global:::endpoint:s3.direct.${var.region}.cloud-object-storage.appdomain.cloud" : service.service_crn
+        crn                 = service.cloud_object_storage != null ? "crn:v1:bluemix:public:cloud-object-storage:global:::endpoint:s3.direct.${var.region}.cloud-object-storage.appdomain.cloud" : service.service_crn
         vpc_id              = module.vpc[vpcs.name].vpc_id
         security_group_name = vpcs.security_group_name
         subnets = [
