@@ -6,14 +6,14 @@ This module creates a secure landing zone within a single region.
 
 ## Table of Contents
 
-1. [VPC](##vpc)
-2. [Flow Logs](##Flow-Logs)
-3. [Transit Gateway](##transit-gateway)
-4. [Security Groups](##security-groups)
-5. [Virtual Servers](##virtual-servers)
-6. [Virtual Private Endpoints](##virtual-private-endpoints)
-7. [Module Variables](##module-variables)
-8. [Contributing](##contributing)
+1. [VPC](#vpc)
+2. [Flow Logs](#flow-Logs)
+3. [Transit Gateway](#transit-gateway)
+4. [Security Groups](#security-groups)
+5. [Virtual Servers](#virtual-servers)
+6. [Virtual Private Endpoints](#virtual-private-endpoints)
+7. [Module Variables](#module-variables)
+8. [Contributing](#contributing)
 
 ---
 
