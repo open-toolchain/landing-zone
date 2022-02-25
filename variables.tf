@@ -259,6 +259,27 @@ variable "vpcs" {
 
 
 ##############################################################################
+# Transit Gateway
+##############################################################################
+
+variable enable_transit_gateway {
+  description = "Create transit gateway"
+  type        = bool
+  default     = true
+}
+
+variable transit_gateway_connections {
+  description = "Transit gateway vpc connections. Will only be used if transit gateway is enabled."
+  type        = list(string)
+  default = [
+    "management",
+    "workload"
+  ]
+} 
+
+##############################################################################
+
+##############################################################################
 # VSI Variables
 ##############################################################################
 
