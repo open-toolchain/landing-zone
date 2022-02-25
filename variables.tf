@@ -599,9 +599,10 @@ variable "virtual_private_endpoints" {
       service_crn  = string
       vpcs = list(
         object({
-          name                = string
-          subnets             = list(string)
-          security_group_name = optional(string)
+          name                 = string
+          subnets              = list(string)
+          security_group_name  = optional(string)
+          cloud_object_storage = optional(bool)
         })
       )
     })
