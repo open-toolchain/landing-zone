@@ -262,20 +262,20 @@ variable "vpcs" {
 # Transit Gateway
 ##############################################################################
 
-variable enable_transit_gateway {
+variable "enable_transit_gateway" {
   description = "Create transit gateway"
   type        = bool
   default     = true
 }
 
-variable transit_gateway_connections {
+variable "transit_gateway_connections" {
   description = "Transit gateway vpc connections. Will only be used if transit gateway is enabled."
   type        = list(string)
   default = [
     "management",
     "workload"
   ]
-} 
+}
 
 ##############################################################################
 
@@ -292,13 +292,14 @@ variable "vsi" {
   description = "A list describing VSI workloads to create"
   type = list(
     object({
-      name           = string
-      vpc_name       = string
-      subnet_names   = list(string)
-      ssh_key_name   = optional(string)
-      image_name     = string
-      machine_type   = string
-      vsi_per_subnet = number
+      name            = string
+      vpc_name        = string
+      subnet_names    = list(string)
+      ssh_key_name    = optional(string)
+      image_name      = string
+      machine_type    = string
+      vsi_per_subnet  = number
+      security_groups = optional(list(string))
       security_group = optional(
         object({
           name = string
@@ -418,12 +419,13 @@ variable "vsi" {
       ]
     },
     {
-      name           = "workload-vsi"
-      vpc_name       = "workload"
-      subnet_names   = ["subnet-a", "subnet-b", "subnet-c"]
-      image_name     = "ibm-centos-7-6-minimal-amd64-2"
-      machine_type   = "bx2-8x32"
-      vsi_per_subnet = 1
+      name            = "workload-vsi"
+      vpc_name        = "workload"
+      subnet_names    = ["subnet-a", "subnet-b", "subnet-c"]
+      image_name      = "ibm-centos-7-6-minimal-amd64-2"
+      security_groups = ["workload-vpe"]
+      machine_type    = "bx2-8x32"
+      vsi_per_subnet  = 1
       security_group = {
         name = "test"
         rules = [
@@ -477,11 +479,11 @@ variable "flow_logs" {
 
 
 ##############################################################################
-# VPE Variables
+# Security Group Variables
 ##############################################################################
 
 variable "security_groups" {
-  description = "Security groups for VPE"
+  description = "Security groups for VPC"
   type = list(
     object({
       name     = string
@@ -581,6 +583,13 @@ variable "security_groups" {
   }
 
 }
+
+##############################################################################
+
+
+##############################################################################
+# VPE Variables
+##############################################################################
 
 variable "virtual_private_endpoints" {
   description = "Object describing VPE to be created"

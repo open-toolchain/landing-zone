@@ -1,5 +1,28 @@
 ##############################################################################
-# Change Security Group (Optional)
+# ibm_is_security_group
+##############################################################################
+
+locals {
+  # Convert list to map
+  security_group_map = {
+    for group in var.security_groups :
+    (group.name) => group
+  }
+}
+
+resource "ibm_is_security_group" "security_group" {
+  for_each       = local.security_group_map
+  name           = each.value.name
+  resource_group = data.ibm_resource_group.resource_group.id
+  vpc            = module.vpc[each.value.vpc_name].vpc_id
+  tags           = var.tags
+}
+
+##############################################################################
+
+
+##############################################################################
+# Security Group Rules
 ##############################################################################
 
 locals {
