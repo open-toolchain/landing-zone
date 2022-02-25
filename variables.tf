@@ -446,7 +446,7 @@ variable "flow_logs" {
     use             = bool
   })
   default = {
-    cos_bucket_name = "jv-dev-bucket" # moose
+    cos_bucket_name = "jv-dev-bucket"
     active          = true
     use             = true
   }
