@@ -125,6 +125,8 @@ resource "ibm_is_flow_log" "flow_logs" {
   active         = var.flow_logs.active
   storage_bucket = var.flow_logs.cos_bucket_name
   resource_group = data.ibm_resource_group.resource_group.id
+
+  depends_on = [ ibm_cos_bucket.buckets ]
 }
 
 ##############################################################################

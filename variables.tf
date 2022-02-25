@@ -446,7 +446,7 @@ variable "flow_logs" {
     use             = bool
   })
   default = {
-    cos_bucket_name = "jv-dev-bucket"
+    cos_bucket_name = "jv-dev-bucket" # moose
     active          = true
     use             = true
   }
@@ -605,6 +605,61 @@ variable "virtual_private_endpoints" {
           subnets = ["subnet-b"]
         }
       ]
+    }
+  ]
+}
+
+##############################################################################
+
+##############################################################################
+# Cloud Object Storage Variables
+##############################################################################
+
+variable "cos" {
+  description = "Object describing cloud object storage instance. Provide desired plan if instance does not exist and should be created."
+  type = object({
+    service_name = string
+    resource_group = string
+    desired_plan = optional(string)
+    bind_key_name = string
+    bind_key_role = string        
+  })
+
+  default = {
+    service_name = "slz-cos"
+    resource_group = "cs-rg"
+    bind_key_name = "slz-cos-instance-key"
+    bind_key_role = "Writer"
+  }
+}
+
+variable "kms" {
+  description = "Object describing kms instance."
+  type = object({
+    service_name = string 
+    service = string 
+  })
+
+  default = {
+    service_name = "slz-kms"
+    service = "hpcs"
+  }
+}
+
+variable "cos_buckets" {
+  description = "Object describing buckets to be created in desired cloud object storage instance"
+  type = list(object({
+    name                  = string
+    kms_key_crn           = string 
+    single_site_location  = optional(string)
+    region_location       = optional(string) 
+    cross_region_location = optional(string)
+  }))
+
+  default = [
+    {
+      name = "jv-dev-bucket"
+      kms_key_crn = "mgmt-flow-log-key"
     }
   ]
 }
