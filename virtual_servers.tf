@@ -35,8 +35,8 @@ module "vsi" {
     for group in each.value.security_groups :
     ibm_is_security_group.security_group[group].id
   ]
-  ssh_key_ids    = [
-    for ssh_key in each.value.ssh_keys:
+  ssh_key_ids = [
+    for ssh_key in each.value.ssh_keys :
     local.ssh_keys[ssh_key]
   ]
   machine_type   = each.value.machine_type

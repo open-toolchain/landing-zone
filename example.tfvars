@@ -115,12 +115,12 @@ vpcs = [
     }
   }
 ]
-ssh_public_key = ""
 vsi = [
   {
     name           = "test-vsi"
     vpc_name       = "management"
     subnet_names   = ["subnet-a", "subnet-c"]
+    ssh_public_key = "<key>"
     image_name     = "ibm-centos-7-6-minimal-amd64-2"
     machine_type   = "bx2-8x32"
     vsi_per_subnet = 2
@@ -160,6 +160,7 @@ vsi = [
     name           = "workload-vsi"
     vpc_name       = "workload"
     subnet_names   = ["subnet-a", "subnet-b", "subnet-c"]
+    ssh_public_key = "<key>"
     image_name     = "ibm-centos-7-6-minimal-amd64-2"
     machine_type   = "bx2-8x32"
     vsi_per_subnet = 1

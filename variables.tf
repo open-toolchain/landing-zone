@@ -323,16 +323,16 @@ variable "ssh_keys" {
 
   validation {
     error_message = "Each key using the public_key field must have a unique public key."
-    condition     = length(
+    condition = length(
       distinct(
         [
-          for ssh_key in var.ssh_keys:
+          for ssh_key in var.ssh_keys :
           ssh_key.public_key if ssh_key.public_key != null
         ]
       )
-    ) == length(
+      ) == length(
       [
-        for ssh_key in var.ssh_keys:
+        for ssh_key in var.ssh_keys :
         ssh_key.public_key if ssh_key.public_key != null
       ]
     )
@@ -446,7 +446,7 @@ variable "vsi" {
       subnet_names   = ["subnet-a", "subnet-c"]
       image_name     = "ibm-centos-7-6-minimal-amd64-2"
       machine_type   = "bx2-8x32"
-      ssh_keys       = [ "dev-ssh-key" ]
+      ssh_keys       = ["dev-ssh-key"]
       vsi_per_subnet = 1
       security_group = {
         name = "test"
