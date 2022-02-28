@@ -13,7 +13,6 @@ variable "prefix" {
   }
 }
 
-
 variable "resource_group_id" {
   description = "Resource group ID to use for all services created"
   type        = string
