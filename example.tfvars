@@ -182,3 +182,34 @@ vsi = [
     load_balancers = []
   }
 ]
+
+clusters = [
+  {
+    name         = "test-cluster"
+    vpc_name     = "workload"
+    subnet_names = ["subnet-a", "subnet-c"]
+    worker_count = 1
+    machine_type = "bx2.16x64"
+    kube_type    = "openshift"
+  }
+]
+
+worker_pools = [
+  {
+    name         = "worker-pool-1"
+    cluster_name = "gcat-multizone-vidhi-cluster"
+    vpc_name     = "workload"
+    subnet_names = ["subnet-a"]
+    worker_count = 1
+    flavor       = "bx2.16x64"
+    entitlement  = "cloud_pak"
+  },
+  {
+    name         = "worker-pool-2"
+    cluster_name = "gcat-multizone-vidhi-cluster"
+    vpc_name     = "workload"
+    subnet_names = ["subnet-b"]
+    worker_count = 1
+    flavor       = "bx2.16x64"
+    entitlement  = "cloud_pak"
+}]

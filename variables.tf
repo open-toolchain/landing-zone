@@ -659,3 +659,79 @@ variable "virtual_private_endpoints" {
 }
 
 ##############################################################################
+
+
+##############################################################################
+# Cluster variables
+##############################################################################
+
+
+variable "clusters" {
+  description = "A list describing clsuter workloads to create"
+  type = list(
+    object({
+      name           = string
+      vpc_name       = string
+      subnet_names   = list(string)
+      worker_count   = number
+      machine_type   = string
+      kube_type      = string
+      entitlement    = optional(string)
+      pod_subnet     = optional(string)
+      service_subnet = optional(string)
+
+  }))
+  default = [
+    {
+      name           = "test-cluster"
+      vpc_name       = "workload"
+      subnet_names   = ["subnet-a", "subnet-b"]
+      worker_count   = 1
+      machine_type   = "bx2.16x64"
+      kube_type      = "iks"
+      entitlement    = "cloud_pak"
+      pod_subnet     = "172.30.0.0/16"
+      service_subnet = "172.21.0.0/16"
+  }]
+}
+
+variable "worker_pools" {
+  description = "A list describing clsuter workloads to create"
+  type = list(
+    object({
+      name         = string
+      cluster_name = string
+      vpc_name     = string
+      worker_count = number
+      flavor       = string
+      subnet_names = list(string)
+      entitlement  = optional(string)
+  }))
+  default = [
+    {
+      name         = "worker-pool-1"
+      cluster_name = "test-cluster"
+      vpc_name     = "workload"
+      subnet_names = ["subnet-a", "subnet-b"]
+      worker_count = 1
+      flavor       = "bx2.16x64"
+      entitlement  = "cloud_pak"
+
+  }]
+}
+
+variable "wait_till" {
+  description = "To avoid long wait times when you run your Terraform code, you can specify the stage when you want Terraform to mark the cluster resource creation as completed. Depending on what stage you choose, the cluster creation might not be fully completed and continues to run in the background. However, your Terraform code can continue to run without waiting for the cluster to be fully created. Supported args are `MasterNodeReady`, `OneWorkerNodeReady`, and `IngressReady`"
+  type        = string
+  default     = "IngressReady"
+
+  validation {
+    error_message = "`wait_till` value must be one of `MasterNodeReady`, `OneWorkerNodeReady`, or `IngressReady`."
+    condition = contains([
+      "MasterNodeReady",
+      "OneWorkerNodeReady",
+      "IngressReady"
+    ], var.wait_till)
+  }
+}
+##############################################################################
