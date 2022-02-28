@@ -10,7 +10,6 @@ This module creates a secure landing zone within a single region.
 2. [Flow Logs](#flow-Logs)
 3. [Transit Gateway](#transit-gateway)
 4. [Security Groups](#security-groups)
-5. [VPC SSH Keys](#vpc-ssh-keys)
 6. [Virtual Servers](#virtual-servers)
 7. [Virtual Private Endpoints](#virtual-private-endpoints)
 8. [IBM Cloud Services](#ibm-cloud-services)
@@ -259,9 +258,21 @@ The `security_group` variable type is as follows:
 
 ---
 
-## VPC SSH Keys
+## Virtual Servers
 
-This module allows users to create or get from data any number of VPC SSH Keys using the `ssh_keys` variable.
+![Virtual Servers](./.docs/vsi-lb.png)
+
+This module uses the [Cloud Schematics VSI Module](https://github.com/Cloud-Schematics/vsi-module) to let users create any number of VSI workloads. The VSI Module covers the following resources:
+
+- Virtual Server Instances
+- Block Storage for those Instances
+- VPC Load Balancers for those instances
+
+Virtual server components can be found in [virual_servers.tf](./virtual_servers.tf)
+
+### VPC SSH Keys
+
+This Template allows users to create or get from data any number of VPC SSH Keys using the `ssh_keys` variable.
 
 ### SSH Keys Variable
 
@@ -275,20 +286,6 @@ Users can add a name and optionally a public key. If `public_key` is not provide
     })
   )
 ```
-
----
-
-## Virtual Servers
-
-![Virtual Servers](./.docs/vsi-lb.png)
-
-This module uses the [Cloud Schematics VSI Module](https://github.com/Cloud-Schematics/vsi-module) to let users create any number of VSI workloads. The VSI Module covers the following resources:
-
-- Virtual Server Instances
-- Block Storage for those Instances
-- VPC Load Balancers for those instances
-
-Virtual server components can be found in [virual_servers.tf](./virtual_servers.tf)
 
 ### Virtual Servers Variable
 

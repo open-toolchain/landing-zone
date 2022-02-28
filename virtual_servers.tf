@@ -20,6 +20,16 @@ locals {
       ]
     })
   }
+
+  ssh_keys = {
+    for ssh_key in module.ssh_keys.ssh_keys :
+    (ssh_key.name) => ssh_key.id
+  }
+}
+
+module "ssh_keys" {
+  source   = "./ssh_key"
+  ssh_keys = var.ssh_keys
 }
 
 module "vsi" {
