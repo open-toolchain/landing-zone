@@ -671,18 +671,20 @@ variable "use_atracker" {
 variable "atracker" {
   description = "atracker variables"
   type = object({
-    resource_group = string
-    bucket_name    = string
-    location       = string
-    target_crn     = string
+    resource_group        = string
+    bucket_name           = string
+    location              = string
+    target_crn            = string
+    receive_global_events = bool
   })
   default = {
-    resource_group = "default"
-    bucket_name    = "atracker-bucket"
-    location       = "us-south"
-    target_crn     = "1234"
-    target_type    = "cloud_object_storage"
-    cos_api_key    = "<key>"
+    resource_group        = "default"
+    bucket_name           = "atracker-bucket"
+    location              = "us-south"
+    target_crn            = "1234"
+    target_type           = "cloud_object_storage"
+    cos_api_key           = "<key>"
+    receive_global_events = true
   }
 }
 
