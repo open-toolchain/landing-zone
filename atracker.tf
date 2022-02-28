@@ -9,7 +9,7 @@ resource "ibm_atracker_target" "atracker_target" {
     bucket     = var.bucket_name
     api_key    = var.api_key
   }
-  name        = (var.atracker_target_name != null ? var.atracker_target_name : "atracker-target-${var.location}")
+  name        = var.atracker_target_name != null ? var.atracker_target_name : "atracker-target-${var.location}"
   target_type = var.atracker_target_type
 }
 
