@@ -28,8 +28,10 @@ locals {
 }
 
 module "ssh_keys" {
-  source   = "./ssh_key"
-  ssh_keys = var.ssh_keys
+  source            = "./ssh_key"
+  prefix            = var.prefix
+  resource_group_id = data.ibm_resource_group.resource_group.id
+  ssh_keys          = var.ssh_keys
 }
 
 module "vsi" {

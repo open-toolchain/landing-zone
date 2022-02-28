@@ -27,7 +27,7 @@ resource "ibm_is_ssh_key" "ssh_key" {
   for_each       = local.create_ssh_keys
   name           = "${var.prefix}-${each.value.name}"
   public_key     = each.value.public_key
-  resource_group = data.ibm_resource_group.resource_group.id
+  resource_group = var.resource_group_id
   tags           = var.tags
 }
 
