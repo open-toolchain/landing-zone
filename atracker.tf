@@ -6,7 +6,7 @@ resource "ibm_atracker_target" "atracker_target" {
   cos_endpoint {
     endpoint   = "s3.private.${var.location}.cloud-object-storage.appdomain.cloud"
     target_crn = var.target_crn
-    bucket     = var.prefix != null ? "${var.prefix}-${var.bucket_name}" : var.bucket_name
+    bucket     = var.bucket_name
     api_key    = var.api_key
   }
   name        = (var.atracker_target_name != null ? var.atracker_target_name : "atracker-target-${var.location}")
