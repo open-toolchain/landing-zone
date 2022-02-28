@@ -720,3 +720,60 @@ variable "atracker" {
 }
 
 ##############################################################################
+
+
+##############################################################################
+# HP DBaaS Variables
+##############################################################################
+
+variable "dbaas_admin_config" {
+  description = "Name and password for admin user"
+  type = object({
+    admin_name = string
+    password   = string
+  })
+  default = {
+    admin_name = "admin"
+    password   = "Hyperprotectdbaas0001"
+  }
+}
+
+variable "dbaas_cluster_config" {
+  description = "cluster config for Hyper Protect DBaaS"
+  type = object({
+    db_version = string
+    cpu        = number
+    storage    = string
+    memory     = string
+    dbaas_type = string
+  })
+  default = {
+    db_version = "4.4"
+    cpu        = 1
+    storage    = "5gib"
+    memory     = "2gib"
+    dbaas_type = "mongodb"
+  }
+
+  validation {
+    error_message = "Can only be `mongodb` or `postgresql`."
+    condition     = contains(["mongodb", "postgresql"], var.dbaas_cluster_config.dbaas_type)
+  }
+
+  validation {
+    error_message = "Cluster vCPU per node dan only be one of {1, 2, 3, 4, 5, 6, 8, 9, 12, 16}."
+    condition     = contains([1, 2, 3, 4, 5, 6, 8, 9, 12, 16], var.dbaas_cluster_config.cpu)
+  }
+
+  validation {
+    error_message = "Cluster memory can only be one of {2gib, 3gib, 4gib, 5gib, 8gib, 12gib, 16gib, 24gib, 32gib, 64gib, 96gib, 128gib}."
+    condition     = conditions(["2gib", "3gib", "4gib", "5gib", "8gib", "12gib", "16gib", "24gib", "32gib", "64gib", "96gib", "128gib"], var.dbaas_cluster_config.memory)
+  }
+
+  validation {
+    error_message = "Cluster storage can only be one of {5gib, 10gib, 16gib, 24gib, 32gib, 64gib, 128gib, 320gib, 512gib, 640gib, 1280gib}."
+    condition     = conditions(["5gib", "10gib", "16gib", "24gib", "32gib", "64gib", "128gib", "320gib", "512gib", "640gib", "1280gib"], var.dbaas_cluster_config.memory)
+  }
+}
+
+##############################################################################
