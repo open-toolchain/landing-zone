@@ -613,22 +613,24 @@ variable "virtual_private_endpoints" {
 # atracker variables
 ##############################################################################
 
-variable "resource_group" {
-  description = "Enter Name of the resource group"
-  type        = string
-}
 
-variable "bucket_name" {
-  type        = string
-  description = "COS Bucket name"
-}
-
-variable "location" {
-  description = "single site or region or cross region location info"
-  type        = string
-}
-
-variable "target_crn" {
-  description = "The CRN of atracker target"
-  type        = string
-}
+variable "atracker" {
+  description = "atracker variables"
+  type = list(
+    object({
+      resource_group = string
+      bucket_name    = string
+      location       = string
+      target_crn     = string
+      })
+    )
+  }
+     default = [
+    {
+      resource_group = "default"
+      bucket_name    = "atracker-bucket"
+      location       = "us-south"
+      target_crn     = "1234"
+     }
+    ]
+    
