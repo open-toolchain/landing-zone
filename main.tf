@@ -60,6 +60,8 @@ module "vpc" {
 # Add VPC to Flow Logs
 ##############################################################################
 
+/*
+commented out until COS is added
 resource "ibm_is_flow_log" "flow_logs" {
   for_each       = module.vpc
   name           = "${each.key}-logs"
@@ -68,5 +70,6 @@ resource "ibm_is_flow_log" "flow_logs" {
   storage_bucket = var.flow_logs.cos_bucket_name
   resource_group = data.ibm_resource_group.resource_group.id
 }
+*/
 
 ##############################################################################

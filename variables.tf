@@ -1,6 +1,5 @@
 ##############################################################################
 # Account Variables
-# Copyright 2020 IBM
 ##############################################################################
 
 # Uncomment this variable if running locally
@@ -625,37 +624,66 @@ variable "virtual_private_endpoints" {
       )
     })
   )
-  default = [
-    {
-      service_name = "dbaas"
-      service_crn  = "1234"
-      vpcs = [
-        {
-          name                = "management"
-          subnets             = ["subnet-a", "subnet-c"]
-          security_group_name = "workload-vpe"
-        },
-        {
-          name    = "workload"
-          subnets = ["subnet-b"]
-        }
-      ]
-    },
-    {
-      service_name = "rabbitmq"
-      service_crn  = "1234"
-      vpcs = [
-        {
-          name    = "management"
-          subnets = ["subnet-a", "subnet-c"]
-        },
-        {
-          name    = "workload"
-          subnets = ["subnet-b"]
-        }
-      ]
-    }
-  ]
+  default = []
+}
+
+##############################################################################
+
+
+##############################################################################
+# Service Instance Variables
+##############################################################################
+
+variable "service_endpoints" {
+  description = "Service endpoints. Can be `public`, `private`, or `public-and-private`"
+  type        = string
+  default     = "private"
+
+  validation {
+    error_message = "Service endpoints can only be `public`, `private`, or `public-and-private`."
+    condition     = contains(["public", "private", "public-and-private"], var.service_endpoints)
+  }
+}
+
+##############################################################################
+
+
+##############################################################################
+# Logging and Monitoring Variables
+##############################################################################
+
+variable "create_activity_tracker" {
+  description = "Create activity tracker. Only one instance of activity tracker can be provisioned per region in each account."
+  type        = bool
+  default     = false
+}
+
+variable "sysdig" {
+  description = "Object describing sysdig deployment. If use data is false and name is not used, a name will be automatically generated. A plan is only required on creation of an instance. If no resource group ID is provided, resource will use the id of `var.resource_group` instead."
+  type = object({
+    name              = optional(string)
+    use_data          = optional(bool)
+    plan              = optional(string)
+    resource_group_id = optional(string)
+  })
+
+  default = {
+    plan = "graduated-tier"
+  }
+}
+
+variable "logdna" {
+  description = "Object describing logdna deployment. If use data is false and name is not used, a name will be automatically generated. A plan is only required on creation of an instance. If no resource group ID is provided, resource will use the id of `var.resource_group` instead."
+  type = object({
+    name              = optional(string)
+    use_data          = optional(bool)
+    plan              = optional(string)
+    resource_group_id = optional(string)
+  })
+
+  default = {
+    plan = "7-day"
+  }
 }
 
 ##############################################################################

@@ -173,7 +173,8 @@ security_groups = [
     ]
   }
 ]
-virtual_private_endpoints = [
+virtual_private_endpoints = [/*
+  commented out until vpe enabled services are added
   {
     service_name = "dbaas"
     service_crn  = "1234"
@@ -202,5 +203,5 @@ virtual_private_endpoints = [
         subnets = ["subnet-b"]
       }
     ]
-  }
+  }*/
 ]
