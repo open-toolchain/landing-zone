@@ -2,10 +2,6 @@
 # Atracker
 ##############################################################################
 
-data "ibm_resource_group" "cos_group" {
-  name = var.resource_group
-}
-
 resource "ibm_atracker_target" "atracker_target" {
   cos_endpoint {
     endpoint   = "s3.private.${var.location}.cloud-object-storage.appdomain.cloud"
