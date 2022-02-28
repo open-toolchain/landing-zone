@@ -628,3 +628,7 @@ variable "location" {
   type        = string
 }
 
+variable "target_crn" {
+  description = "The CRN of atracker target"
+  type        = string
+}
