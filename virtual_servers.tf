@@ -1,16 +1,4 @@
 ##############################################################################
-# SSH key for creating VSI
-##############################################################################
-
-resource "ibm_is_ssh_key" "ssh_key" {
-  name       = "${var.prefix}-ssh-key"
-  public_key = var.ssh_public_key
-}
-
-##############################################################################
-
-
-##############################################################################
 # Create VSI
 ##############################################################################
 
@@ -47,11 +35,14 @@ module "vsi" {
     for group in each.value.security_groups :
     ibm_is_security_group.security_group[group].id
   ]
-  ssh_key_ids    = [ibm_is_ssh_key.ssh_key.id]
+  ssh_key_ids    = [
+    for ssh_key in each.value.ssh_keys:
+    local.ssh_keys[ssh_key]
+  ]
   machine_type   = each.value.machine_type
   vsi_per_subnet = each.value.vsi_per_subnet
   security_group = each.value.security_group
-  load_balancers = each.value.load_balancers
+  load_balancers = each.value.load_balancers == null ? [] : each.value.load_balancers
 }
 
 ##############################################################################

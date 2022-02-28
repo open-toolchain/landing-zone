@@ -301,9 +301,42 @@ variable "transit_gateway_connections" {
 # VSI Variables
 ##############################################################################
 
-variable "ssh_public_key" {
-  description = "Public ssh key to use in VSI provision"
-  type        = string
+variable "ssh_keys" {
+  description = "SSH Keys to use for VSI Provision. If `public_key` is not provided, the named key will be looked up from data."
+  type = list(
+    object({
+      name       = string
+      public_key = optional(string)
+    })
+  )
+  default = [
+    {
+      name       = "dev-ssh-key"
+      public_key = "<ssh public key>"
+    }
+  ]
+
+  validation {
+    error_message = "Each SSH key must have a unique name."
+    condition     = length(distinct(var.ssh_keys.*.name)) == length(var.ssh_keys.*.name)
+  }
+
+  validation {
+    error_message = "Each key using the public_key field must have a unique public key."
+    condition     = length(
+      distinct(
+        [
+          for ssh_key in var.ssh_keys:
+          ssh_key.public_key if ssh_key.public_key != null
+        ]
+      )
+    ) == length(
+      [
+        for ssh_key in var.ssh_keys:
+        ssh_key.public_key if ssh_key.public_key != null
+      ]
+    )
+  }
 }
 
 variable "vsi" {
@@ -313,7 +346,7 @@ variable "vsi" {
       name            = string
       vpc_name        = string
       subnet_names    = list(string)
-      ssh_key_name    = optional(string)
+      ssh_keys        = list(string)
       image_name      = string
       machine_type    = string
       vsi_per_subnet  = number
@@ -358,7 +391,7 @@ variable "vsi" {
           encryption_key = optional(string)
         })
       ))
-      load_balancers = list(
+      load_balancers = optional(list(
         object({
           name              = string
           type              = string
@@ -403,7 +436,7 @@ variable "vsi" {
             })
           )
         })
-      )
+      ))
     })
   )
   default = [
@@ -413,7 +446,8 @@ variable "vsi" {
       subnet_names   = ["subnet-a", "subnet-c"]
       image_name     = "ibm-centos-7-6-minimal-amd64-2"
       machine_type   = "bx2-8x32"
-      vsi_per_subnet = 2
+      ssh_keys       = [ "dev-ssh-key" ]
+      vsi_per_subnet = 1
       security_group = {
         name = "test"
         rules = [
@@ -429,6 +463,7 @@ variable "vsi" {
           }
         ]
       }
+      /*
       block_storage_volumes = [{
         name    = "one"
         profile = "general-purpose"
@@ -451,7 +486,7 @@ variable "vsi" {
           health_type       = "http"
           pool_member_port  = 80
         }
-      ]
+      ]*/
     }
   ]
 }
