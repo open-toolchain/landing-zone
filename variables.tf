@@ -622,15 +622,15 @@ variable "atracker" {
       bucket_name    = string
       location       = string
       target_crn     = string
-      })
-    )
+    })
+  )
+}
+default = [
+  {
+    resource_group = "default"
+    bucket_name    = "atracker-bucket"
+    location       = "us-south"
+    target_crn     = "1234"
   }
-     default = [
-    {
-      resource_group = "default"
-      bucket_name    = "atracker-bucket"
-      location       = "us-south"
-      target_crn     = "1234"
-     }
-    ]
-    
+]
+

@@ -131,10 +131,10 @@ resource "ibm_is_flow_log" "flow_logs" {
 # Activity Tracker with COS 
 ##############################################################################
 module "atracker" {
- //Uncomment link below line to make it point to registry level
+  //Uncomment link below line to make it point to registry level
   source = "git::https://github.com/terraform-ibm-modules/terraform-ibm-atracker.git"
   #source = "../../terraform-ibm-atracker/"
-  
+
   //source = "../.."
 
   resource_group = var.resource_group

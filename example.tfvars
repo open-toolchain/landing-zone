@@ -186,8 +186,6 @@ vsi = [
 # Atracker Variables
 #####################################################
 
-resource_group = "<USER INPUT REQUIRED>"
-
 bucket_name = "<USER INPUT REQUIRED>"
 
 location = "<USER INPUT REQUIRED>"
