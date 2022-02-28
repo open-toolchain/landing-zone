@@ -27,7 +27,7 @@ data "ibm_resource_group" "resource_group" {
 ##############################################################################
 
 locals {
-  # Conver VPC List to Map
+  # Convert VPC List to Map
   vpc_map = {
     for vpc_network in var.vpcs :
     (vpc_network.prefix) => vpc_network
@@ -57,71 +57,13 @@ module "vpc" {
 
 
 ##############################################################################
-# SSH key for creating VSI
+# Add VPC to Flow Logs
 ##############################################################################
-
-resource "ibm_is_ssh_key" "ssh_key" {
-  name       = "${var.prefix}-ssh-key"
-  public_key = var.ssh_public_key
-}
-
-##############################################################################
-
-
-##############################################################################
-# Create VSI
-##############################################################################
-
-locals {
-  # Convert list to map
-  vsi_map = {
-    for vsi_group in var.vsi :
-    (vsi_group.name) => merge(vsi_group, {
-      # Add VPC ID
-      vpc_id = module.vpc[vsi_group.vpc_name].vpc_id
-      subnets = [
-        # Add subnets to list if they are contained in the subnet list, prepends prefixes
-        for subnet in module.vpc[vsi_group.vpc_name].subnet_zone_list :
-        subnet if contains([
-          # Create modified list of names
-          for name in vsi_group.subnet_names :
-          "${var.prefix}-${vsi_group.vpc_name}-${name}"
-        ], subnet.name)
-      ]
-    })
-  }
-}
-
-module "vsi" {
-  source            = "github.com/Cloud-Schematics/vsi-module.git"
-  for_each          = local.vsi_map
-  resource_group_id = data.ibm_resource_group.resource_group.id
-  prefix            = each.value.name
-  vpc_id            = module.vpc[each.value.vpc_name].vpc_id
-  subnets           = each.value.subnets
-  image             = each.value.image_name
-  ssh_key_ids       = [ibm_is_ssh_key.ssh_key.id]
-  machine_type      = each.value.machine_type
-  vsi_per_subnet    = each.value.vsi_per_subnet
-  security_group    = each.value.security_group
-  load_balancers    = each.value.load_balancers
-}
-
-locals {
-  vsi_list = flatten([
-    for compute in module.vsi :
-    compute.list
-  ])
-  instance_map = {
-    for instance in local.vsi_list :
-    (instance.name) => instance.ipv4_address
-  }
-}
 
 resource "ibm_is_flow_log" "flow_logs" {
-  for_each       = var.flow_logs.use ? local.instance_map : {}
+  for_each       = module.vpc
   name           = "${each.key}-logs"
-  target         = each.value
+  target         = each.value.vpc_id
   active         = var.flow_logs.active
   storage_bucket = var.flow_logs.cos_bucket_name
   resource_group = data.ibm_resource_group.resource_group.id
