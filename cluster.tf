@@ -43,7 +43,7 @@ resource "ibm_container_vpc_cluster" "cluster" {
   tags              = var.tags
   wait_till         = var.wait_till
   entitlement       = each.value.entitlement
-  cos_instance_crn  = "crn:v1:bluemix:public:cloud-object-storage:global:a/cdefe6d99f7ea459aacb25775fb88a33:d804c978-83ca-412a-b9e7-6f590b7c7f0f::"
+  cos_instance_crn  = each.value.kube_type == "openshift" ? each.value.cos_instance_crn : null
   pod_subnet        = each.value.pod_subnet
   service_subnet    = each.value.service_subnet
 

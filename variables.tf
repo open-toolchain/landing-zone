@@ -670,15 +670,17 @@ variable "clusters" {
   description = "A list describing clsuter workloads to create"
   type = list(
     object({
-      name           = string
-      vpc_name       = string
-      subnet_names   = list(string)
-      worker_count   = number
-      machine_type   = string
-      kube_type      = string
-      entitlement    = optional(string)
-      pod_subnet     = optional(string)
-      service_subnet = optional(string)
+      name             = string
+      vpc_name         = string
+      subnet_names     = list(string)
+      worker_count     = number
+      machine_type     = string
+      kube_type        = string
+      cos_instance_crn = string
+      entitlement      = optional(string)
+      pod_subnet       = optional(string)
+      service_subnet   = optional(string)
+
 
   }))
   default = [

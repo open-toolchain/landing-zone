@@ -185,12 +185,13 @@ vsi = [
 
 clusters = [
   {
-    name         = "test-cluster"
-    vpc_name     = "workload"
-    subnet_names = ["subnet-a", "subnet-c"]
-    worker_count = 1
-    machine_type = "bx2.16x64"
-    kube_type    = "openshift"
+    name             = "test-cluster"
+    vpc_name         = "workload"
+    subnet_names     = ["subnet-a", "subnet-c"]
+    worker_count     = 1
+    machine_type     = "bx2.16x64"
+    kube_type        = "openshift"
+    cos_instance_crn = "<crn>"
   }
 ]
 
