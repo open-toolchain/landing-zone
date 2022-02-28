@@ -428,10 +428,6 @@ list(
 
 ## IBM Cloud Services
 
-### Logging and Monitoring
-
-This module uses the [Cloud Schematics Logging and Monitoring Module](https://github.com/Cloud-Schematics/logging_monitoring_module) to allow users to create Logdna and Sysdig (or optionally, to get either or both of those instances from data). This module can also be used to optionally provision activity tracker.
-
 ---
 
 ## Virtual Private Endpoints
