@@ -139,7 +139,7 @@ module "atracker" {
 
   resource_group = var.resource_group
   bucket_name    = var.bucket_name
-  location       = var.location
-  target_crn     = module.cos.cos_instance_id
-  api_key        = module.cos.cos_key_credentials
+  location       = var.region
+  target_crn     = var.target_crn
+  api_key        = var.ibmcloud_api_key
 }
