@@ -70,18 +70,3 @@ resource "ibm_is_flow_log" "flow_logs" {
 }
 
 ##############################################################################
-# Activity Tracker with COS 
-##############################################################################
-module "atracker" {
-  //Uncomment link below line to make it point to registry level
-  source = "git::https://github.com/terraform-ibm-modules/terraform-ibm-atracker.git"
-  #source = "../../terraform-ibm-atracker/"
-
-  //source = "../.."
-
-  resource_group = var.resource_group
-  bucket_name    = var.bucket_name
-  location       = var.region
-  target_crn     = var.target_crn
-  api_key        = var.ibmcloud_api_key
-}

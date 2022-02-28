@@ -662,24 +662,28 @@ variable "virtual_private_endpoints" {
 # atracker variables
 ##############################################################################
 
+variable "use_atracker" {
+  description = "Use atracker and route"
+  type        = bool
+  default     = false
+}
 
 variable "atracker" {
   description = "atracker variables"
-  type = list(
-    object({
-      resource_group = string
-      bucket_name    = string
-      location       = string
-      target_crn     = string
-    })
-  )
-}
-default = [
-  {
+  type = object({
+    resource_group = string
+    bucket_name    = string
+    location       = string
+    target_crn     = string
+  })
+  default = {
     resource_group = "default"
     bucket_name    = "atracker-bucket"
     location       = "us-south"
     target_crn     = "1234"
+    target_type    = "cloud_object_storage"
+    cos_api_key    = "<key>"
   }
-]
+}
+
 
