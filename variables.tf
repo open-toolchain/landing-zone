@@ -726,6 +726,12 @@ variable "atracker" {
 # HP DBaaS Variables
 ##############################################################################
 
+variable "enable_hp_dbaas" {
+  description = "Enable HP DBaaS"
+  type        = bool
+  default     = false
+}
+
 variable "dbaas_admin_config" {
   description = "Name and password for admin user"
   type = object({

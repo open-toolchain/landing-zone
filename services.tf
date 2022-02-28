@@ -22,6 +22,7 @@ module "logging_and_monitoring" {
 ##############################################################################
 
 resource "ibm_resource_instance" "dbaas" {
+  count             = var.enable_hp_dbaas ? 1 : 0
   name              = "${var.prefix}-${var.dbaas_type}"
   service           = "hyperp-dbaas-${var.dbaas_type}"
   plan              = "${var.dbaas_type}-flexible"
