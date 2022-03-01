@@ -33,7 +33,7 @@ resource "ibm_resource_instance" "cos" {
 }
 
 resource "ibm_resource_key" "key" {
-  name                 = var.cos_resource_key.name
+  name                 = "${var.prefix}-${var.cos_resource_key.name}"
   role                 = var.cos_resource_key.role
   resource_instance_id = local.cos_instance_id
   tags                 = (var.tags != null ? var.tags : null)
@@ -71,7 +71,7 @@ locals {
 resource "ibm_cos_bucket" "buckets" {
   for_each = local.buckets_map
 
-  bucket_name           = "${var.prefix}-global-${each.value.name}"
+  bucket_name           = "${var.prefix}-${each.value.name}"
   resource_instance_id  = local.cos_instance_id
   storage_class         = "standard"
   endpoint_type         = "public"

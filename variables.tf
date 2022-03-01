@@ -756,7 +756,7 @@ variable "cos_resource_key" {
   })
 
   default = {
-    name = "slz-cos-instance-key"
+    name = "cos-bind-key"
     role = "Writer"
   }
 }
