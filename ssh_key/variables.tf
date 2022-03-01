@@ -13,11 +13,6 @@ variable "prefix" {
   }
 }
 
-variable "resource_group_id" {
-  description = "Resource group ID to use for all services created"
-  type        = string
-}
-
 variable "tags" {
   description = "A list of tags to be added to resources"
   type        = list(string)
@@ -28,8 +23,9 @@ variable "ssh_keys" {
   description = "SSH Keys to use for VSI Provision. If `public_key` is not provided, the named key will be looked up from data."
   type = list(
     object({
-      name       = string
-      public_key = optional(string)
+      name              = string
+      public_key        = optional(string)
+      resource_group_id = optional(string)
     })
   )
   default = [
