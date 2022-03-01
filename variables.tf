@@ -64,12 +64,19 @@ variable "resource_groups" {
       create = optional(bool)
     })
   )
-  default = [{
-    name = "asset-development"
-    }, {
-    name   = "ignore-me"
-    create = true
-  }]
+  default = [
+    {
+      name = "asset-development"
+    }, 
+    {
+      name   = "ignore-me"
+      create = true
+    },
+    {
+      name = "cs-rg"
+      create = true
+    }
+  ]
 
   validation {
     error_message = "Each group must have a unique name."
@@ -733,47 +740,90 @@ variable "cos" {
     service_name = string
     resource_group = string
     desired_plan = optional(string)
-    bind_key_name = string
-    bind_key_role = string        
   })
 
   default = {
     service_name = "slz-cos"
     resource_group = "cs-rg"
-    bind_key_name = "slz-cos-instance-key"
-    bind_key_role = "Writer"
   }
 }
 
-variable "kms" {
-  description = "Object describing kms instance."
+variable "cos_resource_key" {
+  description = "Object describing resource key for cos instance"
   type = object({
-    service_name = string 
-    service = string 
+    name = string
+    role = string
   })
 
   default = {
-    service_name = "slz-kms"
-    service = "hpcs"
+    name = "slz-cos-instance-key"
+    role = "Writer"
   }
 }
 
+variable "cos_authorization_policies" {
+  description = "List of authorization policies to be created for cos instance"
+  type = list(object({
+    target_service_name         = string 
+    target_resource_instance_id = optional(string)
+    target_resource_group       = optional(string)
+    roles                       = list(string)
+    description                 = string 
+  }))
+
+  default = []
+}
+
 variable "cos_buckets" {
-  description = "Object describing buckets to be created in desired cloud object storage instance"
+  description = "List of standard buckets to be created in desired cloud object storage instance"
   type = list(object({
     name                  = string
-    kms_key_crn           = string 
     single_site_location  = optional(string)
     region_location       = optional(string) 
     cross_region_location = optional(string)
+    kms_key_crn           = optional(string)
   }))
 
   default = [
     {
-      name = "jv-dev-bucket"
-      kms_key_crn = "mgmt-flow-log-key"
+      name = "dev-bucket"
+      region_location = "us-south"
+    },
+    {
+      name = "staging-bucket"
+      region_location = "us-east"
     }
   ]
+
+  validation {
+    error_message = "All single site buckets must specify `ams03`, `che01`, `hkg02`, `mel01`, `mex01`, `mil01`, `mon01`, `osl01`, `par01`, `sjc04`, `sao01`, `seo01`, `sng01`, or `tor01`."
+    condition     = length([
+      for bucket in var.cos_buckets: 
+        bucket if bucket.single_site_location == null 
+          ? true 
+          : contains(["ams03", "che01", "hkg02", "mel01", "mex01", "mil01", "mon01", "osl01", "par01", "sjc04", "sao01", "seo01", "sng01", "tor01"], bucket.single_site_location)
+    ]) == length(var.cos_buckets)
+  }
+  
+  validation {
+    error_message = "All regional buckets must specify `au-syd`, `eu-de`, `eu-gb`, `jp-tok`, `us-east`, `us-south`, `ca-tor`, `jp-osa`, `br-sao`."
+    condition     = length([
+      for bucket in var.cos_buckets: 
+        bucket if bucket.region_location == null 
+          ? true 
+          : contains(["au-syd", "eu-de", "eu-gb", "jp-tok", "us-east", "us-south", "ca-tor", "jp-osa", "br-sao"], bucket.region_location)
+    ]) == length(var.cos_buckets)
+  }
+
+  validation {
+    error_message = "All cross-regional buckets must specify `us`, `eu`, `ap`."
+    condition     = length([
+      for bucket in var.cos_buckets: 
+        bucket if bucket.cross_region_location == null 
+          ? true 
+          : contains(["us", "eu", "ap"], bucket.cross_region_location)
+    ]) == length(var.cos_buckets)
+  }
 }
 
 ##############################################################################
