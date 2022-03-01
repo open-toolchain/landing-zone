@@ -1,9 +1,20 @@
-prefix         = "gcat-multizone-schematics"
-region         = "us-south"
-resource_group = ""
+ibmcloud_api_key = ""
+prefix           = "gcat-multizone-schematics"
+region           = "us-south"
+resource_group   = ""
+tags             = []
+resource_groups = [
+  {
+    name = "default"
+  },
+  {
+    name = "asset-development"
+  }
+]
 vpcs = [
   {
-    prefix = "management"
+    prefix         = "management"
+    resource_group = "asset-development"
     use_public_gateways = {
       zone-1 = true
       zone-2 = true
@@ -59,7 +70,8 @@ vpcs = [
     }
   },
   {
-    prefix = "workload"
+    prefix         = "workload"
+    resource_group = "default"
     use_public_gateways = {
       zone-1 = true
       zone-2 = true
@@ -115,53 +127,27 @@ vpcs = [
     }
   }
 ]
-ssh_public_key = ""
+flow_logs = {
+  cos_bucket_name = "jv-dev-bucket"
+  active          = true
+}
+enable_transit_gateway      = true
+transit_gateway_connections = ["management", "workload"]
+ssh_keys = [
+  {
+    name       = "dev-ssh-key"
+    public_key = "<ssh public key>"
+  }
+]
 vsi = [
   {
     name           = "test-vsi"
     vpc_name       = "management"
+    resource_group = "asset-development"
     subnet_names   = ["subnet-a", "subnet-c"]
     image_name     = "ibm-centos-7-6-minimal-amd64-2"
     machine_type   = "bx2-8x32"
-    vsi_per_subnet = 2
-    security_group = {
-      name = "test"
-      rules = [
-        {
-          name      = "allow-all-inbound"
-          source    = "0.0.0.0/0"
-          direction = "inbound"
-        },
-        {
-          name      = "allow-all-outbound"
-          source    = "0.0.0.0/0"
-          direction = "outbound"
-        }
-      ]
-    }
-    load_balancers = [
-      {
-        name              = "test"
-        type              = "public"
-        listener_port     = 80
-        listener_protocol = "http"
-        connection_limit  = 0
-        algorithm         = "round_robin"
-        protocol          = "http"
-        health_delay      = 5
-        health_retries    = 10
-        health_timeout    = 30
-        health_type       = "http"
-        pool_member_port  = 80
-      }
-    ]
-  },
-  {
-    name           = "workload-vsi"
-    vpc_name       = "workload"
-    subnet_names   = ["subnet-a", "subnet-b", "subnet-c"]
-    image_name     = "ibm-centos-7-6-minimal-amd64-2"
-    machine_type   = "bx2-8x32"
+    ssh_keys       = ["dev-ssh-key"]
     vsi_per_subnet = 1
     security_group = {
       name = "test"
@@ -178,6 +164,56 @@ vsi = [
         }
       ]
     }
-    load_balancers = []
   }
 ]
+security_groups = [
+  {
+    name     = "workload-vpe"
+    vpc_name = "workload"
+    rules = [
+      {
+        name      = "allow-all-inbound"
+        source    = "0.0.0.0/0"
+        direction = "inbound"
+      },
+      {
+        name      = "allow-all-outbound"
+        source    = "0.0.0.0/0"
+        direction = "outbound"
+      }
+    ]
+  }
+]
+virtual_private_endpoints = [/*
+  commented out until vpe enabled services are added
+  {
+    service_name = "dbaas"
+    service_crn  = "1234"
+    vpcs = [
+      {
+        name                = "management"
+        subnets             = ["subnet-a", "subnet-c"]
+        security_group_name = "workload-vpe"
+      },
+      {
+        name    = "workload"
+        subnets = ["subnet-b"]
+      }
+    ]
+  },
+  {
+    service_name = "rabbitmq"
+    service_crn  = "1234"
+    vpcs = [
+      {
+        name    = "management"
+        subnets = ["subnet-a", "subnet-c"]
+      },
+      {
+        name    = "workload"
+        subnets = ["subnet-b"]
+      }
+    ]
+  }*/
+]
+

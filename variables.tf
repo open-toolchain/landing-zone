@@ -1,24 +1,23 @@
 ##############################################################################
 # Account Variables
-# Copyright 2020 IBM
 ##############################################################################
 
 # Uncomment this variable if running locally
 variable "ibmcloud_api_key" {
-  description = "The IBM Cloud platform API key needed to deploy IAM enabled resources"
+  description = "The IBM Cloud platform API key needed to deploy IAM enabled resources."
   type        = string
   sensitive   = true
 }
 
 # Comment out if not running in schematics
-variable "TF_VERSION" {
-  default     = "1.0"
-  type        = string
-  description = "The version of the Terraform engine that's used in the Schematics workspace."
-}
+# variable "TF_VERSION" {
+#   default     = "1.0"
+#   type        = string
+#   description = "The version of the Terraform engine that's used in the Schematics workspace."
+# }
 
 variable "prefix" {
-  description = "A unique identifier need to provision resources. Must begin with a letter"
+  description = "A unique identifier for resources. Must begin with a letter. This prefix will be prepended to any resources provisioned by this template."
   type        = string
   default     = "gcat-multizone-schematics"
 
@@ -29,18 +28,18 @@ variable "prefix" {
 }
 
 variable "region" {
-  description = "Region where VPC will be created"
+  description = "Region where VPC will be created. To find your VPC region, use `ibmcloud is regions` command to find available regions."
   type        = string
   default     = "us-south"
 }
 
 variable "resource_group" {
-  description = "Name of resource group where all infrastructure will be provisioned. "
+  description = "Name of resource group where all infrastructure will be provisioned."
   type        = string
 
   validation {
     error_message = "Unique ID must begin and end with a letter and contain only letters, numbers, and - characters."
-    condition     = can(regex("^([a-z]|[a-z][-a-z0-9]*[a-z0-9])$", var.resource_group))
+    condition     = can(regex("^([A-z]|[a-z][-a-z0-9]*[a-z0-9])$", var.resource_group))
   }
 }
 
@@ -54,14 +53,43 @@ variable "tags" {
 
 
 ##############################################################################
+# Resource Groups Variables
+##############################################################################
+
+variable "resource_groups" {
+  description = "Object describing resource groups to create or reference"
+  type = list(
+    object({
+      name   = string
+      create = optional(bool)
+    })
+  )
+  default = [{
+    name = "asset-development"
+    }, {
+    name   = "ignore-me"
+    create = true
+  }]
+
+  validation {
+    error_message = "Each group must have a unique name."
+    condition     = length(distinct(var.resource_groups.*.name)) == length(var.resource_groups.*.name)
+  }
+}
+
+##############################################################################
+
+
+##############################################################################
 # VPC Variables
 ##############################################################################
 
 variable "vpcs" {
-  description = "A map describing VPCs to be created in this repo"
+  description = "A map describing VPCs to be created in this repo."
   type = list(
     object({
-      prefix                      = string # VPC prefix
+      prefix                      = string           # VPC prefix
+      resource_group              = optional(string) # Name of the group where VPC will be created
       use_manual_address_prefixes = optional(bool)
       classic_access              = optional(bool)
       default_network_acl_name    = optional(string)
@@ -76,9 +104,8 @@ variable "vpcs" {
       )
       network_acls = list(
         object({
-          name                = string
-          network_connections = optional(list(string))
-          add_cluster_rules   = optional(bool)
+          name              = string
+          add_cluster_rules = optional(bool)
           rules = list(
             object({
               name        = string
@@ -141,7 +168,8 @@ variable "vpcs" {
   )
   default = [
     {
-      prefix = "management"
+      prefix         = "management"
+      resource_group = "asset-development"
       use_public_gateways = {
         zone-1 = true
         zone-2 = true
@@ -197,7 +225,8 @@ variable "vpcs" {
       }
     },
     {
-      prefix = "workload"
+      prefix         = "workload"
+      resource_group = "ignore-me"
       use_public_gateways = {
         zone-1 = true
         zone-2 = true
@@ -259,25 +288,109 @@ variable "vpcs" {
 
 
 ##############################################################################
+# Flow Logs Variables
+##############################################################################
+
+variable "flow_logs" {
+  description = "List of variables for flow log to connect to each VSI instance. Set `use` to false to disable flow logs."
+  type = object({
+    cos_bucket_name = string
+    active          = bool
+  })
+  default = {
+    cos_bucket_name = "jv-dev-bucket"
+    active          = true
+  }
+}
+
+##############################################################################
+
+
+##############################################################################
+# Transit Gateway
+##############################################################################
+
+variable "enable_transit_gateway" {
+  description = "Create transit gateway"
+  type        = bool
+  default     = true
+}
+
+variable "transit_gateway_resource_group" {
+  description = "Name of resource group to use for transit gateway. Must be included in `var.resource_group`"
+  type        = string
+  default     = "asset-development"
+}
+
+variable "transit_gateway_connections" {
+  description = "Transit gateway vpc connections. Will only be used if transit gateway is enabled."
+  type        = list(string)
+  default = [
+    "management",
+    "workload"
+  ]
+}
+
+##############################################################################
+
+##############################################################################
 # VSI Variables
 ##############################################################################
 
-variable "ssh_public_key" {
-  description = "Public ssh key to use in VSI provision"
-  type        = string
+variable "ssh_keys" {
+  description = "SSH Keys to use for VSI Provision. If `public_key` is not provided, the named key will be looked up from data. If a resource group name is added, it must be included in `var.resource_groups`"
+  type = list(
+    object({
+      name           = string
+      public_key     = optional(string)
+      resource_group = optional(string)
+    })
+  )
+  default = [
+    {
+      name           = "dev-ssh-key"
+      public_key     = "<ssh public key>"
+      resource_group = "asset-development"
+    }
+  ]
+
+  validation {
+    error_message = "Each SSH key must have a unique name."
+    condition     = length(distinct(var.ssh_keys.*.name)) == length(var.ssh_keys.*.name)
+  }
+
+  validation {
+    error_message = "Each key using the public_key field must have a unique public key."
+    condition = length(
+      distinct(
+        [
+          for ssh_key in var.ssh_keys :
+          ssh_key.public_key if ssh_key.public_key != null
+        ]
+      )
+      ) == length(
+      [
+        for ssh_key in var.ssh_keys :
+        ssh_key.public_key if ssh_key.public_key != null
+      ]
+    )
+  }
 }
 
 variable "vsi" {
   description = "A list describing VSI workloads to create"
   type = list(
     object({
-      name           = string
-      vpc_name       = string
-      subnet_names   = list(string)
-      ssh_key_name   = optional(string)
-      image_name     = string
-      machine_type   = string
-      vsi_per_subnet = number
+      name            = string
+      vpc_name        = string
+      subnet_names    = list(string)
+      ssh_keys        = list(string)
+      image_name      = string
+      machine_type    = string
+      vsi_per_subnet  = number
+      user_data       = optional(string)
+      resource_group  = optional(string)
+      security_groups = optional(list(string))
       security_group = optional(
         object({
           name = string
@@ -308,7 +421,16 @@ variable "vsi" {
           )
         })
       )
-      load_balancers = list(
+      block_storage_volumes = optional(list(
+        object({
+          name           = string
+          profile        = string
+          capacity       = optional(number)
+          iops           = optional(number)
+          encryption_key = optional(string)
+        })
+      ))
+      load_balancers = optional(list(
         object({
           name              = string
           type              = string
@@ -353,7 +475,7 @@ variable "vsi" {
             })
           )
         })
-      )
+      ))
     })
   )
   default = [
@@ -363,45 +485,7 @@ variable "vsi" {
       subnet_names   = ["subnet-a", "subnet-c"]
       image_name     = "ibm-centos-7-6-minimal-amd64-2"
       machine_type   = "bx2-8x32"
-      vsi_per_subnet = 2
-      security_group = {
-        name = "test"
-        rules = [
-          {
-            name      = "allow-all-inbound"
-            source    = "0.0.0.0/0"
-            direction = "inbound"
-          },
-          {
-            name      = "allow-all-outbound"
-            source    = "0.0.0.0/0"
-            direction = "outbound"
-          }
-        ]
-      }
-      load_balancers = [
-        {
-          name              = "test"
-          type              = "public"
-          listener_port     = 80
-          listener_protocol = "http"
-          connection_limit  = 0
-          algorithm         = "round_robin"
-          protocol          = "http"
-          health_delay      = 10
-          health_retries    = 10
-          health_timeout    = 5
-          health_type       = "http"
-          pool_member_port  = 80
-        }
-      ]
-    },
-    {
-      name           = "workload-vsi"
-      vpc_name       = "workload"
-      subnet_names   = ["subnet-a", "subnet-b", "subnet-c"]
-      image_name     = "ibm-centos-7-6-minimal-amd64-2"
-      machine_type   = "bx2-8x32"
+      ssh_keys       = ["dev-ssh-key"]
       vsi_per_subnet = 1
       security_group = {
         name = "test"
@@ -418,9 +502,17 @@ variable "vsi" {
           }
         ]
       }
+      /*
+      block_storage_volumes = [{
+        name    = "one"
+        profile = "general-purpose"
+        }, {
+        name    = "two"
+        profile = "general-purpose"
+      }]
       load_balancers = [
         {
-          name              = "workload"
+          name              = "test"
           type              = "public"
           listener_port     = 80
           listener_protocol = "http"
@@ -433,38 +525,27 @@ variable "vsi" {
           health_type       = "http"
           pool_member_port  = 80
         }
-      ]
+      ]*/
     }
   ]
 }
 
-variable "flow_logs" {
-  description = "List of variables for flow log to connect to each VSI instance. Set `use` to false to disable flow logs."
-  type = object({
-    cos_bucket_name = string
-    active          = bool
-    use             = bool
-  })
-  default = {
-    cos_bucket_name = "jv-dev-bucket"
-    active          = true
-    use             = true
-  }
-}
+
 
 ##############################################################################
 
 
 ##############################################################################
-# VPE Variables
+# Security Group Variables
 ##############################################################################
 
 variable "security_groups" {
-  description = "Security groups for VPE"
+  description = "Security groups for VPC"
   type = list(
     object({
-      name     = string
-      vpc_name = string
+      name           = string
+      vpc_name       = string
+      resource_group = optional(string)
       rules = list(
         object({
           name      = string
@@ -495,8 +576,9 @@ variable "security_groups" {
 
   default = [
     {
-      name     = "workload-vpe"
-      vpc_name = "workload"
+      name           = "workload-vpe"
+      vpc_name       = "workload"
+      resource_group = "asset-development"
       rules = [
         {
           name      = "allow-all-inbound"
@@ -561,12 +643,21 @@ variable "security_groups" {
 
 }
 
+##############################################################################
+
+
+##############################################################################
+# VPE Variables
+##############################################################################
+
 variable "virtual_private_endpoints" {
   description = "Object describing VPE to be created"
   type = list(
     object({
-      service_name = string
-      service_crn  = string
+      service_name         = string
+      service_crn          = string
+      cloud_object_storage = optional(bool)
+      resource_group       = optional(string)
       vpcs = list(
         object({
           name                = string
@@ -576,37 +667,58 @@ variable "virtual_private_endpoints" {
       )
     })
   )
-  default = [
-    {
-      service_name = "dbaas"
-      service_crn  = "1234"
-      vpcs = [
-        {
-          name                = "management"
-          subnets             = ["subnet-a", "subnet-c"]
-          security_group_name = "workload-vpe"
-        },
-        {
-          name    = "workload"
-          subnets = ["subnet-b"]
-        }
-      ]
-    },
-    {
-      service_name = "rabbitmq"
-      service_crn  = "1234"
-      vpcs = [
-        {
-          name    = "management"
-          subnets = ["subnet-a", "subnet-c"]
-        },
-        {
-          name    = "workload"
-          subnets = ["subnet-b"]
-        }
-      ]
-    }
-  ]
+  default = []
+}
+
+##############################################################################
+
+
+##############################################################################
+# Service Instance Variables
+##############################################################################
+
+variable "service_endpoints" {
+  description = "Service endpoints. Can be `public`, `private`, or `public-and-private`"
+  type        = string
+  default     = "private"
+
+  validation {
+    error_message = "Service endpoints can only be `public`, `private`, or `public-and-private`."
+    condition     = contains(["public", "private", "public-and-private"], var.service_endpoints)
+  }
+}
+
+##############################################################################
+
+
+##############################################################################
+# atracker variables
+##############################################################################
+
+variable "use_atracker" {
+  description = "Use atracker and route"
+  type        = bool
+  default     = false
+}
+
+variable "atracker" {
+  description = "atracker variables"
+  type = object({
+    resource_group        = string
+    bucket_name           = string
+    location              = string
+    target_crn            = string
+    receive_global_events = bool
+  })
+  default = {
+    resource_group        = "default"
+    bucket_name           = "atracker-bucket"
+    location              = "us-south"
+    target_crn            = "1234"
+    target_type           = "cloud_object_storage"
+    cos_api_key           = "<key>"
+    receive_global_events = true
+  }
 }
 
 ##############################################################################
