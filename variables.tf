@@ -69,8 +69,7 @@ variable "resource_groups" {
       name = "asset-development"
     }, 
     {
-      name   = "ignore-me"
-      create = true
+      name   = "default"
     },
     {
       name = "cs-rg"
@@ -355,9 +354,9 @@ variable "ssh_keys" {
   )
   default = [
     {
-      name           = "dev-ssh-key"
+      name           = "ev-ssh-key"
       public_key     = "<ssh public key>"
-      resource_group = "asset-development"
+      resource_group = "default"
     }
   ]
 
