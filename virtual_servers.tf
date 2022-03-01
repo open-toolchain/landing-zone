@@ -28,16 +28,23 @@ locals {
 }
 
 module "ssh_keys" {
-  source            = "./ssh_key"
-  prefix            = var.prefix
-  resource_group_id = data.ibm_resource_group.resource_group.id
-  ssh_keys          = var.ssh_keys
+  source = "./ssh_key"
+  prefix = var.prefix
+  ssh_keys = [
+    for ssh_key in var.ssh_keys :
+    merge(
+      {
+        resource_group_id : local.resource_groups[ssh_key.resource_group]
+      },
+      ssh_key
+    )
+  ]
 }
 
 module "vsi" {
   source                = "github.com/Cloud-Schematics/vsi-module.git"
   for_each              = local.vsi_map
-  resource_group_id     = data.ibm_resource_group.resource_group.id
+  resource_group_id     = each.value.resource_group == null ? null : local.resource_groups[each.value.resource_group]
   create_security_group = each.value.security_group == null ? false : true
   prefix                = each.value.name
   vpc_id                = module.vpc[each.value.vpc_name].vpc_id

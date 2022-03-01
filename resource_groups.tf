@@ -5,14 +5,20 @@
 #   reference
 ##############################################################################
 
-data ibm_resource_group resource_groups {
-  for_each = toset([for group in var.resource_groups : group.name if group.create_new != true])
-  name     = each.key
+data "ibm_resource_group" "resource_groups" {
+  for_each = toset([
+    for group in var.resource_groups :
+    group.name if group.create != true
+  ])
+  name = each.key
 }
 
-resource ibm_resource_group resource_groups {
-  for_each = toset([for group in var.resource_groups : group.name if group.create_new == true])
-  name     = each.key
+resource "ibm_resource_group" "resource_groups" {
+  for_each = toset([
+    for group in var.resource_groups :
+    group.name if group.create == true
+  ])
+  name = each.key
 }
 
 ##############################################################################
@@ -24,9 +30,15 @@ resource ibm_resource_group resource_groups {
 
 locals {
   resource_groups = merge(
-    {for group in data.ibm_resource_group.resource_groups :
-      group.name => group.id},
-    {for group in ibm_resource_group.resource_groups :
-      group.name => group.id}
+    {
+      for group in data.ibm_resource_group.resource_groups :
+      group.name => group.id
+    },
+    {
+      for group in ibm_resource_group.resource_groups :
+      group.name => group.id
+    }
   )
 }
+
+##############################################################################

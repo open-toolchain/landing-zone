@@ -40,6 +40,7 @@ The type of the VPC Variable is as follows:
   type = list(
     object({
       prefix                      = string            # A unique prefix that will prepend all components in the VPC
+      resource_group              = optional(string)  # Name of the resource group to use for VPC. Must by in `var.resource_groups`
       use_manual_address_prefixes = optional(bool)    # Optionally assign prefixes to VPC manually. By default this is false, and prefixes will be created along with subnets
       classic_access              = optional(bool)    # Optionally allow VPC to access classic infrastructure network
       default_network_acl_name    = optional(string)  # Override default ACL name
@@ -281,8 +282,9 @@ Users can add a name and optionally a public key. If `public_key` is not provide
 ```terraform
   type = list(
     object({
-      name       = string
-      public_key = optional(string)
+      name           = string
+      public_key     = optional(string)
+      resource_group = optional(string) # Must be in var.resource_groups
     })
   )
 ```
@@ -302,6 +304,7 @@ list(
       machine_type    = string                  # Name of machine type. Use `ibmcloud is in-prs` to view 
       vsi_per_subnet  = number                  # Number of identical VSI to be created on each subnet
       user_data       = optional(string)        # User data to initialize instance
+      resource_group  = optional(string)        # Name of resource group where VSI will be provisioned, must be in `var.resource_groups`
       security_groups = optional(list(string))  # Optional Name of additional security groups from `var.security groups` to add to VSI
 
       ##############################################################################
@@ -453,10 +456,6 @@ ssh_keys                    | SSH Keys to use for VSI Provision. If `public_key`
 vsi                         | A list describing VSI workloads to create
 security_groups             | Security groups for VPC
 virtual_private_endpoints   | Object describing VPE to be created
-service_endpoints           | Service endpoints. Can be `public`, `private`, or `public-and-private`
-create_activity_tracker     | Create activity tracker. Only one instance of activity tracker can be provisioned per region in each account.
-sysdig                      | Object describing sysdig deployment. If use data is false and name is not used, a name will be automatically generated. A plan is only required on creation of an instance. If no resource group ID is provided, resource will use the id of `var.resource_group` instead.
-logdna                      | Object describing logdna deployment. If use data is false and name is not used, a name will be automatically generated. A plan is only required on creation of an instance. If no resource group ID is provided, resource will use the id of `var.resource_group` instead.
 use_atracker                | Use atracker and route
 atracker                    | atracker variables
 resource_groups             | A list of existing resource groups to reference and new groups to create

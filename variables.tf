@@ -53,6 +53,34 @@ variable "tags" {
 
 
 ##############################################################################
+# Resource Groups Variables
+##############################################################################
+
+variable "resource_groups" {
+  description = "Object describing resource groups to create or reference"
+  type = list(
+    object({
+      name   = string
+      create = optional(bool)
+    })
+  )
+  default = [{
+    name = "asset-development"
+    }, {
+    name   = "ignore-me"
+    create = true
+  }]
+
+  validation {
+    error_message = "Each group must have a unique name."
+    condition     = length(distinct(var.resource_groups.*.name)) == length(var.resource_groups.*.name)
+  }
+}
+
+##############################################################################
+
+
+##############################################################################
 # VPC Variables
 ##############################################################################
 
@@ -60,7 +88,8 @@ variable "vpcs" {
   description = "A map describing VPCs to be created in this repo."
   type = list(
     object({
-      prefix                      = string # VPC prefix
+      prefix                      = string           # VPC prefix
+      resource_group              = optional(string) # Name of the group where VPC will be created
       use_manual_address_prefixes = optional(bool)
       classic_access              = optional(bool)
       default_network_acl_name    = optional(string)
@@ -139,7 +168,8 @@ variable "vpcs" {
   )
   default = [
     {
-      prefix = "management"
+      prefix         = "management"
+      resource_group = "asset-development"
       use_public_gateways = {
         zone-1 = true
         zone-2 = true
@@ -195,7 +225,8 @@ variable "vpcs" {
       }
     },
     {
-      prefix = "workload"
+      prefix         = "workload"
+      resource_group = "ignore-me"
       use_public_gateways = {
         zone-1 = true
         zone-2 = true
@@ -285,6 +316,12 @@ variable "enable_transit_gateway" {
   default     = true
 }
 
+variable "transit_gateway_resource_group" {
+  description = "Name of resource group to use for transit gateway. Must be included in `var.resource_group`"
+  type        = string
+  default     = "asset-development"
+}
+
 variable "transit_gateway_connections" {
   description = "Transit gateway vpc connections. Will only be used if transit gateway is enabled."
   type        = list(string)
@@ -301,17 +338,19 @@ variable "transit_gateway_connections" {
 ##############################################################################
 
 variable "ssh_keys" {
-  description = "SSH Keys to use for VSI Provision. If `public_key` is not provided, the named key will be looked up from data."
+  description = "SSH Keys to use for VSI Provision. If `public_key` is not provided, the named key will be looked up from data. If a resource group name is added, it must be included in `var.resource_groups`"
   type = list(
     object({
-      name       = string
-      public_key = optional(string)
+      name           = string
+      public_key     = optional(string)
+      resource_group = optional(string)
     })
   )
   default = [
     {
-      name       = "dev-ssh-key"
-      public_key = "<ssh public key>"
+      name           = "dev-ssh-key"
+      public_key     = "<ssh public key>"
+      resource_group = "asset-development"
     }
   ]
 
@@ -350,6 +389,7 @@ variable "vsi" {
       machine_type    = string
       vsi_per_subnet  = number
       user_data       = optional(string)
+      resource_group  = optional(string)
       security_groups = optional(list(string))
       security_group = optional(
         object({
@@ -503,8 +543,9 @@ variable "security_groups" {
   description = "Security groups for VPC"
   type = list(
     object({
-      name     = string
-      vpc_name = string
+      name           = string
+      vpc_name       = string
+      resource_group = optional(string)
       rules = list(
         object({
           name      = string
@@ -535,8 +576,9 @@ variable "security_groups" {
 
   default = [
     {
-      name     = "workload-vpe"
-      vpc_name = "workload"
+      name           = "workload-vpe"
+      vpc_name       = "workload"
+      resource_group = "asset-development"
       rules = [
         {
           name      = "allow-all-inbound"
@@ -615,6 +657,7 @@ variable "virtual_private_endpoints" {
       service_name         = string
       service_crn          = string
       cloud_object_storage = optional(bool)
+      resource_group       = optional(string)
       vpcs = list(
         object({
           name                = string
@@ -649,22 +692,32 @@ variable "service_endpoints" {
 
 
 ##############################################################################
-# Resource Groups Variables
+# atracker variables
 ##############################################################################
 
-variable "resource_groups" {
-  description = "Object describing resource groups to create or reference"
-  type = list(
-    object({
-      name       = string
-      create_new = optional(bool)
-    })
-  )
-  default = []
+variable "use_atracker" {
+  description = "Use atracker and route"
+  type        = bool
+  default     = false
+}
 
-  validation {
-    error_message = "Each group must have a unique name."
-    condition     = length(distinct(var.resource_groups.*.name)) == length(var.resource_groups.*.name)
+variable "atracker" {
+  description = "atracker variables"
+  type = object({
+    resource_group        = string
+    bucket_name           = string
+    location              = string
+    target_crn            = string
+    receive_global_events = bool
+  })
+  default = {
+    resource_group        = "default"
+    bucket_name           = "atracker-bucket"
+    location              = "us-south"
+    target_crn            = "1234"
+    target_type           = "cloud_object_storage"
+    cos_api_key           = "<key>"
+    receive_global_events = true
   }
 }
 
