@@ -69,6 +69,9 @@ variable "resource_groups" {
       name = "asset-development"
     }, 
     {
+      name   = "ignore-me"
+    },
+    {
       name   = "default"
     },
     {
