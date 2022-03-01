@@ -33,16 +33,6 @@ variable "region" {
   default     = "us-south"
 }
 
-variable "resource_group" {
-  description = "Name of resource group where all infrastructure will be provisioned."
-  type        = string
-
-  validation {
-    error_message = "Unique ID must begin and end with a letter and contain only letters, numbers, and - characters."
-    condition     = can(regex("^([A-z]|[a-z][-a-z0-9]*[a-z0-9])$", var.resource_group))
-  }
-}
-
 variable "tags" {
   description = "List of tags to apply to resources created by this module."
   type        = list(string)
@@ -605,18 +595,17 @@ variable "security_groups" {
   validation {
     error_message = "Security group rules can only use one of the following blocks: `tcp`, `udp`, `icmp`."
     condition = length(
+      # Ensure length is 0
       [
+        # For each group in security groups
         for group in var.security_groups :
+        # Return true if length isn't 0
         true if length(
           distinct(
             flatten([
+              # For each rule, return true if using more than one `tcp`, `udp`, `icmp block
               for rule in group.rules :
-              true if length(
-                [
-                  for type in ["tcp", "udp", "icmp"] :
-                  true if rule[type] != null
-                ]
-              ) > 1
+              true if length([ for type in ["tcp", "udp", "icmp"] : true if rule[type] != null ]) > 1
             ])
           )
         ) != 0
