@@ -11,7 +11,7 @@ data ibm_resource_group resource_groups {
 }
 
 resource ibm_resource_group resource_groups {
-  for_each = toset([for group in var.resource_groups : group.name if group.create_new])
+  for_each = toset([for group in var.resource_groups : group.name if group.create_new == true])
   name     = each.key
 }
 
