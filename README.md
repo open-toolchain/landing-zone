@@ -459,6 +459,7 @@ sysdig                      | Object describing sysdig deployment. If use data i
 logdna                      | Object describing logdna deployment. If use data is false and name is not used, a name will be automatically generated. A plan is only required on creation of an instance. If no resource group ID is provided, resource will use the id of `var.resource_group` instead.
 use_atracker                | Use atracker and route
 atracker                    | atracker variables
+resource_groups             | A list of existing resource groups to reference and new groups to create
 ---
 
 ## Contributing
