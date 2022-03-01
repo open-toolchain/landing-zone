@@ -205,3 +205,10 @@ virtual_private_endpoints = [/*
     ]
   }*/
 ]
+
+resource_groups = [
+  {
+    name       = "default"
+    create_new = false
+  }
+]

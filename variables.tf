@@ -646,3 +646,26 @@ variable "service_endpoints" {
 }
 
 ##############################################################################
+
+
+##############################################################################
+# Resource Groups Variables
+##############################################################################
+
+variable "resource_groups" {
+  description = "Object describing resource groups to create or reference"
+  type = list(
+    object({
+      name       = string
+      create_new = optional(bool)
+    })
+  )
+  default = []
+
+  validation {
+    error_message = "Each group must have a unique name."
+    condition     = length(distinct(var.resource_groups.*.name)) == length(var.resource_groups.*.name)
+  }
+}
+
+##############################################################################
