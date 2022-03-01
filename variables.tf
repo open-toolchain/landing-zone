@@ -745,6 +745,7 @@ variable "cos" {
   default = {
     service_name = "slz-cos"
     resource_group = "cs-rg"
+    desired_plan = "standard"
   }
 }
 
