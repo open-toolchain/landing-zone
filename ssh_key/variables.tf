@@ -30,8 +30,8 @@ variable "ssh_keys" {
   )
   default = [
     {
-      name       = "dev-ssh-key"
-      public_key = "<ssh public key>"
+      name       = "ev-ssh-key"
+      # public_key = "<ssh public key>"
     }
   ]
 
