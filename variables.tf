@@ -53,7 +53,16 @@ variable "resource_groups" {
     })
   )
   default = [{
-    name = "default"
+    name = "Default"
+  },{
+    name = "slz-cs-rg"
+    create = true
+  },{
+    name = "slz-mgmt-rg"
+    create = true
+  },{
+    name = "slz-wrkld-rg"
+    create = true
   }]
 
   validation {
@@ -74,7 +83,7 @@ variable "vpcs" {
   type = list(
     object({
       prefix                      = string           # VPC prefix
-      resource_group              = optional(string) # Name of the group where VPC will be created
+      resource_group              = string           # Name of the group where VPC will be created
       use_manual_address_prefixes = optional(bool)
       classic_access              = optional(bool)
       default_network_acl_name    = optional(string)
@@ -154,7 +163,7 @@ variable "vpcs" {
   default = [
     {
       prefix         = "management"
-      resource_group = "default"
+      resource_group = "slz-mgmt-rg"
       use_public_gateways = {
         zone-1 = false
         zone-2 = false
@@ -241,6 +250,7 @@ variable "vpcs" {
     },
     {
       prefix = "workload"
+      resource_group = "slz-wrkld-rg"
       use_public_gateways = {
         zone-1 = false
         zone-2 = false
@@ -363,7 +373,7 @@ variable "enable_transit_gateway" {
 variable "transit_gateway_resource_group" {
   description = "Name of resource group to use for transit gateway. Must be included in `var.resource_group`"
   type        = string
-  default     = "default"
+  default     = "slz-cs-rg"
 }
 
 variable "transit_gateway_connections" {
@@ -795,13 +805,13 @@ variable "key_protect" {
     )
   })
   default = {
-    name           = "dev-kms"
-    resource_group = "default"
+    name           = "slz-kms"
+    resource_group = "Default"
     keys = [
       {
         name     = "root"
         root_key = true
-        key_name = "dev-ring"
+        key_name = "slz-ring"
       }
     ]
   }
@@ -830,7 +840,7 @@ variable "atracker" {
     receive_global_events = bool
   })
   default = {
-    resource_group        = "default"
+    resource_group        = "Default"
     bucket_name           = "atracker-bucket"
     location              = "us-south"
     target_crn            = "1234"
