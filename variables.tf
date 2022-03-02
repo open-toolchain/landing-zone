@@ -759,16 +759,23 @@ variable "cos" {
   }
 }
 
-variable "cos_resource_key" {
-  description = "Object describing resource key for cos instance"
-  type = object({
+variable "cos_resource_keys" {
+  description = "List of objects describing resource keys for cos instance"
+  type = list(object({
     name = string
     role = string
-  })
+  }))
 
-  default = {
-    name = "cos-bind-key"
-    role = "Writer"
+  default = [
+    {
+      name = "cos-bind-key"
+      role = "Writer"
+    }
+  ]
+  
+  validation {
+    error_message = "Resource key names must be unique."
+    condition     = length(distinct(var.cos_resource_keys.*.name)) == length(var.cos_resource_keys.*.name)
   }
 }
 

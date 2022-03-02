@@ -33,9 +33,19 @@ resource "ibm_resource_instance" "cos" {
   tags              = (var.tags != null ? var.tags : null)
 }
 
+locals {
+  # Convert COS Resource Key List to Map
+  cos_key_map = {
+    for key in var.cos_resource_keys:
+    (key.name) => key 
+  }
+}
+
 resource "ibm_resource_key" "key" {
-  name                 = "${var.prefix}-${var.cos_resource_key.name}"
-  role                 = var.cos_resource_key.role
+  for_each = local.cos_key_map 
+
+  name                 = "${var.prefix}-${each.value.name}"
+  role                 = each.value.role 
   resource_instance_id = local.cos_instance_id
   tags                 = (var.tags != null ? var.tags : null)
 }
