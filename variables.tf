@@ -680,6 +680,17 @@ variable "clusters" {
       entitlement        = optional(string)
       pod_subnet         = optional(string)
       service_subnet     = optional(string)
+      worker_pools = optional(list(
+        object({
+          name = string
+          # cluster_name       = string
+          vpc_name           = string
+          workers_per_subnet = number
+          flavor             = string
+          subnet_names       = list(string)
+          entitlement        = optional(string)
+      })))
+
   }))
   default = [
     {
@@ -691,6 +702,16 @@ variable "clusters" {
       kube_type          = "iks"
       entitlement        = "cloud_pak"
       cos_instance_crn   = null
+      worker_pools = [
+        {
+          name = "worker-pool-1"
+          vpc_name           = "workload"
+          subnet_names       = ["subnet-a", "subnet-b"]
+          workers_per_subnet = 1
+          flavor             = "bx2.16x64"
+          entitlement        = "cloud_pak"
+
+      }]
   }]
 
   # kube_type validation
@@ -717,31 +738,6 @@ variable "clusters" {
     error_message = "For openshift cluster workers_per_subnet needs to be 2 or more."
   }
 
-}
-
-variable "worker_pools" {
-  description = "A list describing clsuter workloads to create"
-  type = list(
-    object({
-      name               = string
-      cluster_name       = string
-      vpc_name           = string
-      workers_per_subnet = number
-      flavor             = string
-      subnet_names       = list(string)
-      entitlement        = optional(string)
-  }))
-  default = [
-    {
-      name               = "worker-pool-1"
-      cluster_name       = "test-cluster"
-      vpc_name           = "workload"
-      subnet_names       = ["subnet-a", "subnet-b"]
-      workers_per_subnet = 1
-      flavor             = "bx2.16x64"
-      entitlement        = "cloud_pak"
-
-  }]
 }
 
 variable "wait_till" {

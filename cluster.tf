@@ -14,6 +14,28 @@ data "ibm_container_cluster_versions" "cluster_versions" {
 ##############################################################################
 locals {
   # Convert list to map
+  worker_pools_map = flatten([
+    for cluster_group in var.clusters : [
+      for worker_pool_group in cluster_group.worker_pools : merge(worker_pool_group, {
+        # Add Cluster Name
+        cluster_name = cluster_group.name
+        # Add VPC ID
+        vpc_id = module.vpc[worker_pool_group.vpc_name].vpc_id
+        subnets = [
+          # Add subnets to list if they are contained in the subnet list, prepends prefixes
+          for subnet in module.vpc[cluster_group.vpc_name].subnet_zone_list :
+          subnet if contains([
+            # Create modified list of names
+            for name in worker_pool_group.subnet_names :
+            "${var.prefix}-${worker_pool_group.vpc_name}-${name}"
+          ], subnet.name)
+        ]
+
+      }) if worker_pool_group != null
+    ] if cluster_group.worker_pools != null
+  ])
+
+  # Convert list to map
   clusters_map = {
     for cluster_group in var.clusters :
     (cluster_group.name) => merge(cluster_group, {
@@ -29,7 +51,9 @@ locals {
         ], subnet.name)
       ]
     })
+
   }
+
 }
 
 resource "ibm_container_vpc_cluster" "cluster" {
@@ -65,32 +89,13 @@ resource "ibm_container_vpc_cluster" "cluster" {
 ##############################################################################
 # Worker Pool
 ##############################################################################
-locals {
-  # Convert list to map
-  worker_pools_map = {
-    for worker_pool_group in var.worker_pools :
-    (worker_pool_group.name) => merge(worker_pool_group, {
-      # Add VPC ID
-      vpc_id = module.vpc[worker_pool_group.vpc_name].vpc_id
-      subnets = [
-        # Add subnets to list if they are contained in the subnet list, prepends prefixes
-        for subnet in module.vpc[worker_pool_group.vpc_name].subnet_zone_list :
-        subnet if contains([
-          # Create modified list of names
-          for name in worker_pool_group.subnet_names :
-          "${var.prefix}-${worker_pool_group.vpc_name}-${name}"
-        ], subnet.name)
-      ]
-    })
-  }
-}
 
 resource "ibm_container_vpc_worker_pool" "pool" {
-  for_each          = local.worker_pools_map
+  for_each          = { for pool_map in local.worker_pools_map : ("${pool_map.cluster_name}-${pool_map.name}") => pool_map }
   vpc_id            = each.value.vpc_id
   resource_group_id = data.ibm_resource_group.resource_group.id
   entitlement       = each.value.entitlement
-  cluster           = each.value.cluster_name
+  cluster           = ibm_container_vpc_cluster.cluster[each.value.cluster_name].id
   worker_pool_name  = each.value.name
   flavor            = each.value.flavor
   worker_count      = each.value.workers_per_subnet
