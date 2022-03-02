@@ -360,7 +360,7 @@ variable "ssh_keys" {
     {
       name           = "dev-ssh-key"
       public_key     = "<ssh public key>"
-      resource_group = "default"
+      resource_group = "asset-development"
     }
   ]
 
