@@ -567,7 +567,7 @@ variable "vsi" {
           }
         ]
       },
-      ssh_keys = ["management"]
+      ssh_keys = ["jv-dev-ssh-key"]
     },
     {
       name           = "workload-server"
@@ -614,7 +614,7 @@ variable "vsi" {
           }
         ]
       }
-      ssh_keys = ["management"]
+      ssh_keys = ["jv-dev-ssh-key"]
     }
   ]
 }
