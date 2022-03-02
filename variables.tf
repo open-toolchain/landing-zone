@@ -797,6 +797,7 @@ variable "cos_buckets" {
   type = list(object({
     name                  = string
     storage_class         = string 
+    endpoint_type         = string 
     single_site_location  = optional(string)
     region_location       = optional(string) 
     cross_region_location = optional(string)
@@ -807,11 +808,13 @@ variable "cos_buckets" {
     {
       name = "dev-bucket"
       storage_class = "standard" 
+      endpoint_type = "public"
       region_location = "us-south"
     },
     {
       name = "staging-bucket"
       storage_class = "standard" 
+      endpoint_type = "private"
       region_location = "us-east"
     }
   ]
@@ -823,10 +826,19 @@ variable "cos_buckets" {
 
   # https://cloud.ibm.com/docs/cloud-object-storage?topic=cloud-object-storage-classes 
   validation {
-    error_message = "Storage class can only be `standard`, `vault`, `cold`, `smart`."
+    error_message = "Storage class can only be `standard`, `vault`, `cold`, or `smart`."
     condition     = length([
       for bucket in var.cos_buckets:
         bucket if contains(["standard", "vault", "cold", "smart"], bucket.storage_class) 
+    ]) == length(var.cos_buckets)
+  }
+
+  # https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/resources/cos_bucket#endpoint_type 
+  validation {
+    error_message = "Endpoint type can only be `public`, `private`, or `direct`."
+    condition     = length([
+      for bucket in var.cos_buckets:
+        bucket if contains(["public", "private", "direct"], bucket.endpoint_type) 
     ]) == length(var.cos_buckets)
   }
 
