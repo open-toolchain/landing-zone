@@ -70,6 +70,7 @@ variable "resource_groups" {
     }, 
     {
       name   = "ignore-me"
+      create = true
     },
     {
       name   = "default"
