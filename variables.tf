@@ -830,6 +830,7 @@ variable "cos_buckets" {
     ]) == length(var.cos_buckets)
   }
 
+  # https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/resources/cos_bucket#single_site_location
   validation {
     error_message = "All single site buckets must specify `ams03`, `che01`, `hkg02`, `mel01`, `mex01`, `mil01`, `mon01`, `osl01`, `par01`, `sjc04`, `sao01`, `seo01`, `sng01`, or `tor01`."
     condition     = length([
@@ -840,6 +841,7 @@ variable "cos_buckets" {
     ]) == length(var.cos_buckets)
   }
   
+  # https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/resources/cos_bucket#region_location
   validation {
     error_message = "All regional buckets must specify `au-syd`, `eu-de`, `eu-gb`, `jp-tok`, `us-east`, `us-south`, `ca-tor`, `jp-osa`, `br-sao`."
     condition     = length([
@@ -850,6 +852,7 @@ variable "cos_buckets" {
     ]) == length(var.cos_buckets)
   }
 
+  # https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/resources/cos_bucket#cross_region_location
   validation {
     error_message = "All cross-regional buckets must specify `us`, `eu`, `ap`."
     condition     = length([
