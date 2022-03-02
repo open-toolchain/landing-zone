@@ -11,6 +11,17 @@ resource_groups = [
     name = "asset-development"
   }
 ]
+kms = {
+  name           = "dev-kms"
+  resource_group = "asset-development"
+  keys = [
+    {
+      name     = "root"
+      root_key = true
+      key_name = "dev-ring"
+    }
+  ]
+}
 vpcs = [
   {
     prefix         = "management"
