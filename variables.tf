@@ -605,7 +605,7 @@ variable "security_groups" {
             flatten([
               # For each rule, return true if using more than one `tcp`, `udp`, `icmp block
               for rule in group.rules :
-              true if length([ for type in ["tcp", "udp", "icmp"] : true if rule[type] != null ]) > 1
+              true if length([for type in ["tcp", "udp", "icmp"] : true if rule[type] != null]) > 1
             ])
           )
         ) != 0
@@ -674,6 +674,54 @@ variable "service_endpoints" {
   validation {
     error_message = "Service endpoints can only be `public`, `private`, or `public-and-private`."
     condition     = contains(["public", "private", "public-and-private"], var.service_endpoints)
+  }
+}
+
+variable "key_protect" {
+  description = "Key Protect instance variables"
+  type = object({
+    name           = string
+    resource_group = string
+    use_data       = optional(bool)
+    keys = optional(
+      list(
+        object({
+          name            = string
+          root_key        = optional(bool)
+          payload         = optional(string)
+          key_ring        = optional(string) # Any key_ring added will be created
+          force_delete    = optional(bool)
+          endpoint        = optional(string) # can be public or private
+          iv_value        = optional(string) # (Optional, Forces new resource, String) Used with import tokens. The initialization vector (IV) that is generated when you encrypt a nonce. The IV value is required to decrypt the encrypted nonce value that you provide when you make a key import request to the service. To generate an IV, encrypt the nonce by running ibmcloud kp import-token encrypt-nonce. Only for imported root key.
+          encrypted_nonce = optional(string) # The encrypted nonce value that verifies your request to import a key to Key Protect. This value must be encrypted by using the key that you want to import to the service. To retrieve a nonce, use the ibmcloud kp import-token get command. Then, encrypt the value by running ibmcloud kp import-token encrypt-nonce. Only for imported root key.
+          policies = optional(
+            object({
+              rotation = optional(
+                object({
+                  interval_month = number
+                })
+              )
+              dual_auth_delete = optional(
+                object({
+                  enabled = bool
+                })
+              )
+            })
+          )
+        })
+      )
+    )
+  })
+  default = {
+    name           = "dev-kms"
+    resource_group = "asset-development"
+    keys = [
+      {
+        name     = "root"
+        root_key = true
+        key_name = "dev-ring"
+      }
+    ]
   }
 }
 
