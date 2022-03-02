@@ -84,7 +84,7 @@ resource "ibm_cos_bucket" "buckets" {
 
   bucket_name           = "${var.prefix}-${each.value.name}"
   resource_instance_id  = local.cos_instance_id
-  storage_class         = "standard"
+  storage_class         = each.value.storage_class
   endpoint_type         = "public"
   force_delete          = true
   single_site_location  = each.value.single_site_location

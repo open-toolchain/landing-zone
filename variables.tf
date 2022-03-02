@@ -796,6 +796,7 @@ variable "cos_buckets" {
   description = "List of standard buckets to be created in desired cloud object storage instance"
   type = list(object({
     name                  = string
+    storage_class         = string 
     single_site_location  = optional(string)
     region_location       = optional(string) 
     cross_region_location = optional(string)
@@ -805,13 +806,24 @@ variable "cos_buckets" {
   default = [
     {
       name = "dev-bucket"
+      storage_class = "standard" 
       region_location = "us-south"
     },
     {
       name = "staging-bucket"
+      storage_class = "standard" 
       region_location = "us-east"
     }
   ]
+
+  # https://cloud.ibm.com/docs/cloud-object-storage?topic=cloud-object-storage-classes 
+  validation {
+    error_message = "Storage class can only be `standard`, `vault`, `cold`, `smart`."
+    condition     = length([
+      for bucket in var.cos_buckets:
+        bucket if contains(["standard", "vault", "cold", "smart"], bucket.storage_class) 
+    ]) == length(var.cos_buckets)
+  }
 
   validation {
     error_message = "All single site buckets must specify `ams03`, `che01`, `hkg02`, `mel01`, `mex01`, `mil01`, `mon01`, `osl01`, `par01`, `sjc04`, `sao01`, `seo01`, `sng01`, or `tor01`."
