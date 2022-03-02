@@ -741,14 +741,16 @@ variable "cos" {
   description = "Object describing cloud object storage instance. Provide desired plan if instance does not exist and should be created."
   type = object({
     service_name = string
+    use_data = bool 
     resource_group = string
-    desired_plan = optional(string)
+    plan = optional(string)
   })
 
   default = {
     service_name = "cos"
+    use_data = false 
     resource_group = "cs-rg"
-    desired_plan = "standard"
+    plan = "standard"
   }
 }
 

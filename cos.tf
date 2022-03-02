@@ -4,8 +4,7 @@
 
 locals {
   cos_location = "global"
-  should_provision_cos = (var.cos.desired_plan == null) ? false : true 
-  cos_instance_id = local.should_provision_cos ? ibm_resource_instance.cos[0].id : data.ibm_resource_instance.cos[0].id
+  cos_instance_id = var.cos.use_data ? data.ibm_resource_instance.cos[0].id : ibm_resource_instance.cos[0].id 
 }
 
 ##############################################################################
@@ -15,7 +14,8 @@ locals {
 ##############################################################################
 
 data "ibm_resource_instance" "cos" {
-  count             = local.should_provision_cos ? 0 : 1 
+  count             = var.cos.use_data == true ? 1 : 0 
+
   name              = var.cos.service_name
   location          = local.cos_location
   resource_group_id = local.resource_groups[var.cos.resource_group]
@@ -23,12 +23,13 @@ data "ibm_resource_instance" "cos" {
 }
 
 resource "ibm_resource_instance" "cos" {
-  count             = local.should_provision_cos ? 1 : 0
+  count             = var.cos.use_data == true ? 0 : 1 
+
   name              = "${var.prefix}-${var.cos.service_name}"
   resource_group_id = local.resource_groups[var.cos.resource_group]
   service           = "cloud-object-storage"
   location          = local.cos_location
-  plan              = var.cos.desired_plan
+  plan              = var.cos.plan
   tags              = (var.tags != null ? var.tags : null)
 }
 
