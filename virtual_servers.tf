@@ -58,10 +58,11 @@ module "vsi" {
     for ssh_key in each.value.ssh_keys :
     local.ssh_keys[ssh_key]
   ]
-  machine_type   = each.value.machine_type
-  vsi_per_subnet = each.value.vsi_per_subnet
-  security_group = each.value.security_group
-  load_balancers = each.value.load_balancers == null ? [] : each.value.load_balancers
+  machine_type          = each.value.machine_type
+  vsi_per_subnet        = each.value.vsi_per_subnet
+  security_group        = each.value.security_group
+  load_balancers        = each.value.load_balancers == null ? [] : each.value.load_balancers
+  block_storage_volumes = each.value.block_storage_volumes == null ? [] : each.value.block_storage_volumes
 }
 
 ##############################################################################

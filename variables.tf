@@ -523,110 +523,100 @@ variable "vsi" {
     })
   )
   default = [
-  {
-    name           = "management-server"
-    vpc_name       = "management"
-    vsi_per_subnet = 1
-    subnet_names   = ["vsi-zone-1", "vsi-zone-2", "vsi-zone-3"]
-    image_name     = "ibm-ubuntu-16-04-5-minimal-amd64-1"
-    machine_type   = "cx2-2x4"
-    security_group = {
-      name     = "management"
-      vpc_name = "management"
-      rules = [
-        {
-          name      = "allow-ibm-inbound"
-          source    = "161.26.0.0/16"
-          direction = "inbound"
-        },
-        {
-          name      = "allow-sg-outbound"
-          source    = "mgmt-base-security-group"
-          direction = "outbound"
-        },
-        {
-          name      = "allow-ibm-tcp-80-outbound"
-          source    = "161.26.0.0/16"
-          direction = "outbound"
-          tcp = {
-            port_min = 80
-            port_max = 80
+    {
+      name           = "management-server"
+      vpc_name       = "management"
+      vsi_per_subnet = 1
+      subnet_names   = ["vsi-zone-1", "vsi-zone-2", "vsi-zone-3"]
+      image_name     = "ibm-ubuntu-16-04-5-minimal-amd64-1"
+      machine_type   = "cx2-2x4"
+      security_group = {
+        name     = "management"
+        vpc_name = "management"
+        rules = [
+          {
+            name      = "allow-ibm-inbound"
+            source    = "161.26.0.0/16"
+            direction = "inbound"
+          },
+          {
+            name      = "allow-ibm-tcp-80-outbound"
+            source    = "161.26.0.0/16"
+            direction = "outbound"
+            tcp = {
+              port_min = 80
+              port_max = 80
+            }
+          },
+          {
+            name      = "allow-ibm-tcp-443-outbound"
+            source    = "161.26.0.0/16"
+            direction = "outbound"
+            tcp = {
+              port_min = 443
+              port_max = 443
+            }
+          },
+          {
+            name      = "allow-ibm-udp-53-outbound"
+            source    = "161.26.0.0/16"
+            direction = "outbound"
+            udp = {
+              port_min = 53
+              port_max = 53
+            }
           }
-        },
-        {
-          name      = "allow-ibm-tcp-443-outbound"
-          source    = "161.26.0.0/16"
-          direction = "outbound"
-          tcp = {
-            port_min = 443
-            port_max = 443
-          }
-        },
-        {
-          name      = "allow-ibm-udp-53-outbound"
-          source    = "161.26.0.0/16"
-          direction = "outbound"
-          udp = {
-            port_min = 53
-            port_max = 53
-          }
-        }
-      ]
+        ]
+      },
+      ssh_keys = ["management"]
     },
-    ssh_keys = ["management"]
-  },
-  {
-    name           = "workload-server"
-    vpc_name       = "workload"
-    vsi_per_subnet = 1
-    subnet_names   = ["vsi-zone-1", "vsi-zone-2", "vsi-zone-3"]
-    image_name     = "ibm-ubuntu-16-04-5-minimal-amd64-1"
-    machine_type   = "cx2-2x4"
-    security_group = {
-      name     = "workload"
-      vpc_name = "workload"
-      rules = [
-        {
-          name      = "allow-ibm-inbound"
-          source    = "161.26.0.0/16"
-          direction = "inbound"
-        },
-        {
-          name      = "allow-sg-outbound"
-          source    = "mgmt-base-security-group"
-          direction = "outbound"
-        },
-        {
-          name      = "allow-ibm-tcp-80-outbound"
-          source    = "161.26.0.0/16"
-          direction = "outbound"
-          tcp = {
-            port_min = 80
-            port_max = 80
+    {
+      name           = "workload-server"
+      vpc_name       = "workload"
+      vsi_per_subnet = 1
+      subnet_names   = ["vsi-zone-1", "vsi-zone-2", "vsi-zone-3"]
+      image_name     = "ibm-ubuntu-16-04-5-minimal-amd64-1"
+      machine_type   = "cx2-2x4"
+      security_group = {
+        name     = "workload"
+        vpc_name = "workload"
+        rules = [
+          {
+            name      = "allow-ibm-inbound"
+            source    = "161.26.0.0/16"
+            direction = "inbound"
+          },
+          {
+            name      = "allow-ibm-tcp-80-outbound"
+            source    = "161.26.0.0/16"
+            direction = "outbound"
+            tcp = {
+              port_min = 80
+              port_max = 80
+            }
+          },
+          {
+            name      = "allow-ibm-tcp-443-outbound"
+            source    = "161.26.0.0/16"
+            direction = "outbound"
+            tcp = {
+              port_min = 443
+              port_max = 443
+            }
+          },
+          {
+            name      = "allow-ibm-udp-53-outbound"
+            source    = "161.26.0.0/16"
+            direction = "outbound"
+            udp = {
+              port_min = 53
+              port_max = 53
+            }
           }
-        },
-        {
-          name      = "allow-ibm-tcp-443-outbound"
-          source    = "161.26.0.0/16"
-          direction = "outbound"
-          tcp = {
-            port_min = 443
-            port_max = 443
-          }
-        },
-        {
-          name      = "allow-ibm-udp-53-outbound"
-          source    = "161.26.0.0/16"
-          direction = "outbound"
-          udp = {
-            port_min = 53
-            port_max = 53
-          }
-        }
-      ]
+        ]
+      }
+      ssh_keys = ["management"]
     }
-    ssh_keys = ["management"]
-  }
   ]
 }
 
