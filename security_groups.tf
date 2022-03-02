@@ -133,7 +133,7 @@ resource "ibm_is_security_group_rule" "security_group_rules" {
     # Otherwise the list will be empty     
 
     for_each = (
-      each.value.tcp != null
+      each.value.udp != null
       ? [each.value]
       : []
     )

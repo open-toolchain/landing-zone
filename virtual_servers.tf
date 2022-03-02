@@ -34,7 +34,7 @@ module "ssh_keys" {
     for ssh_key in var.ssh_keys :
     merge(
       {
-        resource_group_id : local.resource_groups[ssh_key.resource_group]
+        resource_group_id : ssh_key.resource_group == null ? null : local.resource_groups[ssh_key.resource_group]
       },
       ssh_key
     )
