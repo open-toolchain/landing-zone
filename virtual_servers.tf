@@ -63,6 +63,8 @@ module "vsi" {
   security_group        = each.value.security_group
   load_balancers        = each.value.load_balancers == null ? [] : each.value.load_balancers
   block_storage_volumes = each.value.block_storage_volumes == null ? [] : each.value.block_storage_volumes
+
+  depends_on = [module.ssh_keys]
 }
 
 ##############################################################################

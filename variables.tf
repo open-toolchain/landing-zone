@@ -392,8 +392,7 @@ variable "ssh_keys" {
   )
   default = [
     {
-      name           = "dev-ssh-key"
-      public_key     = "<ssh public key>"
+      name           = "jv-dev-ssh-key"
       resource_group = "default"
     }
   ]
