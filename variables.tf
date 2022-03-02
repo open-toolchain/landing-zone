@@ -19,7 +19,6 @@ variable "ibmcloud_api_key" {
 variable "prefix" {
   description = "A unique identifier for resources. Must begin with a letter. This prefix will be prepended to any resources provisioned by this template."
   type        = string
-  default     = "gcat-multizone-schematics"
 
   validation {
     error_message = "Prefix must begin and end with a letter and contain only letters, numbers, and - characters."
@@ -30,7 +29,6 @@ variable "prefix" {
 variable "region" {
   description = "Region where VPC will be created. To find your VPC region, use `ibmcloud is regions` command to find available regions."
   type        = string
-  default     = "us-south"
 }
 
 variable "tags" {
@@ -55,10 +53,7 @@ variable "resource_groups" {
     })
   )
   default = [{
-    name = "asset-development"
-    }, {
-    name   = "ignore-me"
-    create = true
+    name = "default"
   }]
 
   validation {
@@ -159,23 +154,29 @@ variable "vpcs" {
   default = [
     {
       prefix         = "management"
-      resource_group = "asset-development"
+      resource_group = "default"
       use_public_gateways = {
-        zone-1 = true
-        zone-2 = true
-        zone-3 = true
+        zone-1 = false
+        zone-2 = false
+        zone-3 = false
       }
       network_acls = [
         {
-          name              = "vpc-acl"
-          add_cluster_rules = true
+          name = "management-acl"
           rules = [
             {
-              name        = "allow-all-inbound"
+              name        = "allow-ibm-inbound"
               action      = "allow"
               direction   = "inbound"
-              destination = "0.0.0.0/0"
-              source      = "0.0.0.0/0"
+              destination = "10.0.0.0/8"
+              source      = "161.26.0.0/16"
+            },
+            {
+              name        = "allow-all-network-inbound"
+              action      = "allow"
+              direction   = "inbound"
+              destination = "10.0.0.0/8"
+              source      = "10.0.0.0/8"
             },
             {
               name        = "allow-all-outbound"
@@ -190,49 +191,78 @@ variable "vpcs" {
       subnets = {
         zone-1 = [
           {
-            name           = "subnet-a"
+            name           = "vsi-zone-1"
             cidr           = "10.10.10.0/24"
             public_gateway = true
-            acl_name       = "vpc-acl"
+            acl_name       = "management-acl"
+          },
+          {
+            name           = "vpn-zone-1"
+            cidr           = "10.10.20.0/24"
+            public_gateway = true
+            acl_name       = "management-acl"
+          },
+          {
+            name           = "vpe-zone-1"
+            cidr           = "10.10.30.0/24"
+            public_gateway = true
+            acl_name       = "management-acl"
           }
         ],
         zone-2 = [
           {
-            name           = "subnet-b"
+            name           = "vsi-zone-2"
             cidr           = "10.20.10.0/24"
             public_gateway = true
-            acl_name       = "vpc-acl"
+            acl_name       = "management-acl"
+          },
+          {
+            name           = "vpe-zone-2"
+            cidr           = "10.20.20.0/24"
+            public_gateway = true
+            acl_name       = "management-acl"
           }
         ],
         zone-3 = [
           {
-            name           = "subnet-c"
+            name           = "vsi-zone-3"
             cidr           = "10.30.10.0/24"
             public_gateway = true
-            acl_name       = "vpc-acl"
+            acl_name       = "management-acl"
+          },
+          {
+            name           = "vpe-zone-3"
+            cidr           = "10.30.20.0/24"
+            public_gateway = true
+            acl_name       = "management-acl"
           }
         ]
       }
     },
     {
-      prefix         = "workload"
-      resource_group = "ignore-me"
+      prefix = "workload"
       use_public_gateways = {
-        zone-1 = true
-        zone-2 = true
-        zone-3 = true
+        zone-1 = false
+        zone-2 = false
+        zone-3 = false
       }
       network_acls = [
         {
-          name              = "vpc-acl"
-          add_cluster_rules = true
+          name = "workload-acl"
           rules = [
             {
-              name        = "allow-all-inbound"
+              name        = "allow-ibm-inbound"
               action      = "allow"
               direction   = "inbound"
-              destination = "0.0.0.0/0"
-              source      = "0.0.0.0/0"
+              destination = "10.0.0.0/8"
+              source      = "161.26.0.0/16"
+            },
+            {
+              name        = "allow-all-network-inbound"
+              action      = "allow"
+              direction   = "inbound"
+              destination = "10.0.0.0/8"
+              source      = "10.0.0.0/8"
             },
             {
               name        = "allow-all-outbound"
@@ -247,30 +277,54 @@ variable "vpcs" {
       subnets = {
         zone-1 = [
           {
-            name           = "subnet-a"
+            name           = "vsi-zone-1"
             cidr           = "10.40.10.0/24"
             public_gateway = true
-            acl_name       = "vpc-acl"
+            acl_name       = "workload-acl"
+          },
+          {
+            name           = "vpn-zone-1"
+            cidr           = "10.40.20.0/24"
+            public_gateway = true
+            acl_name       = "workload-acl"
+          },
+          {
+            name           = "vpe-zone-1"
+            cidr           = "10.40.30.0/24"
+            public_gateway = true
+            acl_name       = "workload-acl"
           }
         ],
         zone-2 = [
           {
-            name           = "subnet-b"
+            name           = "vsi-zone-2"
             cidr           = "10.50.10.0/24"
             public_gateway = true
-            acl_name       = "vpc-acl"
+            acl_name       = "workload-acl"
+          },
+          {
+            name           = "vpn-zone-2"
+            cidr           = "10.50.20.0/24"
+            public_gateway = true
+            acl_name       = "workload-acl"
           }
         ],
         zone-3 = [
           {
-            name           = "subnet-c"
+            name           = "vsi-zone-3"
             cidr           = "10.60.10.0/24"
             public_gateway = true
-            acl_name       = "vpc-acl"
+            acl_name       = "workload-acl"
+          },
+          {
+            name           = "vpn-zone-3"
+            cidr           = "10.60.20.0/24"
+            public_gateway = true
+            acl_name       = "workload-acl"
           }
         ]
       }
-    }
+    },
   ]
 }
 
@@ -309,7 +363,7 @@ variable "enable_transit_gateway" {
 variable "transit_gateway_resource_group" {
   description = "Name of resource group to use for transit gateway. Must be included in `var.resource_group`"
   type        = string
-  default     = "asset-development"
+  default     = "default"
 }
 
 variable "transit_gateway_connections" {
@@ -340,7 +394,7 @@ variable "ssh_keys" {
     {
       name           = "dev-ssh-key"
       public_key     = "<ssh public key>"
-      resource_group = "asset-development"
+      resource_group = "default"
     }
   ]
 
@@ -470,52 +524,98 @@ variable "vsi" {
   )
   default = [
     {
-      name           = "test-vsi"
+      name           = "management-server"
       vpc_name       = "management"
-      subnet_names   = ["subnet-a", "subnet-c"]
-      image_name     = "ibm-centos-7-6-minimal-amd64-2"
-      machine_type   = "bx2-8x32"
-      ssh_keys       = ["dev-ssh-key"]
       vsi_per_subnet = 1
+      subnet_names   = ["vsi-zone-1", "vsi-zone-2", "vsi-zone-3"]
+      image_name     = "ibm-ubuntu-16-04-5-minimal-amd64-1"
+      machine_type   = "cx2-2x4"
       security_group = {
-        name = "test"
+        name     = "management"
+        vpc_name = "management"
         rules = [
           {
-            name      = "allow-all-inbound"
-            source    = "0.0.0.0/0"
+            name      = "allow-ibm-inbound"
+            source    = "161.26.0.0/16"
             direction = "inbound"
           },
           {
-            name      = "allow-all-outbound"
-            source    = "0.0.0.0/0"
+            name      = "allow-ibm-tcp-80-outbound"
+            source    = "161.26.0.0/16"
             direction = "outbound"
+            tcp = {
+              port_min = 80
+              port_max = 80
+            }
+          },
+          {
+            name      = "allow-ibm-tcp-443-outbound"
+            source    = "161.26.0.0/16"
+            direction = "outbound"
+            tcp = {
+              port_min = 443
+              port_max = 443
+            }
+          },
+          {
+            name      = "allow-ibm-udp-53-outbound"
+            source    = "161.26.0.0/16"
+            direction = "outbound"
+            udp = {
+              port_min = 53
+              port_max = 53
+            }
+          }
+        ]
+      },
+      ssh_keys = ["management"]
+    },
+    {
+      name           = "workload-server"
+      vpc_name       = "workload"
+      vsi_per_subnet = 1
+      subnet_names   = ["vsi-zone-1", "vsi-zone-2", "vsi-zone-3"]
+      image_name     = "ibm-ubuntu-16-04-5-minimal-amd64-1"
+      machine_type   = "cx2-2x4"
+      security_group = {
+        name     = "workload"
+        vpc_name = "workload"
+        rules = [
+          {
+            name      = "allow-ibm-inbound"
+            source    = "161.26.0.0/16"
+            direction = "inbound"
+          },
+          {
+            name      = "allow-ibm-tcp-80-outbound"
+            source    = "161.26.0.0/16"
+            direction = "outbound"
+            tcp = {
+              port_min = 80
+              port_max = 80
+            }
+          },
+          {
+            name      = "allow-ibm-tcp-443-outbound"
+            source    = "161.26.0.0/16"
+            direction = "outbound"
+            tcp = {
+              port_min = 443
+              port_max = 443
+            }
+          },
+          {
+            name      = "allow-ibm-udp-53-outbound"
+            source    = "161.26.0.0/16"
+            direction = "outbound"
+            udp = {
+              port_min = 53
+              port_max = 53
+            }
           }
         ]
       }
-      /*
-      block_storage_volumes = [{
-        name    = "one"
-        profile = "general-purpose"
-        }, {
-        name    = "two"
-        profile = "general-purpose"
-      }]
-      load_balancers = [
-        {
-          name              = "test"
-          type              = "public"
-          listener_port     = 80
-          listener_protocol = "http"
-          connection_limit  = 0
-          algorithm         = "round_robin"
-          protocol          = "http"
-          health_delay      = 10
-          health_retries    = 10
-          health_timeout    = 5
-          health_type       = "http"
-          pool_member_port  = 80
-        }
-      ]*/
+      ssh_keys = ["management"]
     }
   ]
 }
@@ -564,25 +664,7 @@ variable "security_groups" {
     })
   )
 
-  default = [
-    {
-      name           = "workload-vpe"
-      vpc_name       = "workload"
-      resource_group = "asset-development"
-      rules = [
-        {
-          name      = "allow-all-inbound"
-          source    = "0.0.0.0/0"
-          direction = "inbound"
-        },
-        {
-          name      = "allow-all-outbound"
-          source    = "0.0.0.0/0"
-          direction = "outbound"
-        }
-      ]
-    }
-  ]
+  default = []
 
   validation {
     error_message = "Each security group rule must have a unique name."
@@ -714,7 +796,7 @@ variable "key_protect" {
   })
   default = {
     name           = "dev-kms"
-    resource_group = "asset-development"
+    resource_group = "default"
     keys = [
       {
         name     = "root"
