@@ -752,6 +752,11 @@ variable "cos" {
     resource_group = "cs-rg"
     plan = "standard"
   }
+
+  validation {
+    error_message = "Plan can only be `lite` or `standard`."
+    condition     = contains(["lite", "standard"], var.cos.plan)
+  }
 }
 
 variable "cos_resource_key" {
