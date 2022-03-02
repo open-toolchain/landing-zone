@@ -667,57 +667,79 @@ variable "virtual_private_endpoints" {
 
 
 variable "clusters" {
-  description = "A list describing clsuter workloads to create"
+  description = "A list describing clusters workloads to create"
   type = list(
     object({
-      name             = string
-      vpc_name         = string
-      subnet_names     = list(string)
-      worker_count     = number
-      machine_type     = string
-      kube_type        = string
-      cos_instance_crn = string
-      entitlement      = optional(string)
-      pod_subnet       = optional(string)
-      service_subnet   = optional(string)
-
-
+      name               = string
+      vpc_name           = string
+      subnet_names       = list(string)
+      workers_per_subnet = number
+      machine_type       = string
+      kube_type          = string
+      cos_instance_crn   = string
+      entitlement        = optional(string)
+      pod_subnet         = optional(string)
+      service_subnet     = optional(string)
   }))
   default = [
     {
-      name           = "test-cluster"
-      vpc_name       = "workload"
-      subnet_names   = ["subnet-a", "subnet-b"]
-      worker_count   = 1
-      machine_type   = "bx2.16x64"
-      kube_type      = "iks"
-      entitlement    = "cloud_pak"
-      pod_subnet     = "172.30.0.0/16"
-      service_subnet = "172.21.0.0/16"
+      name               = "test-cluster"
+      vpc_name           = "workload"
+      subnet_names       = ["subnet-a", "subnet-b"]
+      workers_per_subnet = 1
+      machine_type       = "bx2.16x64"
+      kube_type          = "iks"
+      entitlement        = "cloud_pak"
+      cos_instance_crn   = null
   }]
+
+  # kube_type validation
+  validation {
+    condition     = length([for type in flatten(var.clusters[*].kube_type) : true if type == "iks" || type == "openshift"]) == length(var.clusters)
+    error_message = "Invalid value for kube_type entered. Valid values are `iks` or `openshift`."
+  }
+
+  # subnet_names validation
+  validation {
+    condition     = length(distinct([for subnet in flatten(var.clusters[*].subnet_names) : subnet])) == length(flatten(var.clusters[*].subnet_names))
+    error_message = "Duplicates in subnet_names list. Please provide unique subnet list."
+  }
+
+  # cluster name validation
+  validation {
+    condition     = length(distinct([for name in flatten(var.clusters[*].name) : name])) == length(flatten(var.clusters[*].name))
+    error_message = "Duplicate cluster name. Please provide unique cluster names."
+  }
+
+  # min. workers_per_subnet=2 for openshift validation
+  validation {
+    condition     = length([for n in flatten(var.clusters[*]) : false if(n.kube_type == "openshift" && n.workers_per_subnet < 2)]) == 0
+    error_message = "For openshift cluster workers_per_subnet needs to be 2 or more."
+  }
+
 }
 
 variable "worker_pools" {
   description = "A list describing clsuter workloads to create"
   type = list(
     object({
-      name         = string
-      cluster_name = string
-      vpc_name     = string
-      worker_count = number
-      flavor       = string
-      subnet_names = list(string)
-      entitlement  = optional(string)
+      name               = string
+      cluster_name       = string
+      vpc_name           = string
+      workers_per_subnet = number
+      flavor             = string
+      subnet_names       = list(string)
+      entitlement        = optional(string)
   }))
   default = [
     {
-      name         = "worker-pool-1"
-      cluster_name = "test-cluster"
-      vpc_name     = "workload"
-      subnet_names = ["subnet-a", "subnet-b"]
-      worker_count = 1
-      flavor       = "bx2.16x64"
-      entitlement  = "cloud_pak"
+      name               = "worker-pool-1"
+      cluster_name       = "test-cluster"
+      vpc_name           = "workload"
+      subnet_names       = ["subnet-a", "subnet-b"]
+      workers_per_subnet = 1
+      flavor             = "bx2.16x64"
+      entitlement        = "cloud_pak"
 
   }]
 }

@@ -38,7 +38,7 @@ resource "ibm_container_vpc_cluster" "cluster" {
   vpc_id            = each.value.vpc_id
   resource_group_id = data.ibm_resource_group.resource_group.id
   flavor            = each.value.machine_type
-  worker_count      = each.value.worker_count
+  worker_count      = each.value.workers_per_subnet
   kube_version      = each.value.kube_type == "openshift" ? "${data.ibm_container_cluster_versions.cluster_versions.valid_openshift_versions[length(data.ibm_container_cluster_versions.cluster_versions.valid_openshift_versions) - 1]}_openshift" : data.ibm_container_cluster_versions.cluster_versions.valid_kube_versions[length(data.ibm_container_cluster_versions.cluster_versions.valid_kube_versions) - 1]
   tags              = var.tags
   wait_till         = var.wait_till
@@ -93,7 +93,7 @@ resource "ibm_container_vpc_worker_pool" "pool" {
   cluster           = each.value.cluster_name
   worker_pool_name  = each.value.name
   flavor            = each.value.flavor
-  worker_count      = each.value.worker_count
+  worker_count      = each.value.workers_per_subnet
 
   dynamic "zones" {
     for_each = each.value.subnets

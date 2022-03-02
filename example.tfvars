@@ -185,32 +185,40 @@ vsi = [
 
 clusters = [
   {
-    name             = "test-cluster"
-    vpc_name         = "workload"
-    subnet_names     = ["subnet-a", "subnet-c"]
-    worker_count     = 1
-    machine_type     = "bx2.16x64"
-    kube_type        = "openshift"
-    cos_instance_crn = "<crn>"
-  }
-]
-
-worker_pools = [
-  {
-    name         = "worker-pool-1"
-    cluster_name = "gcat-multizone-vidhi-cluster"
-    vpc_name     = "workload"
-    subnet_names = ["subnet-a"]
-    worker_count = 1
-    flavor       = "bx2.16x64"
-    entitlement  = "cloud_pak"
+    name               = "test-cluster-1"
+    vpc_name           = "workload"
+    subnet_names       = ["subnet-a"]
+    workers_per_subnet = 2
+    machine_type       = "bx2.16x64"
+    kube_type          = "openshift"
+    cos_instance_crn   = "<cos crn>"
   },
   {
-    name         = "worker-pool-2"
-    cluster_name = "gcat-multizone-vidhi-cluster"
-    vpc_name     = "workload"
-    subnet_names = ["subnet-b"]
-    worker_count = 1
-    flavor       = "bx2.16x64"
-    entitlement  = "cloud_pak"
+    name               = "test-cluster-2"
+    vpc_name           = "workload"
+    subnet_names       = ["subnet-b", "subnet-c"]
+    workers_per_subnet = 1
+    machine_type       = "bx2.16x64"
+    kube_type          = "iks"
+    cos_instance_crn   = "<cos crn>"
+  }
+]
+worker_pools = [
+  {
+    name               = "worker-pool-1"
+    cluster_name       = "test-cluster-1"
+    vpc_name           = "workload"
+    subnet_names       = ["subnet-a"]
+    workers_per_subnet = 1
+    flavor             = "bx2.16x64"
+    entitlement        = "cloud_pak"
+  },
+  {
+    name               = "worker-pool-2"
+    cluster_name       = "test-cluster-1"
+    vpc_name           = "workload"
+    subnet_names       = ["subnet-b"]
+    workers_per_subnet = 1
+    flavor             = "bx2.16x64"
+    entitlement        = "cloud_pak"
 }]
