@@ -15,6 +15,7 @@ This module creates a secure landing zone within a single region.
 8. [IBM Cloud Services](#ibm-cloud-services)
 9. [Module Variables](#module-variables)
 10. [Contributing](#contributing)
+11. [Terraform Language Resources](#terraform-language-resources)
 
 ---
 
@@ -468,3 +469,11 @@ Create feature branches to add additional components. To integrate code changes 
 If additional variables or added or existing variables are changed, update the [Module Variables](##module-variables) table. To automate this process, use the nodejs package [tfmdcli](https://www.npmjs.com/package/tfmdcli)
 
 Run `terraform fmt` on your codebase before opening pull requests
+
+---
+
+## Terraform Language Resources
+
+- [Terraform Functions](https://www.terraform.io/language/functions)
+- [Using the * Operator (splat operator)](https://www.terraform.io/language/expressions/splat)
+- [Custom Variable Validation Rules](https://www.terraform.io/language/values/variables#custom-validation-rules)
