@@ -816,6 +816,11 @@ variable "cos_buckets" {
     }
   ]
 
+  validation {
+    error_message = "COS Bucket names must be unique."
+    condition     = length(distinct(var.cos_buckets.*.name)) == length(var.cos_buckets.*.name)
+  }
+
   # https://cloud.ibm.com/docs/cloud-object-storage?topic=cloud-object-storage-classes 
   validation {
     error_message = "Storage class can only be `standard`, `vault`, `cold`, `smart`."
