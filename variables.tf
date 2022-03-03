@@ -814,8 +814,27 @@ variable "cos_resource_keys" {
   }
 }
 
+variable "cos_authorization_policies" {
+  description = "List of authorization policies to be created for cos instance"
+  type = list(object({
+    name                        = string 
+    target_service_name         = string 
+    target_resource_instance_id = optional(string)
+    target_resource_group       = optional(string)
+    roles                       = list(string)
+    description                 = string 
+  }))
+
+  default = []
+
+  validation {
+    error_message = "COS Authorization Policy names must be unique."
+    condition     = length(distinct(var.cos_authorization_policies.*.name)) == length(var.cos_authorization_policies.*.name)
+  }
+}
+
 variable "cos_buckets" {
-  description = "List of standard buckets to be created in desired cloud object storage instance"
+  description = "List of standard buckets to be created in desired cloud object storage instance. Please note, logging and monitoring are not FS validated."
   type = list(object({
     name                  = string
     storage_class         = string
@@ -825,6 +844,7 @@ variable "cos_buckets" {
     region_location       = optional(string)
     cross_region_location = optional(string)
     kms_key               = optional(string)
+    allowed_ip            = optional(list(string))
     archive_rule = optional(object({
       days    = number
       enable  = bool
@@ -861,10 +881,10 @@ variable "cos_buckets" {
     {
       name            = "flowlogs-bucket"
       storage_class   = "standard"
-      region_location = "us-south"
       endpoint_type   = "public"
       kms_key         = "slz-key"
       force_delete    = true
+      region_location = "us-south"
     }
   ]
 
@@ -888,6 +908,14 @@ variable "cos_buckets" {
     condition = length([
       for bucket in var.cos_buckets :
       bucket if contains(["public", "private", "direct"], bucket.endpoint_type)
+    ]) == length(var.cos_buckets)
+  }
+
+  validation {
+    error_message = "Exactly one parameter for the bucket's location must be set. Please choose one from `single_site_location`, `region_location`, or `cross_region_location`."
+    condition     = length([
+      for bucket in var.cos_buckets:
+      bucket if length(setintersection([for key in keys(bucket): key if lookup(bucket, key) != null], ["single_site_location", "region_location", "cross_region_location"])) == 1
     ]) == length(var.cos_buckets)
   }
 
@@ -1024,7 +1052,6 @@ variable "atracker" {
 }
 
 ##############################################################################
-
 
 ##############################################################################
 # Cluster variables

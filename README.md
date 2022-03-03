@@ -14,6 +14,7 @@ This module creates a secure landing zone within a single region.
 6. [Clusters and Worker pools](#cluster-and-worker-pool)
 7. [Virtual Private Endpoints](#virtual-private-endpoints)
 8. [IBM Cloud Services](#ibm-cloud-services)
+    * [Cloud Object Storage](#cloud-object-storage)
 9. [Module Variables](#module-variables)
 10. [Contributing](#contributing)
 11. [Terraform Language Resources](#terraform-language-resources)
@@ -431,6 +432,8 @@ list(
 
 ---
 
+<<<<<<< HEAD
+=======
 ## Cluster and Worker pool
 
 You can create as many `iks or openshift` clusters and worker pools on vpc. Cluster variable type is as follows:
@@ -466,11 +469,20 @@ list(
 
 ---
 
+>>>>>>> master
 ## Virtual Private Endpoints
 
 Virtual Private endpoints can be created for any number of services. Virtual private endpoint components can be found in [vpe.tf](vpe.tf).
 
 ---
+
+## IBM Cloud Services
+
+### Cloud Object Storage
+
+This module can provision a Cloud Object Storage instance or retrieve an existing Cloud Object Storage instance, then create any number of buckets within the desired instance. 
+
+Cloud Object Storage components can be found in cos.tf. 
 
 ## Module Variables
 
@@ -493,6 +505,10 @@ Virtual Private endpoints can be created for any number of services. Virtual pri
 | atracker                    | atracker variables                                                                                                                        |
 | resource_groups             | A list of existing resource groups to reference and new groups to create                                                                  |
 | clusters                    | A list of clusters on vpc. Also can add list of worker_pools to the clusters                                                              |
+| cos                         | Object describing the cloud object storage instance. Set `use_data` to false to create instance                                           |
+| cos_resource_keys           | List of objects describing resource keys to create for cos instance                                                                       |
+| cos_authorization_policies  | List of authorization policies to be created for cos instance                                                                             |
+| cos_buckets                 | List of standard buckets to be created in desired cloud object storage instance                                                           |
 
 ---
 

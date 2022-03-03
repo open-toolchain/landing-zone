@@ -367,7 +367,7 @@ security_groups = []
 ##############################################################################
 
 flow_logs = {
-  cos_bucket_name = "jv-dev-bucket"
+  cos_bucket_name = "flowlogs-bucket"
   active          = true
 }
 
