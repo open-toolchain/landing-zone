@@ -742,8 +742,8 @@ variable "virtual_private_endpoints" {
   description = "Object describing VPE to be created"
   type = list(
     object({
-      service_name         = string
-      resource_group       = optional(string)
+      service_name   = string
+      resource_group = optional(string)
       vpcs = list(
         object({
           name                = string
@@ -755,12 +755,12 @@ variable "virtual_private_endpoints" {
   )
   default = [{
     service_name = "cloud_object_storage"
-    vpcs         = [{
-      name = "management"
-      subnets = ["vpe-zone-1", "vpe-zone-2","vpe-zone-3"]
-    },{
-      name = "workload"
-      subnets = ["vpe-zone-1", "vpe-zone-2","vpe-zone-3"]
+    vpcs = [{
+      name    = "management"
+      subnets = ["vpe-zone-1", "vpe-zone-2", "vpe-zone-3"]
+      }, {
+      name    = "workload"
+      subnets = ["vpe-zone-1", "vpe-zone-2", "vpe-zone-3"]
     }]
   }]
 }
@@ -1041,10 +1041,10 @@ variable "clusters" {
       workers_per_subnet = number           # Worker nodes per subnet. Min 2 per subnet for openshift
       machine_type       = string           # Worker node flavor
       kube_type          = string           # iks or openshift
-      cos_instance_crn   = string           # cos CRN for openshift
       entitlement        = optional(string) # entitlement option for openshift
       pod_subnet         = optional(string) # Portable subnet for pods
       service_subnet     = optional(string) # Portable subnet for services
+      resource_group     = string           # Resource Group used for cluster
       worker_pools = optional(list(
         object({
           name               = string           # Worker pool name
@@ -1064,7 +1064,7 @@ variable "clusters" {
       machine_type       = "bx2.16x64"
       kube_type          = "iks"
       entitlement        = "cloud_pak"
-      cos_instance_crn   = null
+      resource_group     = "Default"
       worker_pools = [
         {
           name               = "worker-pool-1"

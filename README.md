@@ -444,10 +444,10 @@ list(
       workers_per_subnet = number           # Worker nodes per subnet. Min 2 per subnet for openshift
       machine_type       = string           # Worker node flavor
       kube_type          = string           # iks or openshift
-      cos_instance_crn   = string           # cos CRN for openshift
       entitlement        = optional(string) # entitlement option for openshift
       pod_subnet         = optional(string) # Portable subnet for pods
       service_subnet     = optional(string) # Portable subnet for services
+      resource_group     = string           # Resource Group used for cluster
       worker_pools = optional(list(
         object({
           name               = string           # Worker pool name

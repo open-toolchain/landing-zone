@@ -5,16 +5,6 @@
 data "ibm_container_cluster_versions" "cluster_versions" {
   region = var.region
 }
-output "name" {
-  value = length([for pools in(var.clusters[*].worker_pools) : false if(length(distinct([for pool in pools : pool.name])) != length([for pool in pools : pool.name]))]) == 0
-
-}
-
-output "name1" {
-  value = length([for subnet in(var.clusters[*].subnet_names) : false if length(distinct(subnet)) != length(subnet)]) == 0
-
-}
-
 
 ##############################################################################
 
@@ -29,6 +19,8 @@ locals {
       for worker_pool_group in cluster_group.worker_pools : merge(worker_pool_group, {
         # Add Cluster Name
         cluster_name = cluster_group.name
+        # resource group
+        resource_group = cluster_group.resource_group
         # Add VPC ID
         vpc_id = module.vpc[worker_pool_group.vpc_name].vpc_id
         subnets = [
@@ -70,14 +62,14 @@ resource "ibm_container_vpc_cluster" "cluster" {
   for_each          = local.clusters_map
   name              = each.value.name
   vpc_id            = each.value.vpc_id
-  resource_group_id = data.ibm_resource_group.resource_group.id
+  resource_group_id = local.resource_groups[each.value.resource_group]
   flavor            = each.value.machine_type
   worker_count      = each.value.workers_per_subnet
   kube_version      = each.value.kube_type == "openshift" ? "${data.ibm_container_cluster_versions.cluster_versions.valid_openshift_versions[length(data.ibm_container_cluster_versions.cluster_versions.valid_openshift_versions) - 1]}_openshift" : data.ibm_container_cluster_versions.cluster_versions.valid_kube_versions[length(data.ibm_container_cluster_versions.cluster_versions.valid_kube_versions) - 1]
   tags              = var.tags
   wait_till         = var.wait_till
   entitlement       = each.value.entitlement
-  cos_instance_crn  = each.value.kube_type == "openshift" ? each.value.cos_instance_crn : null
+  cos_instance_crn  = each.value.kube_type == "openshift" ? local.cos_instance_id : null
   pod_subnet        = each.value.pod_subnet
   service_subnet    = each.value.service_subnet
 
@@ -103,7 +95,7 @@ resource "ibm_container_vpc_cluster" "cluster" {
 resource "ibm_container_vpc_worker_pool" "pool" {
   for_each          = { for pool_map in local.worker_pools_map : ("${pool_map.cluster_name}-${pool_map.name}") => pool_map }
   vpc_id            = each.value.vpc_id
-  resource_group_id = data.ibm_resource_group.resource_group.id
+  resource_group_id = local.resource_groups[each.value.resource_group]
   entitlement       = each.value.entitlement
   cluster           = ibm_container_vpc_cluster.cluster[each.value.cluster_name].id
   worker_pool_name  = each.value.name
