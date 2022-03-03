@@ -93,7 +93,7 @@ resource "ibm_cos_bucket" "buckets" {
   resource_instance_id  = local.cos_instance_id
   storage_class         = each.value.storage_class
   endpoint_type         = each.value.endpoint_type
-  force_delete          = true
+  force_delete          = each.value.force_delete
   single_site_location  = each.value.single_site_location
   region_location       = each.value.region_location
   cross_region_location = each.value.cross_region_location

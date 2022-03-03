@@ -804,6 +804,7 @@ variable "cos_buckets" {
     name                  = string
     storage_class         = string 
     endpoint_type         = string 
+    force_delete          = bool
     single_site_location  = optional(string)
     region_location       = optional(string) 
     cross_region_location = optional(string)
@@ -815,12 +816,14 @@ variable "cos_buckets" {
       name = "dev-bucket"
       storage_class = "standard" 
       endpoint_type = "public"
+      force_delete = true 
       region_location = "us-south"
     },
     {
       name = "staging-bucket"
       storage_class = "standard" 
       endpoint_type = "private"
+      force_delete = false
       region_location = "us-east"
     }
   ]
