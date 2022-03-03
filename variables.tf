@@ -313,7 +313,7 @@ variable "vpcs" {
             acl_name       = "workload-acl"
           },
           {
-            name           = "vpn-zone-2"
+            name           = "vpe-zone-2"
             cidr           = "10.50.20.0/24"
             public_gateway = true
             acl_name       = "workload-acl"
@@ -327,7 +327,7 @@ variable "vpcs" {
             acl_name       = "workload-acl"
           },
           {
-            name           = "vpn-zone-3"
+            name           = "vpe-zone-3"
             cidr           = "10.60.20.0/24"
             public_gateway = true
             acl_name       = "workload-acl"

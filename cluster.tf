@@ -93,7 +93,10 @@ resource "ibm_container_vpc_cluster" "cluster" {
 ##############################################################################
 
 resource "ibm_container_vpc_worker_pool" "pool" {
-  for_each          = { for pool_map in local.worker_pools_map : ("${pool_map.cluster_name}-${pool_map.name}") => pool_map }
+  for_each = {
+    for pool_map in local.worker_pools_map :
+    ("${pool_map.cluster_name}-${pool_map.name}") => pool_map
+  }
   vpc_id            = each.value.vpc_id
   resource_group_id = local.resource_groups[each.value.resource_group]
   entitlement       = each.value.entitlement
