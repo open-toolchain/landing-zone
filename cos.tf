@@ -98,6 +98,49 @@ resource "ibm_cos_bucket" "buckets" {
   region_location       = each.value.region_location
   cross_region_location = each.value.cross_region_location
   key_protect           = each.value.kms_key_crn
+
+  dynamic "archive_rule" {
+    for_each = (
+      each.value.archive_rule == null
+      ? []
+      : [each.value.archive_rule]
+    )
+
+    content {
+      days    = archive_rule.value["days"]
+      enable  = archive_rule.value["enable"]
+      rule_id = archive_rule.value["rule_id"]
+      type    = archive_rule.value["type"]
+    }
+  }
+  
+  dynamic "activity_tracking" {
+    for_each = (
+      each.value.activity_tracking == null
+      ? []
+      : [each.value.activity_tracking] 
+    )
+
+    content {
+      activity_tracker_crn  = activity_tracking.value["activity_tracker_crn"]
+      read_data_events      = activity_tracking.value["read_data_events"]
+      write_data_events     = activity_tracking.value["write_data_events"]
+    }
+  }
+
+  dynamic "metrics_monitoring" {
+    for_each = (
+      each.value.metrics_monitoring == null
+      ? []
+      : [each.value.metrics_monitoring] 
+    )
+
+    content {
+      metrics_monitoring_crn  = metrics_monitoring.value["metrics_monitoring_crn"]
+      request_metrics_enabled = metrics_monitoring.value["request_metrics_enabled"]
+      usage_metrics_enabled   = metrics_monitoring.value["usage_metrics_enabled"]
+    }
+  }
 }
 
 ##############################################################################

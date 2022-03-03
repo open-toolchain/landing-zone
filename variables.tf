@@ -809,6 +809,22 @@ variable "cos_buckets" {
     region_location       = optional(string) 
     cross_region_location = optional(string)
     kms_key_crn           = optional(string)
+    archive_rule = optional(object({
+      days = number 
+      enable = bool
+      rule_id = optional(string)
+      type = string 
+    }))
+    activity_tracking = optional(object({
+      activity_tracker_crn = string 
+      read_data_events = bool 
+      write_data_events = bool
+    }))
+    metrics_monitoring = optional(object({
+      metrics_monitoring_crn = string 
+      request_metrics_enabled = optional(bool)
+      usage_metrics_enabled = optional(bool)
+    }))
   }))
 
   default = [
@@ -883,6 +899,20 @@ variable "cos_buckets" {
           : contains(["us", "eu", "ap"], bucket.cross_region_location)
     ]) == length(var.cos_buckets)
   }
+
+  # https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/resources/cos_bucket#archive_rule
+  validation {
+    error_message = "Each archive rule must specify a type of `Glacier` or `Accelerated`."
+    condition     = length([
+      for bucket in var.cos_buckets: 
+        bucket if bucket.archive_rule == null 
+          ? true 
+          : contains(["Glacier", "Accelerated"], bucket.archive_rule.type)
+    ]) == length(var.cos_buckets)
+  }
 }
 
 ##############################################################################
+
+          # : length(distinct(var.cos_buckets.*.name)) == length(var.cos_buckets.*.name)
+          # : contains(["Glacier", "Accelerated"], bucket.archive_rules.*.type)
