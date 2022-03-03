@@ -743,8 +743,6 @@ variable "virtual_private_endpoints" {
   type = list(
     object({
       service_name         = string
-      service_crn          = string
-      cloud_object_storage = optional(bool)
       resource_group       = optional(string)
       vpcs = list(
         object({
@@ -755,7 +753,16 @@ variable "virtual_private_endpoints" {
       )
     })
   )
-  default = []
+  default = [{
+    service_name = "cloud_object_storage"
+    vpcs         = [{
+      name = "management"
+      subnets = ["vpe-zone-1", "vpe-zone-2","vpe-zone-3"]
+    },{
+      name = "workload"
+      subnets = ["vpe-zone-1", "vpe-zone-2","vpe-zone-3"]
+    }]
+  }]
 }
 
 ##############################################################################
@@ -1012,7 +1019,6 @@ variable "atracker" {
   default = {
     resource_group        = "Default"
     bucket_name           = "atracker-bucket"
-    cos_api_key           = "<key>"
     receive_global_events = true
   }
 }
