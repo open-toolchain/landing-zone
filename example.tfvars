@@ -409,5 +409,48 @@ virtual_private_endpoints = [/*
 ##############################################################################
 # Clusters and Worker pools
 ##############################################################################
-clusters = []
+
+clusters = [
+  {
+    name               = "test-cluster-2"
+    vpc_name           = "workload"
+    subnet_names       = ["vsi-zone-1", "vsi-zone-2", "vsi-zone-3"]
+    workers_per_subnet = 2
+    machine_type       = "bx2.16x64"
+    kube_type          = "openshift"
+    resource_group     = "Default"
+    worker_pools = [
+      {
+        name               = "worker-pool-1"
+        vpc_name           = "workload"
+        subnet_names       = ["vsi-zone-1"]
+        workers_per_subnet = 1
+        flavor             = "bx2.16x64"
+      },
+      {
+        name               = "worker-pool-2"
+        vpc_name           = "workload"
+        subnet_names       = ["vsi-zone-2"]
+        workers_per_subnet = 1
+        flavor             = "bx2.16x64"
+    }]
+  },
+  {
+    name               = "test-cluster-1"
+    vpc_name           = "workload"
+    subnet_names       = ["vsi-zone-1", "vsi-zone-2", "vsi-zone-3"]
+    workers_per_subnet = 1
+    machine_type       = "bx2.16x64"
+    kube_type          = "iks"
+    resource_group     = "Default"
+    worker_pools = [
+      {
+        name               = "worker-pool-1"
+        vpc_name           = "workload"
+        subnet_names       = ["vsi-zone-1"]
+        workers_per_subnet = 1
+        flavor             = "bx2.16x64"
+    }]
+  }
+]
 ##############################################################################

@@ -742,8 +742,8 @@ variable "virtual_private_endpoints" {
   description = "Object describing VPE to be created"
   type = list(
     object({
-      service_name         = string
-      resource_group       = optional(string)
+      service_name   = string
+      resource_group = optional(string)
       vpcs = list(
         object({
           name                = string
@@ -755,12 +755,12 @@ variable "virtual_private_endpoints" {
   )
   default = [{
     service_name = "cloud_object_storage"
-    vpcs         = [{
-      name = "management"
-      subnets = ["vpe-zone-1", "vpe-zone-2","vpe-zone-3"]
-    },{
-      name = "workload"
-      subnets = ["vpe-zone-1", "vpe-zone-2","vpe-zone-3"]
+    vpcs = [{
+      name    = "management"
+      subnets = ["vpe-zone-1", "vpe-zone-2", "vpe-zone-3"]
+      }, {
+      name    = "workload"
+      subnets = ["vpe-zone-1", "vpe-zone-2", "vpe-zone-3"]
     }]
   }]
 }
@@ -1023,4 +1023,104 @@ variable "atracker" {
   }
 }
 
+##############################################################################
+
+
+##############################################################################
+# Cluster variables
+##############################################################################
+
+
+variable "clusters" {
+  description = "A list describing clusters workloads to create"
+  type = list(
+    object({
+      name               = string           # Name of Cluster
+      vpc_name           = string           # Name of VPC
+      subnet_names       = list(string)     # List of vpc subnets for cluster
+      workers_per_subnet = number           # Worker nodes per subnet. Min 2 per subnet for openshift
+      machine_type       = string           # Worker node flavor
+      kube_type          = string           # iks or openshift
+      entitlement        = optional(string) # entitlement option for openshift
+      pod_subnet         = optional(string) # Portable subnet for pods
+      service_subnet     = optional(string) # Portable subnet for services
+      resource_group     = string           # Resource Group used for cluster
+      worker_pools = optional(list(
+        object({
+          name               = string           # Worker pool name
+          vpc_name           = string           # VPC name
+          workers_per_subnet = number           # Worker nodes per subnet
+          flavor             = string           # Worker node flavor
+          subnet_names       = list(string)     # List of vpc subnets for worker pool
+          entitlement        = optional(string) # entitlement option for openshift
+      })))
+  }))
+  default = [
+    {
+      name               = "test-cluster"
+      vpc_name           = "workload"
+      subnet_names       = ["subnet-a", "subnet-b"]
+      workers_per_subnet = 1
+      machine_type       = "bx2.16x64"
+      kube_type          = "iks"
+      entitlement        = "cloud_pak"
+      resource_group     = "Default"
+      worker_pools = [
+        {
+          name               = "worker-pool-1"
+          vpc_name           = "workload"
+          subnet_names       = ["subnet-a", "subnet-b"]
+          workers_per_subnet = 1
+          flavor             = "bx2.16x64"
+          entitlement        = "cloud_pak"
+
+      }]
+  }]
+
+  # kube_type validation
+  validation {
+    condition     = length([for type in flatten(var.clusters[*].kube_type) : true if type == "iks" || type == "openshift"]) == length(var.clusters)
+    error_message = "Invalid value for kube_type entered. Valid values are `iks` or `openshift`."
+  }
+
+  # subnet_names validation
+  validation {
+    condition     = length([for subnet in(var.clusters[*].subnet_names) : false if length(distinct(subnet)) != length(subnet)]) == 0
+    error_message = "Duplicates in var.clusters.subnet_names list. Please provide unique subnet list."
+  }
+
+  # cluster name validation
+  validation {
+    condition     = length(distinct([for name in flatten(var.clusters[*].name) : name])) == length(flatten(var.clusters[*].name))
+    error_message = "Duplicate cluster name. Please provide unique cluster names."
+  }
+
+  # min. workers_per_subnet=2 (default pool) for openshift validation
+  validation {
+    condition     = length([for n in flatten(var.clusters[*]) : false if(n.kube_type == "openshift" && n.workers_per_subnet < 2)]) == 0
+    error_message = "For openshift cluster workers_per_subnet needs to be 2 or more."
+  }
+
+  # worker_pool name validation
+  validation {
+    condition     = length([for pools in(var.clusters[*].worker_pools) : false if(length(distinct([for pool in pools : pool.name])) != length([for pool in pools : pool.name]))]) == 0
+    error_message = "Duplicate worker_pool name in list var.cluster.worker_pools. Please provide unique worker_pool names."
+  }
+
+}
+
+variable "wait_till" {
+  description = "To avoid long wait times when you run your Terraform code, you can specify the stage when you want Terraform to mark the cluster resource creation as completed. Depending on what stage you choose, the cluster creation might not be fully completed and continues to run in the background. However, your Terraform code can continue to run without waiting for the cluster to be fully created. Supported args are `MasterNodeReady`, `OneWorkerNodeReady`, and `IngressReady`"
+  type        = string
+  default     = "IngressReady"
+
+  validation {
+    error_message = "`wait_till` value must be one of `MasterNodeReady`, `OneWorkerNodeReady`, or `IngressReady`."
+    condition = contains([
+      "MasterNodeReady",
+      "OneWorkerNodeReady",
+      "IngressReady"
+    ], var.wait_till)
+  }
+}
 ##############################################################################
