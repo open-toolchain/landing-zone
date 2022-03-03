@@ -3,21 +3,34 @@
 # > These will apply to any resources created using this template
 ##############################################################################
 
-ibmcloud_api_key = "< ibmcloud platform api key >"
-prefix           = "slz"
+ibmcloud_api_key = "<USER DEFINED INPUT>"
+prefix           = "<USER DEFINED INPUT>"
 region           = "us-south"
-tags             = ["slz-example"]
+tags             = []
 ##############################################################################
+
+ssh_keys = [
+  {
+    name       = "slz-key"
+    public_key = "<USER DEFINED INPUT>"
+  }
+]
 
 ##############################################################################
 # Resource Groups
 ##############################################################################
-
-resource_groups = [
-  {
-    name = "default"
-  }
-]
+resource_groups = [{
+    name = "Default"
+  },{
+    name = "slz-cs-rg"
+    create = true
+  },{
+    name = "slz-management-rg"
+    create = true
+  },{
+    name = "slz-workload-rg"
+    create = true
+  }]
 
 ##############################################################################
 
@@ -26,8 +39,8 @@ resource_groups = [
 ##############################################################################
 
 kms = {
-  name           = "dev-kms"
-  resource_group = "default"
+  name           = "kms"
+  resource_group = "Default"
   keys = [
     {
       name     = "root"
@@ -38,186 +51,182 @@ kms = {
 }
 
 ##############################################################################
-
-
-##############################################################################
-# VPC Networks
-##############################################################################
-
 vpcs = [
-  {
-    prefix = "management"
-    use_public_gateways = {
-      zone-1 = false
-      zone-2 = false
-      zone-3 = false
-    }
-    network_acls = [
-      {
-        name = "management-acl"
-        rules = [
+    {
+      prefix         = "management"
+      resource_group = "slz-management-rg"
+      use_public_gateways = {
+        zone-1 = false
+        zone-2 = false
+        zone-3 = false
+      }
+      network_acls = [
+        {
+          name = "management-acl"
+          rules = [
+            {
+              name        = "allow-ibm-inbound"
+              action      = "allow"
+              direction   = "inbound"
+              destination = "10.0.0.0/8"
+              source      = "161.26.0.0/16"
+            },
+            {
+              name        = "allow-all-network-inbound"
+              action      = "allow"
+              direction   = "inbound"
+              destination = "10.0.0.0/8"
+              source      = "10.0.0.0/8"
+            },
+            {
+              name        = "allow-all-outbound"
+              action      = "allow"
+              direction   = "outbound"
+              destination = "0.0.0.0/0"
+              source      = "0.0.0.0/0"
+            }
+          ]
+        }
+      ]
+      subnets = {
+        zone-1 = [
           {
-            name        = "allow-ibm-inbound"
-            action      = "allow"
-            direction   = "inbound"
-            destination = "10.0.0.0/8"
-            source      = "161.26.0.0/16"
+            name           = "vsi-zone-1"
+            cidr           = "10.10.10.0/24"
+            public_gateway = true
+            acl_name       = "management-acl"
           },
           {
-            name        = "allow-all-network-inbound"
-            action      = "allow"
-            direction   = "inbound"
-            destination = "10.0.0.0/8"
-            source      = "10.0.0.0/8"
+            name           = "vpn-zone-1"
+            cidr           = "10.10.20.0/24"
+            public_gateway = true
+            acl_name       = "management-acl"
           },
           {
-            name        = "allow-all-outbound"
-            action      = "allow"
-            direction   = "outbound"
-            destination = "0.0.0.0/0"
-            source      = "0.0.0.0/0"
+            name           = "vpe-zone-1"
+            cidr           = "10.10.30.0/24"
+            public_gateway = true
+            acl_name       = "management-acl"
+          }
+        ],
+        zone-2 = [
+          {
+            name           = "vsi-zone-2"
+            cidr           = "10.20.10.0/24"
+            public_gateway = true
+            acl_name       = "management-acl"
+          },
+          {
+            name           = "vpe-zone-2"
+            cidr           = "10.20.20.0/24"
+            public_gateway = true
+            acl_name       = "management-acl"
+          }
+        ],
+        zone-3 = [
+          {
+            name           = "vsi-zone-3"
+            cidr           = "10.30.10.0/24"
+            public_gateway = true
+            acl_name       = "management-acl"
+          },
+          {
+            name           = "vpe-zone-3"
+            cidr           = "10.30.20.0/24"
+            public_gateway = true
+            acl_name       = "management-acl"
           }
         ]
       }
-    ]
-    subnets = {
-      zone-1 = [
+    },
+    {
+      prefix = "workload"
+      resource_group = "slz-workload-rg"
+      use_public_gateways = {
+        zone-1 = false
+        zone-2 = false
+        zone-3 = false
+      }
+      network_acls = [
         {
-          name           = "vsi-zone-1"
-          cidr           = "10.10.10.0/24"
-          public_gateway = true
-          acl_name       = "management-acl"
-        },
-        {
-          name           = "vpn-zone-1"
-          cidr           = "10.10.20.0/24"
-          public_gateway = true
-          acl_name       = "management-acl"
-        },
-        {
-          name           = "vpe-zone-1"
-          cidr           = "10.10.30.0/24"
-          public_gateway = true
-          acl_name       = "management-acl"
-        }
-      ],
-      zone-2 = [
-        {
-          name           = "vsi-zone-2"
-          cidr           = "10.20.10.0/24"
-          public_gateway = true
-          acl_name       = "management-acl"
-        },
-        {
-          name           = "vpe-zone-2"
-          cidr           = "10.20.20.0/24"
-          public_gateway = true
-          acl_name       = "management-acl"
-        }
-      ],
-      zone-3 = [
-        {
-          name           = "vsi-zone-3"
-          cidr           = "10.30.10.0/24"
-          public_gateway = true
-          acl_name       = "management-acl"
-        },
-        {
-          name           = "vpe-zone-3"
-          cidr           = "10.30.20.0/24"
-          public_gateway = true
-          acl_name       = "management-acl"
+          name = "workload-acl"
+          rules = [
+            {
+              name        = "allow-ibm-inbound"
+              action      = "allow"
+              direction   = "inbound"
+              destination = "10.0.0.0/8"
+              source      = "161.26.0.0/16"
+            },
+            {
+              name        = "allow-all-network-inbound"
+              action      = "allow"
+              direction   = "inbound"
+              destination = "10.0.0.0/8"
+              source      = "10.0.0.0/8"
+            },
+            {
+              name        = "allow-all-outbound"
+              action      = "allow"
+              direction   = "outbound"
+              destination = "0.0.0.0/0"
+              source      = "0.0.0.0/0"
+            }
+          ]
         }
       ]
-    }
-  },
-  {
-    prefix = "workload"
-    use_public_gateways = {
-      zone-1 = false
-      zone-2 = false
-      zone-3 = false
-    }
-    network_acls = [
-      {
-        name = "workload-acl"
-        rules = [
+      subnets = {
+        zone-1 = [
           {
-            name        = "allow-ibm-inbound"
-            action      = "allow"
-            direction   = "inbound"
-            destination = "10.0.0.0/8"
-            source      = "161.26.0.0/16"
+            name           = "vsi-zone-1"
+            cidr           = "10.40.10.0/24"
+            public_gateway = true
+            acl_name       = "workload-acl"
           },
           {
-            name        = "allow-all-network-inbound"
-            action      = "allow"
-            direction   = "inbound"
-            destination = "10.0.0.0/8"
-            source      = "10.0.0.0/8"
+            name           = "vpn-zone-1"
+            cidr           = "10.40.20.0/24"
+            public_gateway = true
+            acl_name       = "workload-acl"
           },
           {
-            name        = "allow-all-outbound"
-            action      = "allow"
-            direction   = "outbound"
-            destination = "0.0.0.0/0"
-            source      = "0.0.0.0/0"
+            name           = "vpe-zone-1"
+            cidr           = "10.40.30.0/24"
+            public_gateway = true
+            acl_name       = "workload-acl"
+          }
+        ],
+        zone-2 = [
+          {
+            name           = "vsi-zone-2"
+            cidr           = "10.50.10.0/24"
+            public_gateway = true
+            acl_name       = "workload-acl"
+          },
+          {
+            name           = "vpn-zone-2"
+            cidr           = "10.50.20.0/24"
+            public_gateway = true
+            acl_name       = "workload-acl"
+          }
+        ],
+        zone-3 = [
+          {
+            name           = "vsi-zone-3"
+            cidr           = "10.60.10.0/24"
+            public_gateway = true
+            acl_name       = "workload-acl"
+          },
+          {
+            name           = "vpn-zone-3"
+            cidr           = "10.60.20.0/24"
+            public_gateway = true
+            acl_name       = "workload-acl"
           }
         ]
       }
-    ]
-    subnets = {
-      zone-1 = [
-        {
-          name           = "vsi-zone-1"
-          cidr           = "10.40.10.0/24"
-          public_gateway = true
-          acl_name       = "workload-acl"
-        },
-        {
-          name           = "vpn-zone-1"
-          cidr           = "10.40.20.0/24"
-          public_gateway = true
-          acl_name       = "workload-acl"
-        },
-        {
-          name           = "vpe-zone-1"
-          cidr           = "10.40.30.0/24"
-          public_gateway = true
-          acl_name       = "workload-acl"
-        }
-      ],
-      zone-2 = [
-        {
-          name           = "vsi-zone-2"
-          cidr           = "10.50.10.0/24"
-          public_gateway = true
-          acl_name       = "workload-acl"
-        },
-        {
-          name           = "vpn-zone-2"
-          cidr           = "10.50.20.0/24"
-          public_gateway = true
-          acl_name       = "workload-acl"
-        }
-      ],
-      zone-3 = [
-        {
-          name           = "vsi-zone-3"
-          cidr           = "10.60.10.0/24"
-          public_gateway = true
-          acl_name       = "workload-acl"
-        },
-        {
-          name           = "vpn-zone-3"
-          cidr           = "10.60.20.0/24"
-          public_gateway = true
-          acl_name       = "workload-acl"
-        }
-      ]
-    }
-  },
-]
+    },
+  ]
 
 enable_transit_gateway      = true
 transit_gateway_connections = ["management", "workload"]
@@ -229,18 +238,11 @@ transit_gateway_connections = ["management", "workload"]
 # Virtual Servers
 ##############################################################################
 
-ssh_keys = [
-  {
-    name       = "management"
-    public_key = "<ssh public key>"
-  }
-]
-
-
 vsi = [
   {
     name           = "management-server"
     vpc_name       = "management"
+    resource_group = "slz-management-rg"
     vsi_per_subnet = 1
     subnet_names   = ["vsi-zone-1", "vsi-zone-2", "vsi-zone-3"]
     image_name     = "ibm-ubuntu-16-04-5-minimal-amd64-1"
@@ -255,8 +257,13 @@ vsi = [
           direction = "inbound"
         },
         {
-          name      = "allow-sg-outbound"
-          source    = "mgmt-base-security-group"
+          name      = "allow-vpc-inbound"
+          source    = "10.0.0.0/8"
+          direction = "outbound"
+        },
+        {
+          name      = "allow-vpc-outbound"
+          source    = "10.0.0.0/8"
           direction = "outbound"
         },
         {
@@ -288,11 +295,12 @@ vsi = [
         }
       ]
     },
-    ssh_keys = ["management"]
+    ssh_keys = ["slz-key"]
   },
   {
     name           = "workload-server"
     vpc_name       = "workload"
+    resource_group = "slz-workload-rg"
     vsi_per_subnet = 1
     subnet_names   = ["vsi-zone-1", "vsi-zone-2", "vsi-zone-3"]
     image_name     = "ibm-ubuntu-16-04-5-minimal-amd64-1"
@@ -307,8 +315,13 @@ vsi = [
           direction = "inbound"
         },
         {
-          name      = "allow-sg-outbound"
-          source    = "mgmt-base-security-group"
+          name      = "allow-vpc-inbound"
+          source    = "10.0.0.0/8"
+          direction = "outbound"
+        },
+        {
+          name      = "allow-vpc-outbound"
+          source    = "10.0.0.0/8"
           direction = "outbound"
         },
         {
@@ -340,7 +353,7 @@ vsi = [
         }
       ]
     }
-    ssh_keys = ["management"]
+    ssh_keys = ["slz-key"]
   }
 ]
 
