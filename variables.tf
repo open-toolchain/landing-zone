@@ -19,7 +19,6 @@ variable "ibmcloud_api_key" {
 variable "prefix" {
   description = "A unique identifier for resources. Must begin with a letter. This prefix will be prepended to any resources provisioned by this template."
   type        = string
-  default     = "gcat-multizone-schematics"
 
   validation {
     error_message = "Prefix must begin and end with a letter and contain only letters, numbers, and - characters."
@@ -30,17 +29,6 @@ variable "prefix" {
 variable "region" {
   description = "Region where VPC will be created. To find your VPC region, use `ibmcloud is regions` command to find available regions."
   type        = string
-  default     = "us-south"
-}
-
-variable "resource_group" {
-  description = "Name of resource group where all infrastructure will be provisioned."
-  type        = string
-
-  validation {
-    error_message = "Unique ID must begin and end with a letter and contain only letters, numbers, and - characters."
-    condition     = can(regex("^([A-z]|[a-z][-a-z0-9]*[a-z0-9])$", var.resource_group))
-  }
 }
 
 variable "tags" {
@@ -64,22 +52,9 @@ variable "resource_groups" {
       create = optional(bool)
     })
   )
-  default = [
-    {
-      name = "asset-development"
-    }, 
-    {
-      name   = "ignore-me"
-      create = true
-    },
-    {
-      name   = "default"
-    },
-    {
-      name = "cs-rg"
-      create = true
-    }
-  ]
+  default = [{
+    name = "default"
+  }]
 
   validation {
     error_message = "Each group must have a unique name."
@@ -179,23 +154,29 @@ variable "vpcs" {
   default = [
     {
       prefix         = "management"
-      resource_group = "asset-development"
+      resource_group = "default"
       use_public_gateways = {
-        zone-1 = true
-        zone-2 = true
-        zone-3 = true
+        zone-1 = false
+        zone-2 = false
+        zone-3 = false
       }
       network_acls = [
         {
-          name              = "vpc-acl"
-          add_cluster_rules = true
+          name = "management-acl"
           rules = [
             {
-              name        = "allow-all-inbound"
+              name        = "allow-ibm-inbound"
               action      = "allow"
               direction   = "inbound"
-              destination = "0.0.0.0/0"
-              source      = "0.0.0.0/0"
+              destination = "10.0.0.0/8"
+              source      = "161.26.0.0/16"
+            },
+            {
+              name        = "allow-all-network-inbound"
+              action      = "allow"
+              direction   = "inbound"
+              destination = "10.0.0.0/8"
+              source      = "10.0.0.0/8"
             },
             {
               name        = "allow-all-outbound"
@@ -210,49 +191,78 @@ variable "vpcs" {
       subnets = {
         zone-1 = [
           {
-            name           = "subnet-a"
+            name           = "vsi-zone-1"
             cidr           = "10.10.10.0/24"
             public_gateway = true
-            acl_name       = "vpc-acl"
+            acl_name       = "management-acl"
+          },
+          {
+            name           = "vpn-zone-1"
+            cidr           = "10.10.20.0/24"
+            public_gateway = true
+            acl_name       = "management-acl"
+          },
+          {
+            name           = "vpe-zone-1"
+            cidr           = "10.10.30.0/24"
+            public_gateway = true
+            acl_name       = "management-acl"
           }
         ],
         zone-2 = [
           {
-            name           = "subnet-b"
+            name           = "vsi-zone-2"
             cidr           = "10.20.10.0/24"
             public_gateway = true
-            acl_name       = "vpc-acl"
+            acl_name       = "management-acl"
+          },
+          {
+            name           = "vpe-zone-2"
+            cidr           = "10.20.20.0/24"
+            public_gateway = true
+            acl_name       = "management-acl"
           }
         ],
         zone-3 = [
           {
-            name           = "subnet-c"
+            name           = "vsi-zone-3"
             cidr           = "10.30.10.0/24"
             public_gateway = true
-            acl_name       = "vpc-acl"
+            acl_name       = "management-acl"
+          },
+          {
+            name           = "vpe-zone-3"
+            cidr           = "10.30.20.0/24"
+            public_gateway = true
+            acl_name       = "management-acl"
           }
         ]
       }
     },
     {
-      prefix         = "workload"
-      resource_group = "ignore-me"
+      prefix = "workload"
       use_public_gateways = {
-        zone-1 = true
-        zone-2 = true
-        zone-3 = true
+        zone-1 = false
+        zone-2 = false
+        zone-3 = false
       }
       network_acls = [
         {
-          name              = "vpc-acl"
-          add_cluster_rules = true
+          name = "workload-acl"
           rules = [
             {
-              name        = "allow-all-inbound"
+              name        = "allow-ibm-inbound"
               action      = "allow"
               direction   = "inbound"
-              destination = "0.0.0.0/0"
-              source      = "0.0.0.0/0"
+              destination = "10.0.0.0/8"
+              source      = "161.26.0.0/16"
+            },
+            {
+              name        = "allow-all-network-inbound"
+              action      = "allow"
+              direction   = "inbound"
+              destination = "10.0.0.0/8"
+              source      = "10.0.0.0/8"
             },
             {
               name        = "allow-all-outbound"
@@ -267,30 +277,54 @@ variable "vpcs" {
       subnets = {
         zone-1 = [
           {
-            name           = "subnet-a"
+            name           = "vsi-zone-1"
             cidr           = "10.40.10.0/24"
             public_gateway = true
-            acl_name       = "vpc-acl"
+            acl_name       = "workload-acl"
+          },
+          {
+            name           = "vpn-zone-1"
+            cidr           = "10.40.20.0/24"
+            public_gateway = true
+            acl_name       = "workload-acl"
+          },
+          {
+            name           = "vpe-zone-1"
+            cidr           = "10.40.30.0/24"
+            public_gateway = true
+            acl_name       = "workload-acl"
           }
         ],
         zone-2 = [
           {
-            name           = "subnet-b"
+            name           = "vsi-zone-2"
             cidr           = "10.50.10.0/24"
             public_gateway = true
-            acl_name       = "vpc-acl"
+            acl_name       = "workload-acl"
+          },
+          {
+            name           = "vpn-zone-2"
+            cidr           = "10.50.20.0/24"
+            public_gateway = true
+            acl_name       = "workload-acl"
           }
         ],
         zone-3 = [
           {
-            name           = "subnet-c"
+            name           = "vsi-zone-3"
             cidr           = "10.60.10.0/24"
             public_gateway = true
-            acl_name       = "vpc-acl"
+            acl_name       = "workload-acl"
+          },
+          {
+            name           = "vpn-zone-3"
+            cidr           = "10.60.20.0/24"
+            public_gateway = true
+            acl_name       = "workload-acl"
           }
         ]
       }
-    }
+    },
   ]
 }
 
@@ -329,7 +363,7 @@ variable "enable_transit_gateway" {
 variable "transit_gateway_resource_group" {
   description = "Name of resource group to use for transit gateway. Must be included in `var.resource_group`"
   type        = string
-  default     = "asset-development"
+  default     = "default"
 }
 
 variable "transit_gateway_connections" {
@@ -358,9 +392,8 @@ variable "ssh_keys" {
   )
   default = [
     {
-      name           = "dev-ssh-key"
-      public_key     = "<ssh public key>"
-      resource_group = "asset-development"
+      name           = "jv-dev-ssh-key"
+      resource_group = "default"
     }
   ]
 
@@ -375,13 +408,13 @@ variable "ssh_keys" {
       distinct(
         [
           for ssh_key in var.ssh_keys :
-          ssh_key.public_key if ssh_key.public_key != null
+          ssh_key.public_key if lookup(ssh_key, "public_key", null) != null
         ]
       )
       ) == length(
       [
         for ssh_key in var.ssh_keys :
-        ssh_key.public_key if ssh_key.public_key != null
+        ssh_key.public_key if lookup(ssh_key, "public_key", null) != null
       ]
     )
   }
@@ -391,16 +424,17 @@ variable "vsi" {
   description = "A list describing VSI workloads to create"
   type = list(
     object({
-      name            = string
-      vpc_name        = string
-      subnet_names    = list(string)
-      ssh_keys        = list(string)
-      image_name      = string
-      machine_type    = string
-      vsi_per_subnet  = number
-      user_data       = optional(string)
-      resource_group  = optional(string)
-      security_groups = optional(list(string))
+      name               = string
+      vpc_name           = string
+      subnet_names       = list(string)
+      ssh_keys           = list(string)
+      image_name         = string
+      machine_type       = string
+      vsi_per_subnet     = number
+      user_data          = optional(string)
+      resource_group     = optional(string)
+      enable_floating_ip = optional(bool)
+      security_groups    = optional(list(string))
       security_group = optional(
         object({
           name = string
@@ -490,52 +524,98 @@ variable "vsi" {
   )
   default = [
     {
-      name           = "test-vsi"
+      name           = "management-server"
       vpc_name       = "management"
-      subnet_names   = ["subnet-a", "subnet-c"]
-      image_name     = "ibm-centos-7-6-minimal-amd64-2"
-      machine_type   = "bx2-8x32"
-      ssh_keys       = ["dev-ssh-key"]
       vsi_per_subnet = 1
+      subnet_names   = ["vsi-zone-1", "vsi-zone-2", "vsi-zone-3"]
+      image_name     = "ibm-ubuntu-16-04-5-minimal-amd64-1"
+      machine_type   = "cx2-2x4"
       security_group = {
-        name = "test"
+        name     = "management"
+        vpc_name = "management"
         rules = [
           {
-            name      = "allow-all-inbound"
-            source    = "0.0.0.0/0"
+            name      = "allow-ibm-inbound"
+            source    = "161.26.0.0/16"
             direction = "inbound"
           },
           {
-            name      = "allow-all-outbound"
-            source    = "0.0.0.0/0"
+            name      = "allow-ibm-tcp-80-outbound"
+            source    = "161.26.0.0/16"
             direction = "outbound"
+            tcp = {
+              port_min = 80
+              port_max = 80
+            }
+          },
+          {
+            name      = "allow-ibm-tcp-443-outbound"
+            source    = "161.26.0.0/16"
+            direction = "outbound"
+            tcp = {
+              port_min = 443
+              port_max = 443
+            }
+          },
+          {
+            name      = "allow-ibm-udp-53-outbound"
+            source    = "161.26.0.0/16"
+            direction = "outbound"
+            udp = {
+              port_min = 53
+              port_max = 53
+            }
+          }
+        ]
+      },
+      ssh_keys = ["jv-dev-ssh-key"]
+    },
+    {
+      name           = "workload-server"
+      vpc_name       = "workload"
+      vsi_per_subnet = 1
+      subnet_names   = ["vsi-zone-1", "vsi-zone-2", "vsi-zone-3"]
+      image_name     = "ibm-ubuntu-16-04-5-minimal-amd64-1"
+      machine_type   = "cx2-2x4"
+      security_group = {
+        name     = "workload"
+        vpc_name = "workload"
+        rules = [
+          {
+            name      = "allow-ibm-inbound"
+            source    = "161.26.0.0/16"
+            direction = "inbound"
+          },
+          {
+            name      = "allow-ibm-tcp-80-outbound"
+            source    = "161.26.0.0/16"
+            direction = "outbound"
+            tcp = {
+              port_min = 80
+              port_max = 80
+            }
+          },
+          {
+            name      = "allow-ibm-tcp-443-outbound"
+            source    = "161.26.0.0/16"
+            direction = "outbound"
+            tcp = {
+              port_min = 443
+              port_max = 443
+            }
+          },
+          {
+            name      = "allow-ibm-udp-53-outbound"
+            source    = "161.26.0.0/16"
+            direction = "outbound"
+            udp = {
+              port_min = 53
+              port_max = 53
+            }
           }
         ]
       }
-      /*
-      block_storage_volumes = [{
-        name    = "one"
-        profile = "general-purpose"
-        }, {
-        name    = "two"
-        profile = "general-purpose"
-      }]
-      load_balancers = [
-        {
-          name              = "test"
-          type              = "public"
-          listener_port     = 80
-          listener_protocol = "http"
-          connection_limit  = 0
-          algorithm         = "round_robin"
-          protocol          = "http"
-          health_delay      = 10
-          health_retries    = 10
-          health_timeout    = 5
-          health_type       = "http"
-          pool_member_port  = 80
-        }
-      ]*/
+      ssh_keys = ["jv-dev-ssh-key"]
     }
   ]
 }
@@ -584,25 +664,7 @@ variable "security_groups" {
     })
   )
 
-  default = [
-    {
-      name           = "workload-vpe"
-      vpc_name       = "workload"
-      resource_group = "asset-development"
-      rules = [
-        {
-          name      = "allow-all-inbound"
-          source    = "0.0.0.0/0"
-          direction = "inbound"
-        },
-        {
-          name      = "allow-all-outbound"
-          source    = "0.0.0.0/0"
-          direction = "outbound"
-        }
-      ]
-    }
-  ]
+  default = []
 
   validation {
     error_message = "Each security group rule must have a unique name."
@@ -615,18 +677,17 @@ variable "security_groups" {
   validation {
     error_message = "Security group rules can only use one of the following blocks: `tcp`, `udp`, `icmp`."
     condition = length(
+      # Ensure length is 0
       [
+        # For each group in security groups
         for group in var.security_groups :
+        # Return true if length isn't 0
         true if length(
           distinct(
             flatten([
+              # For each rule, return true if using more than one `tcp`, `udp`, `icmp block
               for rule in group.rules :
-              true if length(
-                [
-                  for type in ["tcp", "udp", "icmp"] :
-                  true if rule[type] != null
-                ]
-              ) > 1
+              true if length([for type in ["tcp", "udp", "icmp"] : true if rule[type] != null]) > 1
             ])
           )
         ) != 0
@@ -698,6 +759,54 @@ variable "service_endpoints" {
   }
 }
 
+variable "key_protect" {
+  description = "Key Protect instance variables"
+  type = object({
+    name           = string
+    resource_group = string
+    use_data       = optional(bool)
+    keys = optional(
+      list(
+        object({
+          name            = string
+          root_key        = optional(bool)
+          payload         = optional(string)
+          key_ring        = optional(string) # Any key_ring added will be created
+          force_delete    = optional(bool)
+          endpoint        = optional(string) # can be public or private
+          iv_value        = optional(string) # (Optional, Forces new resource, String) Used with import tokens. The initialization vector (IV) that is generated when you encrypt a nonce. The IV value is required to decrypt the encrypted nonce value that you provide when you make a key import request to the service. To generate an IV, encrypt the nonce by running ibmcloud kp import-token encrypt-nonce. Only for imported root key.
+          encrypted_nonce = optional(string) # The encrypted nonce value that verifies your request to import a key to Key Protect. This value must be encrypted by using the key that you want to import to the service. To retrieve a nonce, use the ibmcloud kp import-token get command. Then, encrypt the value by running ibmcloud kp import-token encrypt-nonce. Only for imported root key.
+          policies = optional(
+            object({
+              rotation = optional(
+                object({
+                  interval_month = number
+                })
+              )
+              dual_auth_delete = optional(
+                object({
+                  enabled = bool
+                })
+              )
+            })
+          )
+        })
+      )
+    )
+  })
+  default = {
+    name           = "dev-kms"
+    resource_group = "default"
+    keys = [
+      {
+        name     = "root"
+        root_key = true
+        key_name = "dev-ring"
+      }
+    ]
+  }
+}
+
 ##############################################################################
 
 
@@ -749,7 +858,7 @@ variable "cos" {
   default = {
     service_name = "cos"
     use_data = false 
-    resource_group = "cs-rg"
+    resource_group = "default"
     plan = "standard"
   }
 

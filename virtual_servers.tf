@@ -34,7 +34,7 @@ module "ssh_keys" {
     for ssh_key in var.ssh_keys :
     merge(
       {
-        resource_group_id : local.resource_groups[ssh_key.resource_group]
+        resource_group_id : ssh_key.resource_group == null ? null : local.resource_groups[ssh_key.resource_group]
       },
       ssh_key
     )
@@ -58,10 +58,13 @@ module "vsi" {
     for ssh_key in each.value.ssh_keys :
     local.ssh_keys[ssh_key]
   ]
-  machine_type   = each.value.machine_type
-  vsi_per_subnet = each.value.vsi_per_subnet
-  security_group = each.value.security_group
-  load_balancers = each.value.load_balancers == null ? [] : each.value.load_balancers
+  machine_type          = each.value.machine_type
+  vsi_per_subnet        = each.value.vsi_per_subnet
+  security_group        = each.value.security_group
+  load_balancers        = each.value.load_balancers == null ? [] : each.value.load_balancers
+  block_storage_volumes = each.value.block_storage_volumes == null ? [] : each.value.block_storage_volumes
+  enable_floating_ip    = each.value.enable_floating_ip == true ? true : false
+  depends_on            = [module.ssh_keys]
 }
 
 ##############################################################################
