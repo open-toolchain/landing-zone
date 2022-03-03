@@ -58,7 +58,7 @@ locals {
   }
 }
 
-resource "ibm_iam_authorization_policy" "policy" {
+resource "ibm_iam_authorization_policy" "cos_policy" {
   for_each = local.cos_auth_policies_map
 
   source_service_name         = "cloud-object-storage"

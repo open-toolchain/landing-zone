@@ -814,6 +814,25 @@ variable "cos_resource_keys" {
   }
 }
 
+variable "cos_authorization_policies" {
+  description = "List of authorization policies to be created for cos instance"
+  type = list(object({
+    name                        = string 
+    target_service_name         = string 
+    target_resource_instance_id = optional(string)
+    target_resource_group       = optional(string)
+    roles                       = list(string)
+    description                 = string 
+  }))
+
+  default = []
+
+  validation {
+    error_message = "COS Authorization Policy names must be unique."
+    condition     = length(distinct(var.cos_authorization_policies.*.name)) == length(var.cos_authorization_policies.*.name)
+  }
+}
+
 variable "cos_buckets" {
   description = "List of standard buckets to be created in desired cloud object storage instance"
   type = list(object({
@@ -1020,187 +1039,6 @@ variable "atracker" {
     resource_group        = "Default"
     bucket_name           = "atracker-bucket"
     receive_global_events = true
-  }
-}
-
-##############################################################################
-
-##############################################################################
-# Cloud Object Storage Variables
-##############################################################################
-
-variable "cos" {
-  description = "Object describing the cloud object storage instance. Set `use_data` to false to create instance"
-  type = object({
-    service_name = string
-    use_data = bool 
-    resource_group = string
-    plan = optional(string)
-  })
-
-  default = {
-    service_name = "cos"
-    use_data = false 
-    resource_group = "default"
-    plan = "standard"
-  }
-
-  validation {
-    error_message = "Plan can only be `lite` or `standard`."
-    condition     = contains(["lite", "standard"], var.cos.plan)
-  }
-}
-
-variable "cos_resource_keys" {
-  description = "List of objects describing resource keys to create for cos instance"
-  type = list(object({
-    name = string
-    role = string
-  }))
-
-  default = [
-    {
-      name = "cos-bind-key"
-      role = "Writer"
-    }
-  ]
-  
-  validation {
-    error_message = "Resource key names must be unique."
-    condition     = length(distinct(var.cos_resource_keys.*.name)) == length(var.cos_resource_keys.*.name)
-  }
-}
-
-variable "cos_authorization_policies" {
-  description = "List of authorization policies to be created for cos instance"
-  type = list(object({
-    name                        = string 
-    target_service_name         = string 
-    target_resource_instance_id = optional(string)
-    target_resource_group       = optional(string)
-    roles                       = list(string)
-    description                 = string 
-  }))
-
-  default = []
-
-  validation {
-    error_message = "COS Authorization Policy names must be unique."
-    condition     = length(distinct(var.cos_authorization_policies.*.name)) == length(var.cos_authorization_policies.*.name)
-  }
-}
-
-variable "cos_buckets" {
-  description = "List of standard buckets to be created in desired cloud object storage instance"
-  type = list(object({
-    name                  = string
-    storage_class         = string 
-    endpoint_type         = string 
-    force_delete          = bool
-    single_site_location  = optional(string)
-    region_location       = optional(string) 
-    cross_region_location = optional(string)
-    kms_key_crn           = optional(string)
-    archive_rule = optional(object({
-      days = number 
-      enable = bool
-      rule_id = optional(string)
-      type = string 
-    }))
-    activity_tracking = optional(object({
-      activity_tracker_crn = string 
-      read_data_events = bool 
-      write_data_events = bool
-    }))
-    metrics_monitoring = optional(object({
-      metrics_monitoring_crn = string 
-      request_metrics_enabled = optional(bool)
-      usage_metrics_enabled = optional(bool)
-    }))
-  }))
-
-  default = [
-    {
-      name = "dev-bucket"
-      storage_class = "standard" 
-      endpoint_type = "public"
-      force_delete = true 
-      region_location = "us-south"
-    },
-    {
-      name = "staging-bucket"
-      storage_class = "standard" 
-      endpoint_type = "private"
-      force_delete = false
-      region_location = "us-east"
-    }
-  ]
-
-  validation {
-    error_message = "COS Bucket names must be unique."
-    condition     = length(distinct(var.cos_buckets.*.name)) == length(var.cos_buckets.*.name)
-  }
-
-  # https://cloud.ibm.com/docs/cloud-object-storage?topic=cloud-object-storage-classes 
-  validation {
-    error_message = "Storage class can only be `standard`, `vault`, `cold`, or `smart`."
-    condition     = length([
-      for bucket in var.cos_buckets:
-        bucket if contains(["standard", "vault", "cold", "smart"], bucket.storage_class) 
-    ]) == length(var.cos_buckets)
-  }
-
-  # https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/resources/cos_bucket#endpoint_type 
-  validation {
-    error_message = "Endpoint type can only be `public`, `private`, or `direct`."
-    condition     = length([
-      for bucket in var.cos_buckets:
-        bucket if contains(["public", "private", "direct"], bucket.endpoint_type) 
-    ]) == length(var.cos_buckets)
-  }
-
-  # https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/resources/cos_bucket#single_site_location
-  validation {
-    error_message = "All single site buckets must specify `ams03`, `che01`, `hkg02`, `mel01`, `mex01`, `mil01`, `mon01`, `osl01`, `par01`, `sjc04`, `sao01`, `seo01`, `sng01`, or `tor01`."
-    condition     = length([
-      for bucket in var.cos_buckets: 
-        bucket if bucket.single_site_location == null 
-          ? true 
-          : contains(["ams03", "che01", "hkg02", "mel01", "mex01", "mil01", "mon01", "osl01", "par01", "sjc04", "sao01", "seo01", "sng01", "tor01"], bucket.single_site_location)
-    ]) == length(var.cos_buckets)
-  }
-  
-  # https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/resources/cos_bucket#region_location
-  validation {
-    error_message = "All regional buckets must specify `au-syd`, `eu-de`, `eu-gb`, `jp-tok`, `us-east`, `us-south`, `ca-tor`, `jp-osa`, `br-sao`."
-    condition     = length([
-      for bucket in var.cos_buckets: 
-        bucket if bucket.region_location == null 
-          ? true 
-          : contains(["au-syd", "eu-de", "eu-gb", "jp-tok", "us-east", "us-south", "ca-tor", "jp-osa", "br-sao"], bucket.region_location)
-    ]) == length(var.cos_buckets)
-  }
-
-  # https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/resources/cos_bucket#cross_region_location
-  validation {
-    error_message = "All cross-regional buckets must specify `us`, `eu`, `ap`."
-    condition     = length([
-      for bucket in var.cos_buckets: 
-        bucket if bucket.cross_region_location == null 
-          ? true 
-          : contains(["us", "eu", "ap"], bucket.cross_region_location)
-    ]) == length(var.cos_buckets)
-  }
-
-  # https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/resources/cos_bucket#archive_rule
-  validation {
-    error_message = "Each archive rule must specify a type of `Glacier` or `Accelerated`."
-    condition     = length([
-      for bucket in var.cos_buckets: 
-        bucket if bucket.archive_rule == null 
-          ? true 
-          : contains(["Glacier", "Accelerated"], bucket.archive_rule.type)
-    ]) == length(var.cos_buckets)
   }
 }
 
