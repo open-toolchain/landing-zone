@@ -1087,7 +1087,7 @@ variable "clusters" {
       name               = "test-cluster"
       vpc_name           = "workload"
       subnet_names       = ["vsi-zone-1", "vsi-zone-2", "vsi-zone-3"]
-      workers_per_subnet = 1
+      workers_per_subnet = 2
       machine_type       = "bx2.16x64"
       kube_type          = "openshift"
       entitlement        = "cloud_pak"
