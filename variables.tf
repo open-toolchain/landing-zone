@@ -834,7 +834,7 @@ variable "cos_authorization_policies" {
 }
 
 variable "cos_buckets" {
-  description = "List of standard buckets to be created in desired cloud object storage instance"
+  description = "List of standard buckets to be created in desired cloud object storage instance. Please note, logging and monitoring are not FS validated."
   type = list(object({
     name                  = string
     storage_class         = string
