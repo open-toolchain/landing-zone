@@ -49,16 +49,15 @@ module "vpc" {
 # Add VPC to Flow Logs
 ##############################################################################
 
-/*
-commented out until COS is added
 resource "ibm_is_flow_log" "flow_logs" {
-  for_each       = module.vpc
+  for_each       = local.vpc_map
   name           = "${each.key}-logs"
-  target         = each.value.vpc_id
+  target         = module.vpc[each.value.prefix].vpc_id
   active         = var.flow_logs.active
-  storage_bucket = var.flow_logs.cos_bucket_name
-  resource_group = data.ibm_resource_group.resource_group.id
+  storage_bucket = ibm_cos_bucket.buckets[var.flow_logs.cos_bucket_name].bucket_name
+  resource_group = each.value.resource_group == null ? null : local.resource_groups[each.value.resource_group]
+
+  depends_on = [ibm_cos_bucket.buckets, ibm_iam_authorization_policy.policy]
 }
-*/
 
 ##############################################################################

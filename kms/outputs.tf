@@ -43,4 +43,16 @@ output "keys" {
   ]
 }
 
+output "key_map" {
+  description = "Map of ids and keys for keys created"
+  value = {
+    for kms_key in var.kms_keys :
+    (kms_key.name) => {
+      name = kms_key.name
+      id   = ibm_kms_key.key[kms_key.name].id
+      crn  = ibm_kms_key.key[kms_key.name].crn
+    }
+  }
+}
+
 ##############################################################################
