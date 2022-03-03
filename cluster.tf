@@ -5,6 +5,16 @@
 data "ibm_container_cluster_versions" "cluster_versions" {
   region = var.region
 }
+output "name" {
+  value = length([for pools in(var.clusters[*].worker_pools) : false if(length(distinct([for pool in pools : pool.name])) != length([for pool in pools : pool.name]))]) == 0
+
+}
+
+output "name1" {
+  value = length([for subnet in(var.clusters[*].subnet_names) : false if length(distinct(subnet)) != length(subnet)]) == 0
+
+}
+
 
 ##############################################################################
 

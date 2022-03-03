@@ -185,40 +185,44 @@ vsi = [
 
 clusters = [
   {
-    name               = "test-cluster-1"
-    vpc_name           = "workload"
-    subnet_names       = ["subnet-a"]
-    workers_per_subnet = 2
-    machine_type       = "bx2.16x64"
-    kube_type          = "openshift"
-    cos_instance_crn   = "<cos crn>"
-  },
-  {
     name               = "test-cluster-2"
     vpc_name           = "workload"
     subnet_names       = ["subnet-b", "subnet-c"]
     workers_per_subnet = 1
     machine_type       = "bx2.16x64"
     kube_type          = "iks"
-    cos_instance_crn   = "<cos crn>"
-  }
-]
-worker_pools = [
-  {
-    name               = "worker-pool-1"
-    cluster_name       = "test-cluster-1"
-    vpc_name           = "workload"
-    subnet_names       = ["subnet-a"]
-    workers_per_subnet = 1
-    flavor             = "bx2.16x64"
-    entitlement        = "cloud_pak"
+    cos_instance_crn   = "<crn>"
+    worker_pools = [
+      {
+        name               = "worker-pool-1"
+        vpc_name           = "workload"
+        subnet_names       = ["subnet-a"]
+        workers_per_subnet = 1
+        flavor             = "bx2.16x64"
+      },
+      {
+        name               = "worker-pool-2"
+        vpc_name           = "workload"
+        subnet_names       = ["subnet-a"]
+        workers_per_subnet = 1
+        flavor             = "bx2.16x64"
+    }]
   },
   {
-    name               = "worker-pool-2"
-    cluster_name       = "test-cluster-1"
+    name               = "test-cluster-1"
     vpc_name           = "workload"
-    subnet_names       = ["subnet-b"]
+    subnet_names       = ["subnet-b", "subnet-c"]
     workers_per_subnet = 1
-    flavor             = "bx2.16x64"
-    entitlement        = "cloud_pak"
-}]
+    machine_type       = "bx2.16x64"
+    kube_type          = "iks"
+    cos_instance_crn   = "<crn>"
+    worker_pools = [
+      {
+        name               = "worker-pool-1"
+        vpc_name           = "workload"
+        subnet_names       = ["subnet-a"]
+        workers_per_subnet = 1
+        flavor             = "bx2.16x64"
+    }]
+  }
+]

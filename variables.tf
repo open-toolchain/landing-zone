@@ -704,7 +704,7 @@ variable "clusters" {
       cos_instance_crn   = null
       worker_pools = [
         {
-          name = "worker-pool-1"
+          name               = "worker-pool-1"
           vpc_name           = "workload"
           subnet_names       = ["subnet-a", "subnet-b"]
           workers_per_subnet = 1
@@ -722,8 +722,8 @@ variable "clusters" {
 
   # subnet_names validation
   validation {
-    condition     = length(distinct([for subnet in flatten(var.clusters[*].subnet_names) : subnet])) == length(flatten(var.clusters[*].subnet_names))
-    error_message = "Duplicates in subnet_names list. Please provide unique subnet list."
+    condition     = length([for subnet in(var.clusters[*].subnet_names) : false if length(distinct(subnet)) != length(subnet)]) == 0
+    error_message = "Duplicates in var.clusters.subnet_names list. Please provide unique subnet list."
   }
 
   # cluster name validation
@@ -732,10 +732,16 @@ variable "clusters" {
     error_message = "Duplicate cluster name. Please provide unique cluster names."
   }
 
-  # min. workers_per_subnet=2 for openshift validation
+  # min. workers_per_subnet=2 (default pool) for openshift validation
   validation {
     condition     = length([for n in flatten(var.clusters[*]) : false if(n.kube_type == "openshift" && n.workers_per_subnet < 2)]) == 0
     error_message = "For openshift cluster workers_per_subnet needs to be 2 or more."
+  }
+
+  # worker_pool name validation
+  validation {
+    condition     = length([for pools in(var.clusters[*].worker_pools) : false if(length(distinct([for pool in pools : pool.name])) != length([for pool in pools : pool.name]))]) == 0
+    error_message = "Duplicate worker_pool name in list var.cluster.worker_pools. Please provide unique worker_pool names."
   }
 
 }
