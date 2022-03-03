@@ -50,19 +50,26 @@ resource "ibm_resource_key" "key" {
   tags                 = (var.tags != null ? var.tags : null)
 }
 
+locals {
+  # Convert COS Authorization Policies List to Map
+  cos_auth_policies_map = {
+    for cos_auth_policy in var.cos_authorization_policies:
+    (cos_auth_policy.name) => cos_auth_policy
+  }
+}
+
 resource "ibm_iam_authorization_policy" "policy" {
-  count = length(var.cos_authorization_policies)
+  for_each = local.cos_auth_policies_map
 
   source_service_name         = "cloud-object-storage"
   source_resource_instance_id = local.cos_instance_id
   source_resource_group_id    = local.resource_groups[var.cos.resource_group]
 
-  target_service_name         = var.cos_authorization_policies[count.index].target_service_name
-  target_resource_instance_id = var.cos_authorization_policies[count.index].target_resource_instance_id
-  target_resource_group_id    = local.resource_groups[var.cos_authorization_policies[count.index].target_resource_group]
-
-  roles       = var.cos_authorization_policies[count.index].roles 
-  description = var.cos_authorization_policies[count.index].description
+  target_service_name         = each.value.target_service_name
+  target_resource_instance_id = each.value.target_resource_instance_id
+  target_resource_group_id    = each.value.target_resource_group
+  roles                       = each.value.roles 
+  description                 = each.value.description
 }
 
 ##############################################################################

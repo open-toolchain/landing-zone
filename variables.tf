@@ -782,6 +782,7 @@ variable "cos_resource_keys" {
 variable "cos_authorization_policies" {
   description = "List of authorization policies to be created for cos instance"
   type = list(object({
+    name                        = string 
     target_service_name         = string 
     target_resource_instance_id = optional(string)
     target_resource_group       = optional(string)
@@ -790,6 +791,11 @@ variable "cos_authorization_policies" {
   }))
 
   default = []
+
+  validation {
+    error_message = "COS Authorization Policy names must be unique."
+    condition     = length(distinct(var.cos_authorization_policies.*.name)) == length(var.cos_authorization_policies.*.name)
+  }
 }
 
 variable "cos_buckets" {
