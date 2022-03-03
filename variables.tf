@@ -880,10 +880,10 @@ variable "cos_buckets" {
     {
       name            = "flowlogs-bucket"
       storage_class   = "standard"
-      region_location = "us-south"
       endpoint_type   = "public"
       kms_key         = "slz-key"
       force_delete    = true
+      region_location = "us-south"
     }
   ]
 
@@ -907,6 +907,14 @@ variable "cos_buckets" {
     condition = length([
       for bucket in var.cos_buckets :
       bucket if contains(["public", "private", "direct"], bucket.endpoint_type)
+    ]) == length(var.cos_buckets)
+  }
+
+  validation {
+    error_message = "Exactly one parameter for the bucket's location must be set. Please choose one from `single_site_location`, `region_location`, or `cross_region_location`."
+    condition     = length([
+      for bucket in var.cos_buckets:
+      bucket if length(setintersection([for key in keys(bucket): key if lookup(bucket, key) != null], ["single_site_location", "region_location", "cross_region_location"])) == 1
     ]) == length(var.cos_buckets)
   }
 
