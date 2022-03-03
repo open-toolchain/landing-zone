@@ -11,12 +11,13 @@ This module creates a secure landing zone within a single region.
 3. [Transit Gateway](#transit-gateway)
 4. [Security Groups](#security-groups)
 5. [Virtual Servers](#virtual-servers)
-6. [Virtual Private Endpoints](#virtual-private-endpoints)
-7. [IBM Cloud Services](#ibm-cloud-services)
+6. [Clusters and Worker pools](#cluster-and-worker-pool)
+7. [Virtual Private Endpoints](#virtual-private-endpoints)
+8. [IBM Cloud Services](#ibm-cloud-services)
     * [Cloud Object Storage](#cloud-object-storage)
-8. [Module Variables](#module-variables)
-9. [Contributing](#contributing)
-10. [Terraform Language Resources](#terraform-language-resources)
+9. [Module Variables](#module-variables)
+10. [Contributing](#contributing)
+11. [Terraform Language Resources](#terraform-language-resources)
 
 ---
 
@@ -88,7 +89,7 @@ The type of the VPC Variable is as follows:
               source      = string # Source CIDR block
 
               ##############################################################################
-              # Optionally the rule can be created for TCP, UDP, or ICMP traffic. 
+              # Optionally the rule can be created for TCP, UDP, or ICMP traffic.
               # Only ONE of the following blocks can be used in a single ACL rule
               ##############################################################################
 
@@ -141,13 +142,13 @@ The type of the VPC Variable is as follows:
       ##############################################################################
       # Object for subnets to be created in each zone, each zone can have any number
       # of subnets
-      # 
+      #
       # Each subnet accepts the four following arguments:
       # * name           - Name of the subnet
       # * cidr           - CIDR block for the subnet
-      # * public_gateway - Optionally add a public gateway. This works only if the zone 
+      # * public_gateway - Optionally add a public gateway. This works only if the zone
       #                    for `use_public_gateway` is set to `true`
-      # * acl_name       - Name of ACL to be attached. Name must be found in 
+      # * acl_name       - Name of ACL to be attached. Name must be found in
       #                    `network_acl` object
       ##############################################################################
 
@@ -183,7 +184,7 @@ The type of the VPC Variable is as follows:
 
 ## Flow Logs
 
-By default, a flow logs collector will be attached to each VPC. 
+By default, a flow logs collector will be attached to each VPC.
 
 Flow logs resources can be found in [main.tf](./main.tf)
 
@@ -298,19 +299,19 @@ The virtual server variable type is as follows:
 ```terraform
 list(
     object({
-      name            = string                  # Name to be used for each VSI created 
+      name            = string                  # Name to be used for each VSI created
       vpc_name        = string                  # Name of VPC from `vpcs` variable
       subnet_names    = list(string)            # Names of subnets where VSI will be provisioned
       ssh_keys        = list(string)            # List of SSH Keys from `var.ssh_keys` to use when provisioning.
       image_name      = string                  # Name of the image for VSI, use `ibmcloud is images` to view
-      machine_type    = string                  # Name of machine type. Use `ibmcloud is in-prs` to view 
+      machine_type    = string                  # Name of machine type. Use `ibmcloud is in-prs` to view
       vsi_per_subnet  = number                  # Number of identical VSI to be created on each subnet
       user_data       = optional(string)        # User data to initialize instance
       resource_group  = optional(string)        # Name of resource group where VSI will be provisioned, must be in `var.resource_groups`
       security_groups = optional(list(string))  # Optional Name of additional security groups from `var.security groups` to add to VSI
 
       ##############################################################################
-      # When creating VSI, users can optionally create a new security group for 
+      # When creating VSI, users can optionally create a new security group for
       # those instances. These fields function the same as in `var.security_groups`
       ##############################################################################
 
@@ -356,7 +357,7 @@ list(
         object({
           name           = string           # Volume name
           profile        = string           # Profile
-          capacity       = optional(number) # Capacity 
+          capacity       = optional(number) # Capacity
           iops           = optional(number) # IOPs
           encryption_key = optional(string) # Optionally provide kms key
         })
@@ -384,7 +385,7 @@ list(
           pool_member_port  = string # Listener port
 
           ##############################################################################
-          # A security group can optionally be created and attached to each load 
+          # A security group can optionally be created and attached to each load
           # balancer
           ##############################################################################
 
@@ -431,6 +432,44 @@ list(
 
 ---
 
+<<<<<<< HEAD
+=======
+## Cluster and Worker pool
+
+You can create as many `iks or openshift` clusters and worker pools on vpc. Cluster variable type is as follows:
+
+```
+list(
+    object({
+      name               = string           # Name of Cluster
+      vpc_name           = string           # Name of VPC
+      subnet_names       = list(string)     # List of vpc subnets for cluster
+      workers_per_subnet = number           # Worker nodes per subnet. Min 2 per subnet for openshift
+      machine_type       = string           # Worker node flavor
+      kube_type          = string           # iks or openshift
+      entitlement        = optional(string) # entitlement option for openshift
+      pod_subnet         = optional(string) # Portable subnet for pods
+      service_subnet     = optional(string) # Portable subnet for services
+      resource_group     = string           # Resource Group used for cluster
+      worker_pools = optional(list(
+        object({
+          name               = string           # Worker pool name
+          vpc_name           = string           # VPC name
+          workers_per_subnet = number           # Worker nodes per subnet
+          flavor             = string           # Worker node flavor
+          subnet_names       = list(string)     # List of vpc subnets for worker pool
+          entitlement        = optional(string) # entitlement option for openshift
+      })))
+  }))
+```
+
+---
+
+## IBM Cloud Services
+
+---
+
+>>>>>>> master
 ## Virtual Private Endpoints
 
 Virtual Private endpoints can be created for any number of services. Virtual private endpoint components can be found in [vpe.tf](vpe.tf).
@@ -447,30 +486,29 @@ Cloud Object Storage components can be found in cos.tf.
 
 ## Module Variables
 
-Name                            | Description
-------------------------------- | ---------------------------
-ibmcloud_api_key                | The IBM Cloud platform API key needed to deploy IAM enabled resources.
-prefix                          | A unique identifier for resources. Must begin with a letter. This prefix will be prepended to any resources provisioned by this template.
-region                          | Region where VPC will be created. To find your VPC region, use `ibmcloud is regions` command to find available regions.
-resource_group                  | Name of resource group where all infrastructure will be provisioned.
-tags                            | List of tags to apply to resources created by this module.
-resource_groups                 | A list of existing resource groups to reference and new groups to create
-vpcs                            | A map describing VPCs to be created in this repo.
-flow_logs                       | List of variables for flow log to connect to each VSI instance. Set `use` to false to disable flow logs.
-enable_transit_gateway          | Create transit gateway
-transit_gateway_resource_group  | Name of the resource group to use for the transit gateway. 
-transit_gateway_connections     | Transit gateway vpc connections. Will only be used if transit gateway is enabled.
-ssh_keys                        | SSH Keys to use for VSI Provision. If `public_key` is not provided, the named key will be looked up from data.
-vsi                             | A list describing VSI workloads to create
-security_groups                 | Security groups for VPC
-virtual_private_endpoints       | Object describing VPE to be created
-service_endpoints               | Service endpoints for the instance. Can be `public`, `private`, or `public-and-privvate`.
-use_atracker                    | Use atracker and route
-atracker                        | atracker variables
-cos                             | Object describing the cloud object storage instance. Set `use_data` to false to create instance
-cos_resource_keys               | List of objects describing resource keys to create for cos instance
-cos_authorization_policies      | List of authorization policies to be created for cos instance
-cos_buckets                     | List of standard buckets to be created in desired cloud object storage instance
+| Name                        | Description                                                                                                                               |
+| --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
+| ibmcloud_api_key            | The IBM Cloud platform API key needed to deploy IAM enabled resources.                                                                    |
+| prefix                      | A unique identifier for resources. Must begin with a letter. This prefix will be prepended to any resources provisioned by this template. |
+| region                      | Region where VPC will be created. To find your VPC region, use `ibmcloud is regions` command to find available regions.                   |
+| resource_group              | Name of resource group where all infrastructure will be provisioned.                                                                      |
+| tags                        | List of tags to apply to resources created by this module.                                                                                |
+| vpcs                        | A map describing VPCs to be created in this repo.                                                                                         |
+| flow_logs                   | List of variables for flow log to connect to each VSI instance. Set `use` to false to disable flow logs.                                  |
+| enable_transit_gateway      | Create transit gateway                                                                                                                    |
+| transit_gateway_connections | Transit gateway vpc connections. Will only be used if transit gateway is enabled.                                                         |
+| ssh_keys                    | SSH Keys to use for VSI Provision. If `public_key` is not provided, the named key will be looked up from data.                            |
+| vsi                         | A list describing VSI workloads to create                                                                                                 |
+| security_groups             | Security groups for VPC                                                                                                                   |
+| virtual_private_endpoints   | Object describing VPE to be created                                                                                                       |
+| use_atracker                | Use atracker and route                                                                                                                    |
+| atracker                    | atracker variables                                                                                                                        |
+| resource_groups             | A list of existing resource groups to reference and new groups to create                                                                  |
+| clusters                    | A list of clusters on vpc. Also can add list of worker_pools to the clusters                                                              |
+| cos                         | Object describing the cloud object storage instance. Set `use_data` to false to create instance                                           |
+| cos_resource_keys           | List of objects describing resource keys to create for cos instance                                                                       |
+| cos_authorization_policies  | List of authorization policies to be created for cos instance                                                                             |
+| cos_buckets                 | List of standard buckets to be created in desired cloud object storage instance                                                           |
 
 ---
 
@@ -487,5 +525,5 @@ Run `terraform fmt` on your codebase before opening pull requests
 ## Terraform Language Resources
 
 - [Terraform Functions](https://www.terraform.io/language/functions)
-- [Using the * Operator (splat operator)](https://www.terraform.io/language/expressions/splat)
+- [Using the \* Operator (splat operator)](https://www.terraform.io/language/expressions/splat)
 - [Custom Variable Validation Rules](https://www.terraform.io/language/values/variables#custom-validation-rules)

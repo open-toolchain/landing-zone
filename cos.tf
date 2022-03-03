@@ -3,8 +3,8 @@
 ##############################################################################
 
 locals {
-  cos_location = "global"
-  cos_instance_id = var.cos.use_data ? data.ibm_resource_instance.cos[0].id : ibm_resource_instance.cos[0].id 
+  cos_location    = "global"
+  cos_instance_id = var.cos.use_data ? data.ibm_resource_instance.cos[0].id : ibm_resource_instance.cos[0].id
 }
 
 ##############################################################################
@@ -14,7 +14,7 @@ locals {
 ##############################################################################
 
 data "ibm_resource_instance" "cos" {
-  count             = var.cos.use_data == true ? 1 : 0 
+  count = var.cos.use_data == true ? 1 : 0
 
   name              = var.cos.service_name
   location          = local.cos_location
@@ -23,7 +23,7 @@ data "ibm_resource_instance" "cos" {
 }
 
 resource "ibm_resource_instance" "cos" {
-  count             = var.cos.use_data == true ? 0 : 1 
+  count = var.cos.use_data == true ? 0 : 1
 
   name              = "${var.prefix}-${var.cos.service_name}"
   resource_group_id = local.resource_groups[var.cos.resource_group]
@@ -36,16 +36,16 @@ resource "ibm_resource_instance" "cos" {
 locals {
   # Convert COS Resource Key List to Map
   cos_key_map = {
-    for key in var.cos_resource_keys:
-    (key.name) => key 
+    for key in var.cos_resource_keys :
+    (key.name) => key
   }
 }
 
 resource "ibm_resource_key" "key" {
-  for_each = local.cos_key_map 
+  for_each = local.cos_key_map
 
   name                 = "${var.prefix}-${each.value.name}"
-  role                 = each.value.role 
+  role                 = each.value.role
   resource_instance_id = local.cos_instance_id
   tags                 = (var.tags != null ? var.tags : null)
 }
@@ -82,7 +82,7 @@ locals {
   # Convert COS Bucket List to Map
   buckets_map = {
     for bucket in var.cos_buckets :
-    (bucket.name) => bucket 
+    (bucket.name) => bucket
   }
 }
 
@@ -97,8 +97,10 @@ resource "ibm_cos_bucket" "buckets" {
   single_site_location  = each.value.single_site_location
   region_location       = each.value.region_location
   cross_region_location = each.value.cross_region_location
-  key_protect           = each.value.kms_key_crn
-
+  key_protect = each.value.kms_key == null ? null : [
+    for key in module.key_protect.keys :
+    key.id if key.name == each.value.kms_key
+  ][0]
   dynamic "archive_rule" {
     for_each = (
       each.value.archive_rule == null
@@ -107,24 +109,24 @@ resource "ibm_cos_bucket" "buckets" {
     )
 
     content {
-      days    = archive_rule.value["days"]
-      enable  = archive_rule.value["enable"]
-      rule_id = archive_rule.value["rule_id"]
-      type    = archive_rule.value["type"]
+      days    = archive_rule.value.days
+      enable  = archive_rule.value.enable
+      rule_id = archive_rule.value.rule_id
+      type    = archive_rule.value.type
     }
   }
-  
+
   dynamic "activity_tracking" {
     for_each = (
       each.value.activity_tracking == null
       ? []
-      : [each.value.activity_tracking] 
+      : [each.value.activity_tracking]
     )
 
     content {
-      activity_tracker_crn  = activity_tracking.value["activity_tracker_crn"]
-      read_data_events      = activity_tracking.value["read_data_events"]
-      write_data_events     = activity_tracking.value["write_data_events"]
+      activity_tracker_crn = activity_tracking.value.activity_tracker_crn
+      read_data_events     = activity_tracking.value.read_data_events
+      write_data_events    = activity_tracking.value.write_data_events
     }
   }
 
@@ -132,13 +134,13 @@ resource "ibm_cos_bucket" "buckets" {
     for_each = (
       each.value.metrics_monitoring == null
       ? []
-      : [each.value.metrics_monitoring] 
+      : [each.value.metrics_monitoring]
     )
 
     content {
-      metrics_monitoring_crn  = metrics_monitoring.value["metrics_monitoring_crn"]
-      request_metrics_enabled = metrics_monitoring.value["request_metrics_enabled"]
-      usage_metrics_enabled   = metrics_monitoring.value["usage_metrics_enabled"]
+      metrics_monitoring_crn  = metrics_monitoring.value.metrics_monitoring_crn
+      request_metrics_enabled = metrics_monitoring.value.request_metrics_enabled
+      usage_metrics_enabled   = metrics_monitoring.value.usage_metrics_enabled
     }
   }
 }
