@@ -10,19 +10,13 @@ This module creates a secure landing zone within a single region.
 2. [Flow Logs](#flow-Logs)
 3. [Transit Gateway](#transit-gateway)
 4. [Security Groups](#security-groups)
-   <<<<<<< HEAD
 5. [Virtual Servers](#virtual-servers)
-6. [Virtual Private Endpoints](#virtual-private-endpoints)
-7. [Cluster and Worker pool](#)
-8. [Module Variables](#module-variables)
-9. # [Contributing](#contributing)
-10. [Virtual Servers](#virtual-servers)
-11. [Virtual Private Endpoints](#virtual-private-endpoints)
-12. [IBM Cloud Services](#ibm-cloud-services)
-13. [Module Variables](#module-variables)
-14. [Contributing](#contributing)
-15. [Terraform Language Resources](#terraform-language-resources)
-    > > > > > > > master
+6. [Clusters and Worker pools] (#cluster-and-worker-pool)
+7. [Virtual Private Endpoints](#virtual-private-endpoints)
+8. [IBM Cloud Services](#ibm-cloud-services)
+9. [Module Variables](#module-variables)
+10. [Contributing](#contributing)
+11. [Terraform Language Resources](#terraform-language-resources)
 
 ---
 
