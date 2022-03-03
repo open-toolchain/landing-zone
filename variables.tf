@@ -58,10 +58,10 @@ variable "resource_groups" {
     name = "slz-cs-rg"
     create = true
   },{
-    name = "slz-mgmt-rg"
+    name = "slz-management-rg"
     create = true
   },{
-    name = "slz-wrkld-rg"
+    name = "slz-workload-rg"
     create = true
   }]
 
@@ -83,7 +83,7 @@ variable "vpcs" {
   type = list(
     object({
       prefix                      = string           # VPC prefix
-      resource_group              = string           # Name of the group where VPC will be created
+      resource_group              = optional(string) # Name of the group where VPC will be created
       use_manual_address_prefixes = optional(bool)
       classic_access              = optional(bool)
       default_network_acl_name    = optional(string)
@@ -163,7 +163,7 @@ variable "vpcs" {
   default = [
     {
       prefix         = "management"
-      resource_group = "slz-mgmt-rg"
+      resource_group = "slz-management-rg"
       use_public_gateways = {
         zone-1 = false
         zone-2 = false
@@ -250,7 +250,7 @@ variable "vpcs" {
     },
     {
       prefix = "workload"
-      resource_group = "slz-wrkld-rg"
+      resource_group = "slz-workload-rg"
       use_public_gateways = {
         zone-1 = false
         zone-2 = false

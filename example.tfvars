@@ -25,10 +25,10 @@ resource_groups = [{
     name = "slz-cs-rg"
     create = true
   },{
-    name = "slz-mgmt-rg"
+    name = "slz-management-rg"
     create = true
   },{
-    name = "slz-wrkld-rg"
+    name = "slz-workload-rg"
     create = true
   }]
 
@@ -54,7 +54,7 @@ kms = {
 vpcs = [
     {
       prefix         = "management"
-      resource_group = "slz-mgmt-rg"
+      resource_group = "slz-management-rg"
       use_public_gateways = {
         zone-1 = false
         zone-2 = false
@@ -141,7 +141,7 @@ vpcs = [
     },
     {
       prefix = "workload"
-      resource_group = "slz-wrkld-rg"
+      resource_group = "slz-workload-rg"
       use_public_gateways = {
         zone-1 = false
         zone-2 = false
@@ -242,7 +242,7 @@ vsi = [
   {
     name           = "management-server"
     vpc_name       = "management"
-    resource_group = "slz-mgmt-rg"
+    resource_group = "slz-management-rg"
     vsi_per_subnet = 1
     subnet_names   = ["vsi-zone-1", "vsi-zone-2", "vsi-zone-3"]
     image_name     = "ibm-ubuntu-16-04-5-minimal-amd64-1"
@@ -300,7 +300,7 @@ vsi = [
   {
     name           = "workload-server"
     vpc_name       = "workload"
-    resource_group = "slz-wrkld-rg"
+    resource_group = "slz-workload-rg"
     vsi_per_subnet = 1
     subnet_names   = ["vsi-zone-1", "vsi-zone-2", "vsi-zone-3"]
     image_name     = "ibm-ubuntu-16-04-5-minimal-amd64-1"
