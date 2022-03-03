@@ -6,3 +6,5 @@ terraform.*.*
 terraform.tfstate
 provider.tf
 *.x
+*.yaml
+dev.sh

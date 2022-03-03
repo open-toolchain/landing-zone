@@ -12,17 +12,6 @@ provider "ibm" {
 
 
 ##############################################################################
-# Resource Group where VPC is created
-##############################################################################
-
-data "ibm_resource_group" "resource_group" {
-  name = var.resource_group
-}
-
-##############################################################################
-
-
-##############################################################################
 # Create VPCs
 ##############################################################################
 
@@ -38,7 +27,7 @@ module "vpc" {
   source   = "github.com/Cloud-Schematics/multizone-vpc-module.git"
   for_each = local.vpc_map
 
-  resource_group_id           = data.ibm_resource_group.resource_group.id
+  resource_group_id           = each.value.resource_group == null ? null : local.resource_groups[each.value.resource_group]
   region                      = var.region
   prefix                      = "${var.prefix}-${each.value.prefix}"
   vpc_name                    = "vpc"
@@ -61,6 +50,8 @@ module "vpc" {
 # Add VPC to Flow Logs
 ##############################################################################
 
+/*
+commented out until COS is added
 resource "ibm_is_flow_log" "flow_logs" {
   for_each       = module.vpc
   name           = "${each.key}-logs"
@@ -69,5 +60,6 @@ resource "ibm_is_flow_log" "flow_logs" {
   storage_bucket = var.flow_logs.cos_bucket_name
   resource_group = data.ibm_resource_group.resource_group.id
 }
+*/
 
 ##############################################################################

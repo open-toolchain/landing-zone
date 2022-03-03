@@ -39,7 +39,7 @@ resource "ibm_is_virtual_endpoint_gateway" "endpoint_gateway" {
   for_each        = local.vpe_gateway_connections
   name            = each.key
   vpc             = each.value.vpc_id
-  resource_group  = data.ibm_resource_group.resource_group.id
+  resource_group  = each.value.resource_group == null ? null : local.resource_groups[each.value.resource_group]
   security_groups = each.value.security_group_name == null ? null : [each.value.security_group_name]
 
   target {
