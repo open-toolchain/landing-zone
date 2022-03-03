@@ -467,11 +467,11 @@ variable "vsi" {
       )
       block_storage_volumes = optional(list(
         object({
-          name           = string
-          profile        = string
-          capacity       = optional(number)
-          iops           = optional(number)
-          encryption_key = optional(string)
+          name     = string
+          profile  = string
+          capacity = optional(number)
+          iops     = optional(number)
+          kms_key  = optional(string)
         })
       ))
       load_balancers = optional(list(
@@ -530,6 +530,13 @@ variable "vsi" {
       subnet_names   = ["vsi-zone-1", "vsi-zone-2", "vsi-zone-3"]
       image_name     = "ibm-ubuntu-16-04-5-minimal-amd64-1"
       machine_type   = "cx2-2x4"
+      block_storage_volumes = [
+        {
+          name           = "kms-test-volume"
+          profile        = "general-purpose"
+          encryption_key = "dev-kms"
+        }
+      ]
       security_group = {
         name     = "management"
         vpc_name = "management"

@@ -42,7 +42,7 @@ module "ssh_keys" {
 }
 
 module "vsi" {
-  source                = "github.com/Cloud-Schematics/vsi-module.git"
+  source                = "./vsi"
   for_each              = local.vsi_map
   resource_group_id     = each.value.resource_group == null ? null : local.resource_groups[each.value.resource_group]
   create_security_group = each.value.security_group == null ? false : true
@@ -58,13 +58,23 @@ module "vsi" {
     for ssh_key in each.value.ssh_keys :
     local.ssh_keys[ssh_key]
   ]
-  machine_type          = each.value.machine_type
-  vsi_per_subnet        = each.value.vsi_per_subnet
-  security_group        = each.value.security_group
-  load_balancers        = each.value.load_balancers == null ? [] : each.value.load_balancers
-  block_storage_volumes = each.value.block_storage_volumes == null ? [] : each.value.block_storage_volumes
-  enable_floating_ip    = each.value.enable_floating_ip == true ? true : false
-  depends_on            = [module.ssh_keys]
+  machine_type   = each.value.machine_type
+  vsi_per_subnet = each.value.vsi_per_subnet
+  security_group = each.value.security_group
+  load_balancers = each.value.load_balancers == null ? [] : each.value.load_balancers
+  block_storage_volumes = each.value.block_storage_volumes == null ? [] : [
+    # For each block storage volume
+    for volume in each.value.block_storage_volumes :
+    # Merge volume and add encryption key
+    merge(volume, {
+      encryption_key = volume.kms_key == null ? null : [
+        for key in module.key_protect.keys :
+        key.id if key.name == volume.kms_key
+      ][0]
+    })
+  ]
+  enable_floating_ip = each.value.enable_floating_ip == true ? true : false
+  depends_on         = [module.ssh_keys]
 }
 
 ##############################################################################
