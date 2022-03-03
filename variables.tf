@@ -1059,7 +1059,7 @@ variable "clusters" {
     {
       name               = "test-cluster"
       vpc_name           = "workload"
-      subnet_names       = ["subnet-a", "subnet-b"]
+      subnet_names       = ["vsi-zone-1", "vsi-zone-2", "vsi-zone-3"]
       workers_per_subnet = 1
       machine_type       = "bx2.16x64"
       kube_type          = "iks"
@@ -1069,7 +1069,7 @@ variable "clusters" {
         {
           name               = "worker-pool-1"
           vpc_name           = "workload"
-          subnet_names       = ["subnet-a", "subnet-b"]
+          subnet_names       = ["vsi-zone-1", "vsi-zone-2", "vsi-zone-3"]
           workers_per_subnet = 1
           flavor             = "bx2.16x64"
           entitlement        = "cloud_pak"
