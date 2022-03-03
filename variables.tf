@@ -1062,7 +1062,7 @@ variable "clusters" {
       subnet_names       = ["vsi-zone-1", "vsi-zone-2", "vsi-zone-3"]
       workers_per_subnet = 1
       machine_type       = "bx2.16x64"
-      kube_type          = "iks"
+      kube_type          = "openshift"
       entitlement        = "cloud_pak"
       resource_group     = "Default"
       worker_pools = [
