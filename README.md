@@ -10,11 +10,12 @@ This module creates a secure landing zone within a single region.
 2. [Flow Logs](#flow-Logs)
 3. [Transit Gateway](#transit-gateway)
 4. [Security Groups](#security-groups)
-6. [Virtual Servers](#virtual-servers)
-7. [Virtual Private Endpoints](#virtual-private-endpoints)
-8. [IBM Cloud Services](#ibm-cloud-services)
-9. [Module Variables](#module-variables)
-10. [Contributing](#contributing)
+5. [Virtual Servers](#virtual-servers)
+6. [Virtual Private Endpoints](#virtual-private-endpoints)
+7. [IBM Cloud Services](#ibm-cloud-services)
+    * [Cloud Object Storage](#cloud-object-storage)
+8. [Module Variables](#module-variables)
+9. [Contributing](#contributing)
 
 ---
 
@@ -429,36 +430,47 @@ list(
 
 ---
 
-## IBM Cloud Services
-
----
-
 ## Virtual Private Endpoints
 
 Virtual Private endpoints can be created for any number of services. Virtual private endpoint components can be found in [vpe.tf](vpe.tf).
 
 ---
 
+## IBM Cloud Services
+
+### Cloud Object Storage
+
+This module can provision a Cloud Object Storage instance or retrieve an existing Cloud Object Storage instance, then create any number of buckets within the desired instance. 
+
+Cloud Object Storage components can be found in cos.tf. 
+
 ## Module Variables
 
-Name                        | Description
---------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-ibmcloud_api_key            | The IBM Cloud platform API key needed to deploy IAM enabled resources.
-prefix                      | A unique identifier for resources. Must begin with a letter. This prefix will be prepended to any resources provisioned by this template.
-region                      | Region where VPC will be created. To find your VPC region, use `ibmcloud is regions` command to find available regions.
-resource_group              | Name of resource group where all infrastructure will be provisioned.
-tags                        | List of tags to apply to resources created by this module.
-vpcs                        | A map describing VPCs to be created in this repo.
-flow_logs                   | List of variables for flow log to connect to each VSI instance. Set `use` to false to disable flow logs.
-enable_transit_gateway      | Create transit gateway
-transit_gateway_connections | Transit gateway vpc connections. Will only be used if transit gateway is enabled.
-ssh_keys                    | SSH Keys to use for VSI Provision. If `public_key` is not provided, the named key will be looked up from data.
-vsi                         | A list describing VSI workloads to create
-security_groups             | Security groups for VPC
-virtual_private_endpoints   | Object describing VPE to be created
-use_atracker                | Use atracker and route
-atracker                    | atracker variables
-resource_groups             | A list of existing resource groups to reference and new groups to create
+Name                            | Description
+------------------------------- | ---------------------------
+ibmcloud_api_key                | The IBM Cloud platform API key needed to deploy IAM enabled resources.
+prefix                          | A unique identifier for resources. Must begin with a letter. This prefix will be prepended to any resources provisioned by this template.
+region                          | Region where VPC will be created. To find your VPC region, use `ibmcloud is regions` command to find available regions.
+resource_group                  | Name of resource group where all infrastructure will be provisioned.
+tags                            | List of tags to apply to resources created by this module.
+resource_groups                 | A list of existing resource groups to reference and new groups to create
+vpcs                            | A map describing VPCs to be created in this repo.
+flow_logs                       | List of variables for flow log to connect to each VSI instance. Set `use` to false to disable flow logs.
+enable_transit_gateway          | Create transit gateway
+transit_gateway_resource_group  | Name of the resource group to use for the transit gateway. 
+transit_gateway_connections     | Transit gateway vpc connections. Will only be used if transit gateway is enabled.
+ssh_keys                        | SSH Keys to use for VSI Provision. If `public_key` is not provided, the named key will be looked up from data.
+vsi                             | A list describing VSI workloads to create
+security_groups                 | Security groups for VPC
+virtual_private_endpoints       | Object describing VPE to be created
+service_endpoints               | Service endpoints for the instance. Can be `public`, `private`, or `public-and-privvate`.
+use_atracker                    | Use atracker and route
+atracker                        | atracker variables
+cos                             | Object describing the cloud object storage instance. Set `use_data` to false to create instance
+cos_resource_keys               | List of objects describing resource keys to create for cos instance
+cos_authorization_policies      | List of authorization policies to be created for cos instance
+cos_buckets                     | List of standard buckets to be created in desired cloud object storage instance
+
 ---
 
 ## Contributing

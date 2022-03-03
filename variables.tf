@@ -738,7 +738,7 @@ variable "atracker" {
 ##############################################################################
 
 variable "cos" {
-  description = "Object describing cloud object storage instance. Provide desired plan if instance does not exist and should be created."
+  description = "Object describing the cloud object storage instance. Set `use_data` to false to create instance"
   type = object({
     service_name = string
     use_data = bool 
@@ -760,7 +760,7 @@ variable "cos" {
 }
 
 variable "cos_resource_keys" {
-  description = "List of objects describing resource keys for cos instance"
+  description = "List of objects describing resource keys to create for cos instance"
   type = list(object({
     name = string
     role = string
@@ -913,6 +913,3 @@ variable "cos_buckets" {
 }
 
 ##############################################################################
-
-          # : length(distinct(var.cos_buckets.*.name)) == length(var.cos_buckets.*.name)
-          # : contains(["Glacier", "Accelerated"], bucket.archive_rules.*.type)
