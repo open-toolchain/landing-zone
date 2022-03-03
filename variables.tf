@@ -844,6 +844,7 @@ variable "cos_buckets" {
     region_location       = optional(string)
     cross_region_location = optional(string)
     kms_key               = optional(string)
+    allowed_ip            = optional(list(string))
     archive_rule = optional(object({
       days    = number
       enable  = bool

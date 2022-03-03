@@ -97,6 +97,7 @@ resource "ibm_cos_bucket" "buckets" {
   single_site_location  = each.value.single_site_location
   region_location       = each.value.region_location
   cross_region_location = each.value.cross_region_location
+  allowed_ip            = each.value.allowed_ip
   key_protect = each.value.kms_key == null ? null : [
     for key in module.key_protect.keys :
     key.id if key.name == each.value.kms_key
