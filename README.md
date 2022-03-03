@@ -11,7 +11,7 @@ This module creates a secure landing zone within a single region.
 3. [Transit Gateway](#transit-gateway)
 4. [Security Groups](#security-groups)
 5. [Virtual Servers](#virtual-servers)
-6. [Clusters and Worker pools] (#cluster-and-worker-pool)
+6. [Clusters and Worker pools](#cluster-and-worker-pool)
 7. [Virtual Private Endpoints](#virtual-private-endpoints)
 8. [IBM Cloud Services](#ibm-cloud-services)
 9. [Module Variables](#module-variables)
