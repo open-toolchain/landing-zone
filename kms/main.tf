@@ -3,22 +3,22 @@
 ##############################################################################
 
 resource "ibm_resource_instance" "kms" {
-  count             = var.kms.use_instance == true ? 0 : 1
+  count             = var.kms.use_data == true ? 0 : 1
   name              = var.kms.name
-  service           = (var.kms.service == "keyprotect" ? "kms" : "hs-crypto")
+  service           = var.use_hs_crypto == true ? "hs-crypto" : "kms"
   plan              = "tiered-pricing"
   location          = var.region
   resource_group_id = var.kms.resource_group_id
 }
 
 data "ibm_resource_instance" "kms" {
-  count             = var.kms.use_instance == true ? 1 : 0
+  count             = var.kms.use_data == true ? 1 : 0
   name              = var.kms.name
   resource_group_id = var.kms.resource_group_id
 }
 
 locals {
-  kms_guid = var.kms.use_instance == true ? data.ibm_resource_instance.kms[0].guid : ibm_resource_instance.kms[0].guid
+  kms_guid = var.kms.use_data == true ? data.ibm_resource_instance.kms[0].guid : ibm_resource_instance.kms[0].guid
   kms_keys = {
     for kms_key in var.kms_keys :
     (kms_key.name) => kms_key
