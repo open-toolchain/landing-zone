@@ -15,11 +15,11 @@ variable "region" {
 ##############################################################################
 
 variable "kms" {
-  description = "Object describing the KMS instance"
+  description = "Object describing the Key Protect instance"
   type = object({
     name              = string
-    service           = string # The type of KMS instance, can be set to either keyprotect or hpcs
-    use_instance      = optional(bool)
+    use_hs_crypto     = optional(bool) # can be hpcs or keyprotect
+    use_data          = optional(bool)
     resource_group_id = optional(string)
   })
 }
@@ -52,11 +52,6 @@ variable "kms_keys" {
       )
     })
   )
-
-  validation {
-    error_message = "KMS service can be set to only \"hpcs\" or \"keyprotect\"."
-    condition     = var.kms.service == "hpcs" || var.kms.service == "keyprotect" 
-  }
   
   validation {
     error_message = "Each key must have a unique name."
