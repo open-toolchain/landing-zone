@@ -55,6 +55,8 @@ variable "resource_groups" {
   default = [{
     name = "Default"
     }, {
+    name = "default"
+    }, {
     name   = "slz-cs-rg"
     create = true
     }, {
@@ -258,7 +260,8 @@ variable "vpcs" {
       }
       network_acls = [
         {
-          name = "workload-acl"
+          name              = "workload-acl"
+          add_cluster_rules = true
           rules = [
             {
               name        = "allow-ibm-inbound"
@@ -754,7 +757,7 @@ variable "virtual_private_endpoints" {
     })
   )
   default = [{
-    service_name = "cloud_object_storage"
+    service_name = "cloud-object-storage"
     vpcs = [{
       name    = "management"
       subnets = ["vpe-zone-1", "vpe-zone-2", "vpe-zone-3"]
@@ -817,12 +820,12 @@ variable "cos_resource_keys" {
 variable "cos_authorization_policies" {
   description = "List of authorization policies to be created for cos instance"
   type = list(object({
-    name                        = string 
-    target_service_name         = string 
+    name                        = string
+    target_service_name         = string
     target_resource_instance_id = optional(string)
     target_resource_group       = optional(string)
     roles                       = list(string)
-    description                 = string 
+    description                 = string
   }))
 
   default = []
@@ -913,9 +916,9 @@ variable "cos_buckets" {
 
   validation {
     error_message = "Exactly one parameter for the bucket's location must be set. Please choose one from `single_site_location`, `region_location`, or `cross_region_location`."
-    condition     = length([
-      for bucket in var.cos_buckets:
-      bucket if length(setintersection([for key in keys(bucket): key if lookup(bucket, key) != null], ["single_site_location", "region_location", "cross_region_location"])) == 1
+    condition = length([
+      for bucket in var.cos_buckets :
+      bucket if length(setintersection([for key in keys(bucket) : key if lookup(bucket, key) != null], ["single_site_location", "region_location", "cross_region_location"])) == 1
     ]) == length(var.cos_buckets)
   }
 

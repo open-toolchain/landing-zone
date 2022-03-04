@@ -53,7 +53,7 @@ resource "ibm_resource_key" "key" {
 locals {
   # Convert COS Authorization Policies List to Map
   cos_auth_policies_map = {
-    for cos_auth_policy in var.cos_authorization_policies:
+    for cos_auth_policy in var.cos_authorization_policies :
     (cos_auth_policy.name) => cos_auth_policy
   }
 }
@@ -68,7 +68,7 @@ resource "ibm_iam_authorization_policy" "cos_policy" {
   target_service_name         = each.value.target_service_name
   target_resource_instance_id = each.value.target_resource_instance_id
   target_resource_group_id    = each.value.target_resource_group
-  roles                       = each.value.roles 
+  roles                       = each.value.roles
   description                 = each.value.description
 }
 
