@@ -15,10 +15,10 @@ variable "region" {
 ##############################################################################
 
 variable "kms" {
-  description = "Object describing the Key Protect instance"
+  description = "Object describing the KMS instance"
   type = object({
     name              = string
-    use_data          = optional(bool)
+    use_instance      = optional(bool)
     resource_group_id = optional(string)
   })
 }
