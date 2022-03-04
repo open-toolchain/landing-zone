@@ -5,7 +5,7 @@
 resource "ibm_resource_instance" "kms" {
   count             = var.kms.use_data == true ? 0 : 1
   name              = var.kms.name
-  service           = var.use_hs_crypto == true ? "hs-crypto" : "kms"
+  service           = var.kms.use_hs_crypto
   plan              = "tiered-pricing"
   location          = var.region
   resource_group_id = var.kms.resource_group_id
