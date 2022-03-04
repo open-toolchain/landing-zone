@@ -8,14 +8,14 @@ locals {
       source_service_name         = "server-protect"
       description                 = "Allow KMS to access block storage volumes"
       roles                       = ["Reader"]
-      target_service_name         = "key_protect.service"
+      target_service_name         = kms.use_hs_crypto == true ? "hs-crypto" : "kms"
       target_resource_instance_id = module.key_protect.kms_guid
     },
     cos-to-kms = {
       source_service_name         = "cloud-object-storage"
       description                 = "Allow KMS to access cloud object storage"
       roles                       = ["Reader"]
-      target_service_name         = "key_protect.service"
+      target_service_name         = kms.use_hs_crypto == true ? "hs-crypto" : "kms"
       target_resource_instance_id = module.key_protect.kms_guid
     },
     flow-logs-cos = {
