@@ -988,6 +988,7 @@ variable "key_protect" {
     name           = string
     resource_group = string
     use_data       = optional(bool)
+    use_hs_crypto  = optional(bool)
     keys = optional(
       list(
         object({
