@@ -1089,7 +1089,27 @@ variable "clusters" {
   }))
   default = [
     {
-      name               = "test-cluster"
+      name               = "roks-test-cluster"
+      vpc_name           = "workload"
+      subnet_names       = ["vsi-zone-1", "vsi-zone-2", "vsi-zone-3"]
+      workers_per_subnet = 2
+      machine_type       = "bx2.16x64"
+      kube_type          = "openshift"
+      entitlement        = "cloud_pak"
+      resource_group     = "Default"
+      worker_pools = [
+        {
+          name               = "worker-pool-1"
+          vpc_name           = "workload"
+          subnet_names       = ["vsi-zone-1", "vsi-zone-2", "vsi-zone-3"]
+          workers_per_subnet = 1
+          flavor             = "bx2.16x64"
+          entitlement        = "cloud_pak"
+
+      }]
+    },
+    {
+      name               = "iks-test-cluster"
       vpc_name           = "workload"
       subnet_names       = ["vsi-zone-1", "vsi-zone-2", "vsi-zone-3"]
       workers_per_subnet = 2
