@@ -14,7 +14,7 @@ locals {
     [
       for vpcs in service.vpcs :
       {
-        name                = "${vpcs.name}-${service.service_name}-gateway"
+        name                = "${vpcs.name}-${service.service_name}"
         vpc_id              = module.vpc[vpcs.name].vpc_id
         resource_group      = service.resource_group
         security_group_name = vpcs.security_group_name
@@ -34,7 +34,7 @@ locals {
         for subnet in vpcs.subnets :
         {
           ip_name      = "${vpcs.name}-${service.service_name}-gateway-${subnet}-ip"
-          gateway_name = "${vpcs.name}-${service.service_name}-gateway"
+          gateway_name = "${vpcs.name}-${service.service_name}"
           id = [
             for vpc_subnet in module.vpc[vpcs.name].subnet_zone_list :
             vpc_subnet.id if vpc_subnet.name == "${var.prefix}-${vpcs.name}-${subnet}"
@@ -63,7 +63,7 @@ resource "ibm_is_subnet_reserved_ip" "ip" {
 
 resource "ibm_is_virtual_endpoint_gateway" "endpoint_gateway" {
   for_each        = local.vpe_gateway_map
-  name            = each.key
+  name            = "${var.prefix}-${each.key}"
   vpc             = each.value.vpc_id
   resource_group  = each.value.resource_group == null ? null : local.resource_groups[each.value.resource_group]
   security_groups = each.value.security_group_name == null ? null : [each.value.security_group_name]

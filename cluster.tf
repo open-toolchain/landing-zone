@@ -19,6 +19,7 @@ locals {
       for worker_pool_group in cluster_group.worker_pools : merge(worker_pool_group, {
         # Add Cluster Name
         cluster_name = cluster_group.name
+        entitlement  = cluster_group.kube_type == "iks" ? null : cluster_group.entitlement
         # resource group
         resource_group = cluster_group.resource_group
         # Add VPC ID
@@ -82,6 +83,10 @@ resource "ibm_container_vpc_cluster" "cluster" {
   }
 
   disable_public_service_endpoint = true
+
+  timeouts {
+    create = "2h"
+  }
 
 }
 

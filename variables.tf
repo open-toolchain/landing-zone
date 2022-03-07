@@ -48,8 +48,9 @@ variable "resource_groups" {
   description = "Object describing resource groups to create or reference"
   type = list(
     object({
-      name   = string
-      create = optional(bool)
+      name       = string
+      create     = optional(bool)
+      use_prefix = optional(bool)
     })
   )
   default = [{
@@ -1092,8 +1093,8 @@ variable "clusters" {
       subnet_names       = ["vsi-zone-1", "vsi-zone-2", "vsi-zone-3"]
       workers_per_subnet = 2
       machine_type       = "bx2.16x64"
-      kube_type          = "openshift"
-      entitlement        = "cloud_pak"
+      kube_type          = "iks"
+      # entitlement        = "cloud_pak"
       resource_group     = "Default"
       worker_pools = [
         {
