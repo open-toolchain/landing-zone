@@ -432,7 +432,6 @@ variable "ssh_keys" {
       ]
     )
   }
-  sensitive = true
 }
 
 variable "vsi" {
