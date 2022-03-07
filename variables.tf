@@ -255,9 +255,9 @@ variable "vpcs" {
       prefix         = "workload"
       resource_group = "slz-workload-rg"
       use_public_gateways = {
-        zone-1 = false
-        zone-2 = false
-        zone-3 = false
+        zone-1 = true
+        zone-2 = true
+        zone-3 = true
       }
       network_acls = [
         {
@@ -432,6 +432,7 @@ variable "ssh_keys" {
       ]
     )
   }
+  sensitive = true
 }
 
 variable "vsi" {

@@ -6,18 +6,26 @@ This module creates a secure landing zone within a single region.
 
 ## Table of Contents
 
-1. [VPC](#vpc)
-2. [Flow Logs](#flow-Logs)
-3. [Transit Gateway](#transit-gateway)
-4. [Security Groups](#security-groups)
-5. [Virtual Servers](#virtual-servers)
-6. [Clusters and Worker pools](#cluster-and-worker-pool)
-7. [Virtual Private Endpoints](#virtual-private-endpoints)
-8. [IBM Cloud Services](#ibm-cloud-services)
-    * [Cloud Object Storage](#cloud-object-storage)
-9. [Module Variables](#module-variables)
-10. [Contributing](#contributing)
-11. [Terraform Language Resources](#terraform-language-resources)
+- [Secure Landing Zone](#secure-landing-zone)
+  - [Table of Contents](#table-of-contents)
+  - [VPC](#vpc)
+    - [VPCs Variable](#vpcs-variable)
+  - [Flow Logs](#flow-logs)
+  - [Transit Gateway](#transit-gateway)
+  - [Security Groups](#security-groups)
+    - [Security Groups Variable](#security-groups-variable)
+  - [Virtual Servers](#virtual-servers)
+    - [VPC SSH Keys](#vpc-ssh-keys)
+    - [SSH Keys Variable](#ssh-keys-variable)
+    - [Virtual Servers Variable](#virtual-servers-variable)
+  - [Cluster and Worker pool](#cluster-and-worker-pool)
+  - [IBM Cloud Services](#ibm-cloud-services)
+  - [Virtual Private Endpoints](#virtual-private-endpoints)
+  - [IBM Cloud Services](#ibm-cloud-services-1)
+    - [Cloud Object Storage](#cloud-object-storage)
+  - [Module Variables](#module-variables)
+  - [Contributing](#contributing)
+  - [Terraform Language Resources](#terraform-language-resources)
 
 ---
 
@@ -432,11 +440,11 @@ list(
 
 ---
 
-<<<<<<< HEAD
-=======
 ## Cluster and Worker pool
 
-You can create as many `iks or openshift` clusters and worker pools on vpc. Cluster variable type is as follows:
+You can create as many `iks` or `openshift` clusters and worker pools on vpc. Cluster variable type is as follows:
+
+For `ROKS` clusters, ensure public gateways are enabled to allow your cluster to correctly provision ingress ALBs.
 
 ```
 list(
@@ -469,7 +477,6 @@ list(
 
 ---
 
->>>>>>> master
 ## Virtual Private Endpoints
 
 Virtual Private endpoints can be created for any number of services. Virtual private endpoint components can be found in [vpe.tf](vpe.tf).

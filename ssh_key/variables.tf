@@ -28,6 +28,7 @@ variable "ssh_keys" {
       resource_group_id = optional(string)
     })
   )
+  sensitive = true
   default = [
     {
       name       = "dev-ssh-key"
