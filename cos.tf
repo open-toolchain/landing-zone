@@ -73,7 +73,7 @@ resource "ibm_cos_bucket" "buckets" {
   endpoint_type         = each.value.endpoint_type
   force_delete          = each.value.force_delete
   single_site_location  = each.value.single_site_location
-  region_location       = each.value.region_location == null ? null : each.value.region_location
+  region_location       = each.value.region_location == null ? var.region : each.value.region_location
   cross_region_location = each.value.cross_region_location
   allowed_ip            = each.value.allowed_ip
   key_protect = each.value.kms_key == null ? null : [

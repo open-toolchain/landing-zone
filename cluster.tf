@@ -2,9 +2,8 @@
 ##############################################################################
 # Find valid IKS/Roks cluster version
 ##############################################################################
-data "ibm_container_cluster_versions" "cluster_versions" {
-  region = var.region
-}
+
+data "ibm_container_cluster_versions" "cluster_versions" {}
 
 ##############################################################################
 
