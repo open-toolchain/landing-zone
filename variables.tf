@@ -536,109 +536,7 @@ variable "vsi" {
       ))
     })
   )
-  default = [
-    {
-      name           = "management-server"
-      vpc_name       = "management"
-      vsi_per_subnet = 1
-      subnet_names   = ["vsi-zone-1", "vsi-zone-2", "vsi-zone-3"]
-      image_name     = "ibm-ubuntu-16-04-5-minimal-amd64-1"
-      machine_type   = "cx2-2x4"
-      block_storage_volumes = [
-        {
-          name    = "kms-test-volume"
-          profile = "general-purpose"
-          kms_key = "slz-key"
-        }
-      ]
-      security_group = {
-        name     = "management"
-        vpc_name = "management"
-        rules = [
-          {
-            name      = "allow-ibm-inbound"
-            source    = "161.26.0.0/16"
-            direction = "inbound"
-          },
-          {
-            name      = "allow-ibm-tcp-80-outbound"
-            source    = "161.26.0.0/16"
-            direction = "outbound"
-            tcp = {
-              port_min = 80
-              port_max = 80
-            }
-          },
-          {
-            name      = "allow-ibm-tcp-443-outbound"
-            source    = "161.26.0.0/16"
-            direction = "outbound"
-            tcp = {
-              port_min = 443
-              port_max = 443
-            }
-          },
-          {
-            name      = "allow-ibm-udp-53-outbound"
-            source    = "161.26.0.0/16"
-            direction = "outbound"
-            udp = {
-              port_min = 53
-              port_max = 53
-            }
-          }
-        ]
-      },
-      ssh_keys = ["jv-dev-ssh-key"]
-    },
-    {
-      name           = "workload-server"
-      vpc_name       = "workload"
-      vsi_per_subnet = 1
-      subnet_names   = ["vsi-zone-1", "vsi-zone-2", "vsi-zone-3"]
-      image_name     = "ibm-ubuntu-16-04-5-minimal-amd64-1"
-      machine_type   = "cx2-2x4"
-      security_group = {
-        name     = "workload"
-        vpc_name = "workload"
-        rules = [
-          {
-            name      = "allow-ibm-inbound"
-            source    = "161.26.0.0/16"
-            direction = "inbound"
-          },
-          {
-            name      = "allow-ibm-tcp-80-outbound"
-            source    = "161.26.0.0/16"
-            direction = "outbound"
-            tcp = {
-              port_min = 80
-              port_max = 80
-            }
-          },
-          {
-            name      = "allow-ibm-tcp-443-outbound"
-            source    = "161.26.0.0/16"
-            direction = "outbound"
-            tcp = {
-              port_min = 443
-              port_max = 443
-            }
-          },
-          {
-            name      = "allow-ibm-udp-53-outbound"
-            source    = "161.26.0.0/16"
-            direction = "outbound"
-            udp = {
-              port_min = 53
-              port_max = 53
-            }
-          }
-        ]
-      }
-      ssh_keys = ["jv-dev-ssh-key"]
-    }
-  ]
+  default = []
 }
 
 
@@ -1064,47 +962,7 @@ variable "clusters" {
           entitlement        = optional(string) # entitlement option for openshift
       })))
   }))
-  default = [
-    {
-      name               = "roks-test-cluster"
-      vpc_name           = "workload"
-      subnet_names       = ["vsi-zone-1", "vsi-zone-2", "vsi-zone-3"]
-      workers_per_subnet = 2
-      machine_type       = "bx2.16x64"
-      kube_type          = "openshift"
-      entitlement        = "cloud_pak"
-      resource_group     = "Default"
-      worker_pools = [
-        {
-          name               = "worker-pool-1"
-          vpc_name           = "workload"
-          subnet_names       = ["vsi-zone-1", "vsi-zone-2", "vsi-zone-3"]
-          workers_per_subnet = 1
-          flavor             = "bx2.16x64"
-          entitlement        = "cloud_pak"
-
-      }]
-    },
-    {
-      name               = "iks-test-cluster"
-      vpc_name           = "workload"
-      subnet_names       = ["vsi-zone-1", "vsi-zone-2", "vsi-zone-3"]
-      workers_per_subnet = 2
-      machine_type       = "bx2.16x64"
-      kube_type          = "iks"
-      # entitlement        = "cloud_pak"
-      resource_group     = "Default"
-      worker_pools = [
-        {
-          name               = "worker-pool-1"
-          vpc_name           = "workload"
-          subnet_names       = ["vsi-zone-1", "vsi-zone-2", "vsi-zone-3"]
-          workers_per_subnet = 1
-          flavor             = "bx2.16x64"
-          entitlement        = "cloud_pak"
-
-      }]
-  }]
+  default = []
 
   # kube_type validation
   validation {
