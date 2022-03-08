@@ -818,25 +818,6 @@ variable "cos_resource_keys" {
   }
 }
 
-variable "cos_authorization_policies" {
-  description = "List of authorization policies to be created for cos instance"
-  type = list(object({
-    name                        = string
-    target_service_name         = string
-    target_resource_instance_id = optional(string)
-    target_resource_group       = optional(string)
-    roles                       = list(string)
-    description                 = string
-  }))
-
-  default = []
-
-  validation {
-    error_message = "COS Authorization Policy names must be unique."
-    condition     = length(distinct(var.cos_authorization_policies.*.name)) == length(var.cos_authorization_policies.*.name)
-  }
-}
-
 variable "cos_buckets" {
   description = "List of standard buckets to be created in desired cloud object storage instance. Please note, logging and monitoring are not FS validated."
   type = list(object({
@@ -873,14 +854,12 @@ variable "cos_buckets" {
       storage_class   = "standard"
       endpoint_type   = "public"
       force_delete    = true
-      region_location = "us-south"
     },
     {
       name            = "atracker-bucket"
       storage_class   = "standard"
       endpoint_type   = "public"
       force_delete    = true
-      region_location = "us-south"
     },
     {
       name            = "flowlogs-bucket"
@@ -888,7 +867,6 @@ variable "cos_buckets" {
       endpoint_type   = "public"
       kms_key         = "slz-key"
       force_delete    = true
-      region_location = "us-south"
     }
   ]
 
@@ -919,7 +897,7 @@ variable "cos_buckets" {
     error_message = "Exactly one parameter for the bucket's location must be set. Please choose one from `single_site_location`, `region_location`, or `cross_region_location`."
     condition = length([
       for bucket in var.cos_buckets :
-      bucket if length(setintersection([for key in keys(bucket) : key if lookup(bucket, key) != null], ["single_site_location", "region_location", "cross_region_location"])) == 1
+      bucket if length(setintersection([for key in keys(bucket) : key if lookup(bucket, key) != null], ["single_site_location", "region_location", "cross_region_location"])) <= 1
     ]) == length(var.cos_buckets)
   }
 
