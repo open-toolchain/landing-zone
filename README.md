@@ -534,9 +534,11 @@ Run `terraform fmt` on your codebase before opening pull requests
 - [Using the \* Operator (splat operator)](https://www.terraform.io/language/expressions/splat)
 - [Custom Variable Validation Rules](https://www.terraform.io/language/values/variables#custom-validation-rules)
 
+---
+
 ## As A Template For Multiple Patterns
 
-The modular nature of this template allwos it to be used to provisioned architectures for VSI, Clusters, or a combination of both VSI and clusters.
+The modular nature of this template allwos it to be used to provisioned architectures for VSI, Clusters, or a combination of both VSI and clusters. For each of these, a provider block anda copy of [variables.tf](variables.tf). By referencing this template as a module, it allows uers to add `clusters` or `vsi` by adding the relevant variable block.
 
 ### VSI
 
@@ -562,5 +564,62 @@ module "vsi_pattern" {
   service_endpoints              = var.service_endpoints
   key_protect                    = var.key_protect
   atracker                       = var.atracker
+}
+```
+
+### Cluster and VSI
+
+```terraform
+module "cluster_vsi_pattern" {
+  source                         = "github.ibm.com/slz-v2-poc/vpc-and-vsi-pattern2.git"
+  prefix                         = var.prefix
+  region                         = var.region
+  tags                           = var.tags
+  resource_groups                = var.resource_groups
+  vpcs                           = var.vpcs
+  flow_logs                      = var.flow_logs
+  enable_transit_gateway         = var.enable_transit_gateway
+  transit_gateway_resource_group = var.transit_gateway_resource_group
+  transit_gateway_connections    = var.transit_gateway_connections
+  ssh_keys                       = var.ssh_keys
+  vsi                            = var.vsi
+  security_groups                = var.security_groups
+  virtual_private_endpoints      = var.virtual_private_endpoints
+  cos                            = var.cos
+  cos_resource_keys              = var.cos_resource_keys
+  cos_buckets                    = var.cos_buckets
+  service_endpoints              = var.service_endpoints
+  key_protect                    = var.key_protect
+  atracker                       = var.atracker
+  clusters                       = var.clusters
+  wait_till                      = var.wait_till
+}
+```
+
+### Cluster
+
+```terraform
+module "cluster_pattern" {
+  source                         = "github.ibm.com/slz-v2-poc/vpc-and-vsi-pattern2.git"
+  prefix                         = var.prefix
+  region                         = var.region
+  tags                           = var.tags
+  resource_groups                = var.resource_groups
+  vpcs                           = var.vpcs
+  flow_logs                      = var.flow_logs
+  enable_transit_gateway         = var.enable_transit_gateway
+  transit_gateway_resource_group = var.transit_gateway_resource_group
+  transit_gateway_connections    = var.transit_gateway_connections
+  ssh_keys                       = var.ssh_keys
+  security_groups                = var.security_groups
+  virtual_private_endpoints      = var.virtual_private_endpoints
+  cos                            = var.cos
+  cos_resource_keys              = var.cos_resource_keys
+  cos_buckets                    = var.cos_buckets
+  service_endpoints              = var.service_endpoints
+  key_protect                    = var.key_protect
+  atracker                       = var.atracker
+  clusters                       = var.clusters
+  wait_till                      = var.wait_till
 }
 ```
