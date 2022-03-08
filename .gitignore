@@ -8,3 +8,4 @@ provider.tf
 *.x
 *.yaml
 dev.sh
+*.sh

@@ -748,23 +748,23 @@ variable "cos_buckets" {
 
   default = [
     {
-      name            = "dev-bucket"
-      storage_class   = "standard"
-      endpoint_type   = "public"
-      force_delete    = true
+      name          = "dev-bucket"
+      storage_class = "standard"
+      endpoint_type = "public"
+      force_delete  = true
     },
     {
-      name            = "atracker-bucket"
-      storage_class   = "standard"
-      endpoint_type   = "public"
-      force_delete    = true
+      name          = "atracker-bucket"
+      storage_class = "standard"
+      endpoint_type = "public"
+      force_delete  = true
     },
     {
-      name            = "flowlogs-bucket"
-      storage_class   = "standard"
-      endpoint_type   = "public"
-      kms_key         = "slz-key"
-      force_delete    = true
+      name          = "flowlogs-bucket"
+      storage_class = "standard"
+      endpoint_type = "public"
+      kms_key       = "slz-key"
+      force_delete  = true
     }
   ]
 
