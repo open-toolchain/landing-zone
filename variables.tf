@@ -1044,8 +1044,10 @@ variable "clusters" {
   validation {
     error_message = "OpenShift clusters must have a cos name associated with them for provision."
     condition = length([
-      for cluster in var.clusters :
-      true if cluster.kube_type == "openshift" && cluster.cos_name == null
+      for openshift_cluster in [
+        for cluster in var.clusters :
+        cluster if cluster.kube_type == "openshift"
+      ] : openshift_cluster if openshift_cluster.cos_name == null
     ]) == 0
   }
 
@@ -1089,4 +1091,5 @@ variable "wait_till" {
     ], var.wait_till)
   }
 }
+
 ##############################################################################

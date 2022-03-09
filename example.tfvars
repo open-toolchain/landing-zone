@@ -239,39 +239,39 @@ transit_gateway_connections = ["management", "workload"]
 ##############################################################################
 
 cos = [{
-    name           = "cos"
-    use_data       = false
-    resource_group = "Default"
-    plan           = "standard"
-    buckets = [
-      {
-        name          = "workload-bucket"
-        storage_class = "standard"
-        kms_key       = "slz-key"
-        endpoint_type = "public"
-        force_delete  = true
-      },
-      {
-        name          = "atracker-bucket"
-        storage_class = "standard"
-        endpoint_type = "public"
-        force_delete  = true
-      },
-      {
-        name          = "management-bucket"
-        storage_class = "standard"
-        endpoint_type = "public"
-        kms_key       = "slz-key"
-        force_delete  = true
-      }
-    ]
-    keys = [
-      {
-        name = "cos-bind-key"
-        role = "Writer"
-      }
-    ]
-  }]
+  name           = "cos"
+  use_data       = false
+  resource_group = "Default"
+  plan           = "standard"
+  buckets = [
+    {
+      name          = "workload-bucket"
+      storage_class = "standard"
+      kms_key       = "slz-key"
+      endpoint_type = "public"
+      force_delete  = true
+    },
+    {
+      name          = "atracker-bucket"
+      storage_class = "standard"
+      endpoint_type = "public"
+      force_delete  = true
+    },
+    {
+      name          = "management-bucket"
+      storage_class = "standard"
+      endpoint_type = "public"
+      kms_key       = "slz-key"
+      force_delete  = true
+    }
+  ]
+  keys = [
+    {
+      name = "cos-bind-key"
+      role = "Writer"
+    }
+  ]
+}]
 
 ##############################################################################
 
@@ -409,16 +409,16 @@ security_groups = []
 ##############################################################################
 
 virtual_private_endpoints = [{
-    service_name = "cos"
-    service_type = "cloud-object-storage"
-    vpcs = [{
-      name    = "management"
-      subnets = ["vpe-zone-1", "vpe-zone-2", "vpe-zone-3"]
-      }, {
-      name    = "workload"
-      subnets = ["vpe-zone-1", "vpe-zone-2", "vpe-zone-3"]
-    }]
+  service_name = "cos"
+  service_type = "cloud-object-storage"
+  vpcs = [{
+    name    = "management"
+    subnets = ["vpe-zone-1", "vpe-zone-2", "vpe-zone-3"]
+    }, {
+    name    = "workload"
+    subnets = ["vpe-zone-1", "vpe-zone-2", "vpe-zone-3"]
   }]
+}]
 
 ##############################################################################
 
