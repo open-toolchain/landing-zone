@@ -50,7 +50,7 @@ resource "ibm_is_instance" "vsi" {
   keys           = var.ssh_key_ids
 
   primary_network_interface {
-    subnet          = each.value.subnet_id
+    subnet = each.value.subnet_id
     security_groups = flatten([
       (var.create_security_group ? [ibm_is_security_group.security_group[var.security_group.name].id] : []),
       var.security_group_ids
