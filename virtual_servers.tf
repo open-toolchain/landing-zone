@@ -62,7 +62,7 @@ module "vsi" {
     for volume in each.value.block_storage_volumes :
     # Merge volume and add encryption key
     merge(volume, {
-      encryption_key = volume.kms_key == null ? null : [
+      encryption_key = volume.encrpytion_key == null ? null : [
         for key in module.key_management.keys :
         key.id if key.name == volume.kms_key
       ][0]

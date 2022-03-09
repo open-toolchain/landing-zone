@@ -2,14 +2,14 @@
 # KMS Outputs
 ##############################################################################
 
-output "kms_crn" {
+output "key_management_crn" {
   description = "CRN for KMS instance"
   value       = var.key_management.use_data == true ? data.ibm_resource_instance.kms[0].crn : ibm_resource_instance.kms[0].crn
 }
 
-output "kms_guid" {
+output "key_management_guid" {
   description = "GUID for KMS instance"
-  value       = local.kms_guid
+  value       = local.key_management_guid
 }
 
 ##############################################################################
