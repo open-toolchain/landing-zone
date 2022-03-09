@@ -823,23 +823,6 @@ variable "cos" {
     ) == length(flatten([for instance in var.cos : [for bucket in instance.buckets : true]]))
   }
 
-
-  validation {
-    error_message = "Exactly one parameter for the bucket's location must be set. Please choose one from `single_site_location`, `region_location`, or `cross_region_location`."
-    condition = length(
-      flatten([
-        for instance in var.cos :
-        [
-          for bucket in instance.buckets :
-          true if length([
-            for param in ["single_site_location", "region_location", "cross_region_location"] :
-            true if bucket[param] != null
-          ]) > 1
-        ]
-      ])
-    ) == 0
-  }
-
   # https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/resources/cos_bucket#single_site_location
   validation {
     error_message = "All single site buckets must specify `ams03`, `che01`, `hkg02`, `mel01`, `mex01`, `mil01`, `mon01`, `osl01`, `par01`, `sjc04`, `sao01`, `seo01`, `sng01`, or `tor01`."
