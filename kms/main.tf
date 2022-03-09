@@ -3,32 +3,32 @@
 ##############################################################################
 
 resource "ibm_resource_instance" "kms" {
-  count             = var.kms.use_data == true ? 0 : 1
-  name              = var.kms.name
-  service           = var.kms.use_hs_crypto
+  count             = var.key_management.use_data != true && var.key_management.use_hs_crypto != true ? 1 : 0 
+  name              = var.key_management.name
+  service           = "kms"
   plan              = "tiered-pricing"
   location          = var.region
-  resource_group_id = var.kms.resource_group_id
+  resource_group_id = var.key_management.resource_group_id
 }
 
 data "ibm_resource_instance" "kms" {
-  count             = var.kms.use_data == true ? 1 : 0
-  name              = var.kms.name
-  resource_group_id = var.kms.resource_group_id
+  count             = var.key_management.use_data == true && var.key_management.use_hs_crypto != true ? 1 : 0 
+  name              = var.key_management.name
+  resource_group_id = var.key_management.resource_group_id
 }
 
 locals {
-  kms_guid = var.kms.use_data == true ? data.ibm_resource_instance.kms[0].guid : ibm_resource_instance.kms[0].guid
+  kms_guid = var.key_management.use_data == true ? data.ibm_resource_instance.kms[0].guid : ibm_resource_instance.kms[0].guid
   kms_keys = {
-    for kms_key in var.kms_keys :
+    for kms_key in var.keys :
     (kms_key.name) => kms_key
   }
   key_rings = distinct([
-    for kms_key in var.kms_keys :
+    for kms_key in var.keys :
     kms_key.key_ring if kms_key.key_ring != null
   ])
   kms_key_policies = {
-    for kms_key in var.kms_keys :
+    for kms_key in var.keys :
     (kms_key.name) => kms_key if kms_key.policies != null
   }
 }

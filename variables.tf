@@ -982,7 +982,7 @@ variable "service_endpoints" {
   }
 }
 
-variable "key_protect" {
+variable "key_management" {
   description = "Key Protect instance variables"
   type = object({
     name           = string

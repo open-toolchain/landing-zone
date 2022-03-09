@@ -14,7 +14,7 @@ variable "region" {
 # KMS Variables
 ##############################################################################
 
-variable "kms" {
+variable "key_management" {
   description = "Object describing the Key Protect instance"
   type = object({
     name              = string
@@ -24,7 +24,7 @@ variable "kms" {
   })
 }
 
-variable "kms_keys" {
+variable "keys" {
   description = "List of keys to be created for the service"
   type = list(
     object({
@@ -55,13 +55,13 @@ variable "kms_keys" {
   
   validation {
     error_message = "Each key must have a unique name."
-    condition     = length(distinct(var.kms_keys.*.name)) == length(var.kms_keys.*.name)
+    condition     = length(distinct(var.keys.*.name)) == length(var.keys.*.name)
   }
 
   validation {
     error_message = "Key endpoints can only be `public` or `private`."
     condition = length([
-      for kms_key in var.kms_keys :
+      for kms_key in var.keys :
       true if kms_key.endpoint != null && kms_key.endpoint != "public" && kms_key.endpoint != "private"
     ]) == 0
   }
@@ -71,7 +71,7 @@ variable "kms_keys" {
     condition = length([
       for kms_key in [
         for rotation_key in [
-          for policy_key in var.kms_keys :
+          for policy_key in var.keys :
           policy_key if policy_key.policies != null
         ] :
         rotation_key if rotation_key.policies.rotation != null
