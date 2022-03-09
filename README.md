@@ -527,7 +527,7 @@ If additional variables or added or existing variables are changed, update the [
 To contribute, be sure to have the [GCAT TF Linter](https://github.ibm.com/GCAT/tf-linter) installed and then configure the corresponding pre-commit hook. 
 
 ```
-$ ln -s pre-commit.sh .git/hooks/pre-commit 
+$ ln pre-commit.sh .git/hooks/pre-commit 
 ```
 
 ---
