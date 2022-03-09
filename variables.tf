@@ -485,7 +485,7 @@ variable "vsi" {
           profile  = string
           capacity = optional(number)
           iops     = optional(number)
-          kms_key  = optional(string)
+          encryption_key  = optional(string)
         })
       ))
       load_balancers = optional(list(
