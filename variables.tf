@@ -833,7 +833,7 @@ variable "cos" {
             for instance in var.cos :
             [
               for bucket in instance.buckets :
-              bucket if bucket.single_site_location != null
+              bucket if lookup(bucket, "single_site_location", null) != null
             ]
           ]
         ) : site_bucket if !contains(["ams03", "che01", "hkg02", "mel01", "mex01", "mil01", "mon01", "osl01", "par01", "sjc04", "sao01", "seo01", "sng01", "tor01"], site_bucket.single_site_location)
@@ -851,7 +851,7 @@ variable "cos" {
             for instance in var.cos :
             [
               for bucket in instance.buckets :
-              bucket if bucket.region_location != null
+              bucket if lookup(bucket, "region_location", null) != null
             ]
           ]
         ) : site_bucket if !contains(["au-syd", "eu-de", "eu-gb", "jp-tok", "us-east", "us-south", "ca-tor", "jp-osa", "br-sao"], site_bucket.region_location)
@@ -869,7 +869,7 @@ variable "cos" {
             for instance in var.cos :
             [
               for bucket in instance.buckets :
-              bucket if bucket.cross_region_location != null
+              bucket if lookup(bucket, "cross_region_location", null) != null
             ]
           ]
         ) : site_bucket if !contains(["us", "eu", "ap"], site_bucket.cross_region_location)
@@ -887,7 +887,7 @@ variable "cos" {
             for instance in var.cos :
             [
               for bucket in instance.buckets :
-              bucket if bucket.archive_rule != null
+              bucket if lookup(bucket, "archive_rule", null) != null
             ]
           ]
         ) : site_bucket if !contains(["Glacier", "Accelerated"], site_bucket.archive_rule.type)
