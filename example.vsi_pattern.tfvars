@@ -204,7 +204,7 @@ vpcs = [
           acl_name       = "workload-acl"
         },
         {
-          name           = "vpn-zone-2"
+          name           = "vpe-zone-2"
           cidr           = "10.50.20.0/24"
           public_gateway = true
           acl_name       = "workload-acl"
@@ -218,7 +218,7 @@ vpcs = [
           acl_name       = "workload-acl"
         },
         {
-          name           = "vpn-zone-3"
+          name           = "vpe-zone-3"
           cidr           = "10.60.20.0/24"
           public_gateway = true
           acl_name       = "workload-acl"
@@ -373,38 +373,16 @@ flow_logs = {
 
 
 
-virtual_private_endpoints = [/*
-  commented out until vpe enabled services are added
-  {
-    service_name = "dbaas"
-    service_crn  = "1234"
-    vpcs = [
-      {
-        name                = "management"
-        subnets             = ["subnet-a", "subnet-c"]
-        security_group_name = "workload-vpe"
-      },
-      {
-        name    = "workload"
-        subnets = ["subnet-b"]
-      }
-    ]
-  },
-  {
-    service_name = "rabbitmq"
-    service_crn  = "1234"
-    vpcs = [
-      {
-        name    = "management"
-        subnets = ["subnet-a", "subnet-c"]
-      },
-      {
-        name    = "workload"
-        subnets = ["subnet-b"]
-      }
-    ]
-  }*/
-]
+virtual_private_endpoints = [{
+  service_name = "cloud-object-storage"
+  vpcs = [{
+    name    = "management"
+    subnets = ["vpe-zone-1", "vpe-zone-2", "vpe-zone-3"]
+    }, {
+    name    = "workload"
+    subnets = ["vpe-zone-1", "vpe-zone-2", "vpe-zone-3"]
+  }]
+}]
 
 ##############################################################################
 # Clusters and Worker pools

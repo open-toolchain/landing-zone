@@ -2,9 +2,8 @@
 ##############################################################################
 # Find valid IKS/Roks cluster version
 ##############################################################################
-data "ibm_container_cluster_versions" "cluster_versions" {
-  region = var.region
-}
+
+data "ibm_container_cluster_versions" "cluster_versions" {}
 
 ##############################################################################
 
@@ -18,7 +17,8 @@ locals {
     for cluster_group in var.clusters : [
       for worker_pool_group in cluster_group.worker_pools : merge(worker_pool_group, {
         # Add Cluster Name
-        cluster_name = cluster_group.name
+        cluster_name = "${var.prefix}-${cluster_group.name}"
+        entitlement  = cluster_group.kube_type == "iks" ? null : cluster_group.entitlement
         # resource group
         resource_group = cluster_group.resource_group
         # Add VPC ID
@@ -40,7 +40,7 @@ locals {
   # Convert list to map
   clusters_map = {
     for cluster_group in var.clusters :
-    (cluster_group.name) => merge(cluster_group, {
+    ("${var.prefix}-${cluster_group.name}") => merge(cluster_group, {
       # Add VPC ID
       vpc_id = module.vpc[cluster_group.vpc_name].vpc_id
       subnets = [
@@ -82,6 +82,10 @@ resource "ibm_container_vpc_cluster" "cluster" {
   }
 
   disable_public_service_endpoint = true
+
+  timeouts {
+    create = "2h"
+  }
 
 }
 
