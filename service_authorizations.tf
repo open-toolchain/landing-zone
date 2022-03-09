@@ -5,30 +5,36 @@
 ##############################################################################
 
 locals {
-  authorization_policies = {
-    block-storage = {
-      source_service_name         = "server-protect"
-      description                 = "Allow block storage volumes to be encrypted by KMS instance"
-      roles                       = ["Reader"]
-      target_service_name         = "kms"
-      target_resource_instance_id = module.key_protect.kms_guid
+  authorization_policies = merge(
+    {
+      block-storage = {
+        source_service_name         = "server-protect"
+        description                 = "Allow block storage volumes to be encrypted by KMS instance"
+        roles                       = ["Reader"]
+        target_service_name         = "kms"
+        target_resource_instance_id = module.key_protect.kms_guid
+      }
+      cos-to-kms = {
+        source_service_name         = "cloud-object-storage"
+        description                 = "Allow COS instance to read from KMS instance"
+        roles                       = ["Reader"]
+        target_service_name         = "kms"
+        target_resource_instance_id = module.key_protect.kms_guid
+      }
     },
-    cos-to-kms = {
-      source_service_name         = "cloud-object-storage"
-      description                 = "Allow COS instance to read from KMS instance"
-      roles                       = ["Reader"]
-      target_service_name         = "kms"
-      target_resource_instance_id = module.key_protect.kms_guid
-    },
-    flow-logs-cos = {
-      source_service_name         = "is"
-      source_resource_type        = "flow-log-collector"
-      description                 = "Allow flow logs write access to cloud object storage instance"
-      roles                       = ["Writer"]
-      target_service_name         = "cloud-object-storage"
-      target_resource_instance_id = local.cos_instance_id
+    {
+      # Create an authorization for each COS instance
+      for instance in var.cos :
+      "${instance.name}-flow-logs-cos" => {
+        source_service_name         = "is"
+        source_resource_type        = "flow-log-collector"
+        description                 = "Allow flow logs write access  cloud object storage instance"
+        roles                       = ["Writer"]
+        target_service_name         = "cloud-object-storage"
+        target_resource_instance_id = local.cos_instance_ids[instance.name]
+      }
     }
-  }
+  )
 }
 
 ##############################################################################

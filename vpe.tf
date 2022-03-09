@@ -4,9 +4,12 @@
 
 locals {
   services = {
-    cloud-object-storage = {
-      id  = local.cos_instance_id
+    for endpoint in var.virtual_private_endpoints :
+    # create string for service name and type
+    "${endpoint.service_name}-${endpoint.service_type}" => {
+      # Only COS supported now
       crn = "crn:v1:bluemix:public:cloud-object-storage:global:::endpoint:s3.direct.${var.region}.cloud-object-storage.appdomain.cloud"
+      id  = local.cos_instance_ids[endpoint.service_name]
     }
   }
   vpe_gateway_list = flatten([
@@ -18,7 +21,7 @@ locals {
         vpc_id              = module.vpc[vpcs.name].vpc_id
         resource_group      = service.resource_group
         security_group_name = vpcs.security_group_name
-        crn                 = local.services[service.service_name].crn
+        crn                 = local.services["${service.service_name}-${service.service_type}"].crn
       }
     ]
   ])

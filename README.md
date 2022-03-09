@@ -511,7 +511,7 @@ Cloud Object Storage components can be found in cos.tf.
 | atracker                    | atracker variables                                                                                                                        |
 | resource_groups             | A list of existing resource groups to reference and new groups to create                                                                  |
 | clusters                    | A list of clusters on vpc. Also can add list of worker_pools to the clusters                                                              |
-| cos                         | Object describing the cloud object storage instance. Set `use_data` to false to create instance                                           |
+| cos                         |"Object describing the cloud object storage instance, buckets, and keys. Set `use_data` to false to create instance
 | cos_resource_keys           | List of objects describing resource keys to create for cos instance                                                                       |
 | cos_authorization_policies  | List of authorization policies to be created for cos instance                                                                             |
 | cos_buckets                 | List of standard buckets to be created in desired cloud object storage instance                                                           |
@@ -559,8 +559,6 @@ module "vsi_pattern" {
   security_groups                = var.security_groups
   virtual_private_endpoints      = var.virtual_private_endpoints
   cos                            = var.cos
-  cos_resource_keys              = var.cos_resource_keys
-  cos_buckets                    = var.cos_buckets
   service_endpoints              = var.service_endpoints
   key_protect                    = var.key_protect
   atracker                       = var.atracker
@@ -586,8 +584,6 @@ module "cluster_vsi_pattern" {
   security_groups                = var.security_groups
   virtual_private_endpoints      = var.virtual_private_endpoints
   cos                            = var.cos
-  cos_resource_keys              = var.cos_resource_keys
-  cos_buckets                    = var.cos_buckets
   service_endpoints              = var.service_endpoints
   key_protect                    = var.key_protect
   atracker                       = var.atracker
@@ -614,8 +610,6 @@ module "cluster_pattern" {
   security_groups                = var.security_groups
   virtual_private_endpoints      = var.virtual_private_endpoints
   cos                            = var.cos
-  cos_resource_keys              = var.cos_resource_keys
-  cos_buckets                    = var.cos_buckets
   service_endpoints              = var.service_endpoints
   key_protect                    = var.key_protect
   atracker                       = var.atracker
