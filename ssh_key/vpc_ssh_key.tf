@@ -8,7 +8,7 @@ resource "ibm_is_ssh_key" "ssh_key" {
     (ssh_key.name) => ssh_key if ssh_key.public_key != null
   }
   name           = "${var.prefix}-${each.value.name}"
-  public_key     = each.value.public_key
+  public_key     = replace(each.value.public_key, "/==.*$/", "==")
   resource_group = each.value.resource_group_id
   tags           = var.tags
 }

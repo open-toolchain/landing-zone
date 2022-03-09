@@ -48,12 +48,15 @@ variable "resource_groups" {
   description = "Object describing resource groups to create or reference"
   type = list(
     object({
-      name   = string
-      create = optional(bool)
+      name       = string
+      create     = optional(bool)
+      use_prefix = optional(bool)
     })
   )
   default = [{
     name = "Default"
+    }, {
+    name = "default"
     }, {
     name   = "slz-cs-rg"
     create = true
@@ -258,7 +261,8 @@ variable "vpcs" {
       }
       network_acls = [
         {
-          name = "workload-acl"
+          name              = "workload-acl"
+          add_cluster_rules = true
           rules = [
             {
               name        = "allow-ibm-inbound"
@@ -532,109 +536,7 @@ variable "vsi" {
       ))
     })
   )
-  default = [
-    {
-      name           = "management-server"
-      vpc_name       = "management"
-      vsi_per_subnet = 1
-      subnet_names   = ["vsi-zone-1", "vsi-zone-2", "vsi-zone-3"]
-      image_name     = "ibm-ubuntu-16-04-5-minimal-amd64-1"
-      machine_type   = "cx2-2x4"
-      block_storage_volumes = [
-        {
-          name    = "kms-test-volume"
-          profile = "general-purpose"
-          kms_key = "slz-key"
-        }
-      ]
-      security_group = {
-        name     = "management"
-        vpc_name = "management"
-        rules = [
-          {
-            name      = "allow-ibm-inbound"
-            source    = "161.26.0.0/16"
-            direction = "inbound"
-          },
-          {
-            name      = "allow-ibm-tcp-80-outbound"
-            source    = "161.26.0.0/16"
-            direction = "outbound"
-            tcp = {
-              port_min = 80
-              port_max = 80
-            }
-          },
-          {
-            name      = "allow-ibm-tcp-443-outbound"
-            source    = "161.26.0.0/16"
-            direction = "outbound"
-            tcp = {
-              port_min = 443
-              port_max = 443
-            }
-          },
-          {
-            name      = "allow-ibm-udp-53-outbound"
-            source    = "161.26.0.0/16"
-            direction = "outbound"
-            udp = {
-              port_min = 53
-              port_max = 53
-            }
-          }
-        ]
-      },
-      ssh_keys = ["jv-dev-ssh-key"]
-    },
-    {
-      name           = "workload-server"
-      vpc_name       = "workload"
-      vsi_per_subnet = 1
-      subnet_names   = ["vsi-zone-1", "vsi-zone-2", "vsi-zone-3"]
-      image_name     = "ibm-ubuntu-16-04-5-minimal-amd64-1"
-      machine_type   = "cx2-2x4"
-      security_group = {
-        name     = "workload"
-        vpc_name = "workload"
-        rules = [
-          {
-            name      = "allow-ibm-inbound"
-            source    = "161.26.0.0/16"
-            direction = "inbound"
-          },
-          {
-            name      = "allow-ibm-tcp-80-outbound"
-            source    = "161.26.0.0/16"
-            direction = "outbound"
-            tcp = {
-              port_min = 80
-              port_max = 80
-            }
-          },
-          {
-            name      = "allow-ibm-tcp-443-outbound"
-            source    = "161.26.0.0/16"
-            direction = "outbound"
-            tcp = {
-              port_min = 443
-              port_max = 443
-            }
-          },
-          {
-            name      = "allow-ibm-udp-53-outbound"
-            source    = "161.26.0.0/16"
-            direction = "outbound"
-            udp = {
-              port_min = 53
-              port_max = 53
-            }
-          }
-        ]
-      }
-      ssh_keys = ["jv-dev-ssh-key"]
-    }
-  ]
+  default = []
 }
 
 
@@ -754,7 +656,7 @@ variable "virtual_private_endpoints" {
     })
   )
   default = [{
-    service_name = "cloud_object_storage"
+    service_name = "cloud-object-storage"
     vpcs = [{
       name    = "management"
       subnets = ["vpe-zone-1", "vpe-zone-2", "vpe-zone-3"]
@@ -814,25 +716,6 @@ variable "cos_resource_keys" {
   }
 }
 
-variable "cos_authorization_policies" {
-  description = "List of authorization policies to be created for cos instance"
-  type = list(object({
-    name                        = string 
-    target_service_name         = string 
-    target_resource_instance_id = optional(string)
-    target_resource_group       = optional(string)
-    roles                       = list(string)
-    description                 = string 
-  }))
-
-  default = []
-
-  validation {
-    error_message = "COS Authorization Policy names must be unique."
-    condition     = length(distinct(var.cos_authorization_policies.*.name)) == length(var.cos_authorization_policies.*.name)
-  }
-}
-
 variable "cos_buckets" {
   description = "List of standard buckets to be created in desired cloud object storage instance. Please note, logging and monitoring are not FS validated."
   type = list(object({
@@ -865,26 +748,23 @@ variable "cos_buckets" {
 
   default = [
     {
-      name            = "dev-bucket"
-      storage_class   = "standard"
-      endpoint_type   = "public"
-      force_delete    = true
-      region_location = "us-south"
+      name          = "dev-bucket"
+      storage_class = "standard"
+      endpoint_type = "public"
+      force_delete  = true
     },
     {
-      name            = "atracker-bucket"
-      storage_class   = "standard"
-      endpoint_type   = "public"
-      force_delete    = true
-      region_location = "us-south"
+      name          = "atracker-bucket"
+      storage_class = "standard"
+      endpoint_type = "public"
+      force_delete  = true
     },
     {
-      name            = "flowlogs-bucket"
-      storage_class   = "standard"
-      endpoint_type   = "public"
-      kms_key         = "slz-key"
-      force_delete    = true
-      region_location = "us-south"
+      name          = "flowlogs-bucket"
+      storage_class = "standard"
+      endpoint_type = "public"
+      kms_key       = "slz-key"
+      force_delete  = true
     }
   ]
 
@@ -913,9 +793,9 @@ variable "cos_buckets" {
 
   validation {
     error_message = "Exactly one parameter for the bucket's location must be set. Please choose one from `single_site_location`, `region_location`, or `cross_region_location`."
-    condition     = length([
-      for bucket in var.cos_buckets:
-      bucket if length(setintersection([for key in keys(bucket): key if lookup(bucket, key) != null], ["single_site_location", "region_location", "cross_region_location"])) == 1
+    condition = length([
+      for bucket in var.cos_buckets :
+      bucket if length(setintersection([for key in keys(bucket) : key if lookup(bucket, key) != null], ["single_site_location", "region_location", "cross_region_location"])) <= 1
     ]) == length(var.cos_buckets)
   }
 
@@ -1083,27 +963,7 @@ variable "clusters" {
           entitlement        = optional(string) # entitlement option for openshift
       })))
   }))
-  default = [
-    {
-      name               = "test-cluster"
-      vpc_name           = "workload"
-      subnet_names       = ["vsi-zone-1", "vsi-zone-2", "vsi-zone-3"]
-      workers_per_subnet = 2
-      machine_type       = "bx2.16x64"
-      kube_type          = "openshift"
-      entitlement        = "cloud_pak"
-      resource_group     = "Default"
-      worker_pools = [
-        {
-          name               = "worker-pool-1"
-          vpc_name           = "workload"
-          subnet_names       = ["vsi-zone-1", "vsi-zone-2", "vsi-zone-3"]
-          workers_per_subnet = 1
-          flavor             = "bx2.16x64"
-          entitlement        = "cloud_pak"
-
-      }]
-  }]
+  default = []
 
   # kube_type validation
   validation {

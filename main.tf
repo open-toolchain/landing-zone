@@ -24,7 +24,7 @@ locals {
 }
 
 module "vpc" {
-  source   = "github.com/Cloud-Schematics/multizone-vpc-module.git"
+  source   = "./vpc"
   for_each = local.vpc_map
 
   resource_group_id           = each.value.resource_group == null ? null : local.resource_groups[each.value.resource_group]

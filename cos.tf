@@ -50,28 +50,6 @@ resource "ibm_resource_key" "key" {
   tags                 = (var.tags != null ? var.tags : null)
 }
 
-locals {
-  # Convert COS Authorization Policies List to Map
-  cos_auth_policies_map = {
-    for cos_auth_policy in var.cos_authorization_policies:
-    (cos_auth_policy.name) => cos_auth_policy
-  }
-}
-
-resource "ibm_iam_authorization_policy" "cos_policy" {
-  for_each = local.cos_auth_policies_map
-
-  source_service_name         = "cloud-object-storage"
-  source_resource_instance_id = local.cos_instance_id
-  source_resource_group_id    = local.resource_groups[var.cos.resource_group]
-
-  target_service_name         = each.value.target_service_name
-  target_resource_instance_id = each.value.target_resource_instance_id
-  target_resource_group_id    = each.value.target_resource_group
-  roles                       = each.value.roles 
-  description                 = each.value.description
-}
-
 ##############################################################################
 
 ##############################################################################
@@ -95,7 +73,7 @@ resource "ibm_cos_bucket" "buckets" {
   endpoint_type         = each.value.endpoint_type
   force_delete          = each.value.force_delete
   single_site_location  = each.value.single_site_location
-  region_location       = each.value.region_location
+  region_location       = each.value.region_location == null ? var.region : each.value.region_location
   cross_region_location = each.value.cross_region_location
   allowed_ip            = each.value.allowed_ip
   key_protect = each.value.kms_key == null ? null : [
