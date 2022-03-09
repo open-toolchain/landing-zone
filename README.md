@@ -523,7 +523,11 @@ Create feature branches to add additional components. To integrate code changes 
 
 If additional variables or added or existing variables are changed, update the [Module Variables](##module-variables) table. To automate this process, use the nodejs package [tfmdcli](https://www.npmjs.com/package/tfmdcli)
 
-Run `terraform fmt` on your codebase before opening pull requests
+To contribute, be sure to have the [GCAT TF Linter](https://github.ibm.com/GCAT/tf-linter) installed and then configure the corresponding pre-commit hook. 
+
+```
+$ ln pre-commit.sh .git/hooks/pre-commit 
+```
 
 ---
 
