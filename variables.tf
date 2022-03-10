@@ -58,14 +58,11 @@ variable "resource_groups" {
     }, {
     name = "default"
     }, {
-    name   = "slz-cs-rg"
-    create = true
+    name = "slz-cs-rg"
     }, {
-    name   = "slz-management-rg"
-    create = true
+    name = "slz-management-rg"
     }, {
-    name   = "slz-workload-rg"
-    create = true
+    name = "slz-workload-rg"
   }]
 
   validation {
@@ -422,17 +419,18 @@ variable "vsi" {
   description = "A list describing VSI workloads to create"
   type = list(
     object({
-      name               = string
-      vpc_name           = string
-      subnet_names       = list(string)
-      ssh_keys           = list(string)
-      image_name         = string
-      machine_type       = string
-      vsi_per_subnet     = number
-      user_data          = optional(string)
-      resource_group     = optional(string)
-      enable_floating_ip = optional(bool)
-      security_groups    = optional(list(string))
+      name                            = string
+      vpc_name                        = string
+      subnet_names                    = list(string)
+      ssh_keys                        = list(string)
+      image_name                      = string
+      machine_type                    = string
+      vsi_per_subnet                  = number
+      user_data                       = optional(string)
+      resource_group                  = optional(string)
+      enable_floating_ip              = optional(bool)
+      security_groups                 = optional(list(string))
+      boot_volume_encryption_key_name = optional(string)
       security_group = optional(
         object({
           name = string

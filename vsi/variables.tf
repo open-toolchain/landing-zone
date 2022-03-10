@@ -84,6 +84,12 @@ variable "user_data" {
   default     = null
 }
 
+variable "boot_volume_encryption_key" {
+  description = "CRN of boot volume encryption key"
+  type        = string
+  default     = ""
+}
+
 variable "enable_floating_ip" {
   description = "Create a floating IP for each virtual server created"
   type        = bool

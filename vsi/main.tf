@@ -57,6 +57,10 @@ resource "ibm_is_instance" "vsi" {
     ])
   }
 
+  boot_volume {
+    encryption = var.boot_volume_encryption_key == "" ? null : var.boot_volume_encryption_key
+  }
+
   # Only add volumes if volumes are being created by the module
   volumes = length(var.block_storage_volumes) == 0 ? [] : local.volume_by_vsi[each.key]
 }
