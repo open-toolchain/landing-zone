@@ -821,23 +821,6 @@ variable "cos" {
     ) == length(flatten([for instance in var.cos : [for bucket in instance.buckets : true]]))
   }
 
-
-  validation {
-    error_message = "Exactly one parameter for the bucket's location must be set. Please choose one from `single_site_location`, `region_location`, or `cross_region_location`."
-    condition = length(
-      flatten([
-        for instance in var.cos :
-        [
-          for bucket in instance.buckets :
-          true if length([
-            for param in ["single_site_location", "region_location", "cross_region_location"] :
-            true if bucket[param] != null
-          ]) > 1
-        ]
-      ])
-    ) == 0
-  }
-
   # https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/resources/cos_bucket#single_site_location
   validation {
     error_message = "All single site buckets must specify `ams03`, `che01`, `hkg02`, `mel01`, `mex01`, `mil01`, `mon01`, `osl01`, `par01`, `sjc04`, `sao01`, `seo01`, `sng01`, or `tor01`."
@@ -848,7 +831,7 @@ variable "cos" {
             for instance in var.cos :
             [
               for bucket in instance.buckets :
-              bucket if bucket.single_site_location != null
+              bucket if lookup(bucket, "single_site_location", null) != null
             ]
           ]
         ) : site_bucket if !contains(["ams03", "che01", "hkg02", "mel01", "mex01", "mil01", "mon01", "osl01", "par01", "sjc04", "sao01", "seo01", "sng01", "tor01"], site_bucket.single_site_location)
@@ -866,7 +849,7 @@ variable "cos" {
             for instance in var.cos :
             [
               for bucket in instance.buckets :
-              bucket if bucket.region_location != null
+              bucket if lookup(bucket, "region_location", null) != null
             ]
           ]
         ) : site_bucket if !contains(["au-syd", "eu-de", "eu-gb", "jp-tok", "us-east", "us-south", "ca-tor", "jp-osa", "br-sao"], site_bucket.region_location)
@@ -884,7 +867,7 @@ variable "cos" {
             for instance in var.cos :
             [
               for bucket in instance.buckets :
-              bucket if bucket.cross_region_location != null
+              bucket if lookup(bucket, "cross_region_location", null) != null
             ]
           ]
         ) : site_bucket if !contains(["us", "eu", "ap"], site_bucket.cross_region_location)
@@ -902,7 +885,7 @@ variable "cos" {
             for instance in var.cos :
             [
               for bucket in instance.buckets :
-              bucket if bucket.archive_rule != null
+              bucket if lookup(bucket, "archive_rule", null) != null
             ]
           ]
         ) : site_bucket if !contains(["Glacier", "Accelerated"], site_bucket.archive_rule.type)
