@@ -37,18 +37,19 @@ resource_groups = [{
 ##############################################################################
 # IBM Managed Services
 ##############################################################################
-
-kms = {
-  name           = "kms"
-  resource_group = "Default"
-  keys = [
-    {
-      name     = "root"
-      root_key = true
-      key_name = "dev-ring"
-    }
-  ]
-}
+key_management = {
+    name           = "kms"
+    resource_group = "Default"
+    use_data = false
+    use_hs_crypto = false
+    keys = [
+      {
+        name     = "slz-key"
+        root_key = true
+        key_ring = "slz-ring"
+      }
+    ]
+  }
 
 ##############################################################################
 vpcs = [

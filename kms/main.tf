@@ -18,13 +18,13 @@ data "ibm_resource_instance" "kms" {
 }
 
 data "ibm_hpcs" "hpcs_instance" {
-  count             = var.key_management.use_data == true && var.key_management.use_hs_crypto != true ? 1 : 0 
+  count             = var.key_management.use_data == true && var.key_management.use_hs_crypto == true ? 1 : 0 
   name              = var.key_management.name
   resource_group_id = var.key_management.resource_group_id
 }
 
 locals {
-  key_management_guid = var.key_management.use_data == true ? data.ibm_resource_instance.kms[0].guid : ibm_resource_instance.kms[0].guid
+  key_management_guid = var.key_management.use_data == true ? var.key_management.use_hs_crypto == true ? data.ibm_hpcs.hpcs_instance[0].guid : data.ibm_resource_instance.kms[0].guid : ibm_resource_instance.kms[0].guid
   key_management_keys = {
     for kms_key in var.keys :
     (kms_key.name) => kms_key
