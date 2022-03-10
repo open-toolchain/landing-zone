@@ -18,7 +18,7 @@ data "ibm_resource_instance" "kms" {
 }
 
 data "ibm_hpcs" "hpcs_instance" {
-  count             = var.key_management.use_data == true && var.key_management.use_hs_crypto == true ? 1 : 0 
+  count             = var.key_management.use_data == true && var.key_management.use_hs_crypto != true ? 1 : 0 
   name              = var.key_management.name
   resource_group_id = var.key_management.resource_group_id
 }
