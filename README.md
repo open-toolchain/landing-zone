@@ -7,20 +7,20 @@ This module creates a secure landing zone within a single region.
 ## Table of Contents
 
 1. [VPC](#vpc)
-  - [VPCs Variable](#vpcs-variable)
-2. [Flow Logs](#flow-logs)
+    - [VPCs Variable](#vpcs-variable)
+    - [Flow Logs](#flow-logs)
 3. [Transit Gateway](#transit-gateway)
 4. [Security Groups](#security-groups)
-  - [Security Groups Variable](#security-groups-variable)
+    - [Security Groups Variable](#security-groups-variable)
 5. [Virtual Servers](#virtual-servers)
-  - [VPC SSH Keys](#vpc-ssh-keys)
-  - [SSH Keys Variable](#ssh-keys-variable)
-  - [Virtual Servers Variable](#virtual-servers-variable)
+    - [VPC SSH Keys](#vpc-ssh-keys)
+    - [SSH Keys Variable](#ssh-keys-variable)
+    - [Virtual Servers Variable](#virtual-servers-variable)
 6. [Cluster and Worker pool](#cluster-and-worker-pool)
 7. [IBM Cloud Services](#ibm-cloud-services)
 8. [Virtual Private Endpoints](#virtual-private-endpoints)
 9. [IBM Cloud Services](#ibm-cloud-services-1)
-  - [Cloud Object Storage](#cloud-object-storage)
+    - [Cloud Object Storage](#cloud-object-storage)
 10. [Module Variables](#module-variables)
 11. [Contributing](#contributing)
 12. [Terraform Language Resources](#terraform-language-resources)
@@ -56,6 +56,7 @@ The type of the VPC Variable is as follows:
       default_network_acl_name    = optional(string)  # Override default ACL name
       default_security_group_name = optional(string)  # Override default VPC security group name
       default_routing_table_name  = optional(string)  # Override default VPC routing table name
+      flow_logs_bucket_name       = optional(string)  # Name of COS bucket to use with flowlogs. Must be created by this template
 
       ##############################################################################
       # Use `address_prefixes` only if `use_manual_address_prefixes` is true
@@ -191,9 +192,7 @@ The type of the VPC Variable is as follows:
 
 ## Flow Logs
 
-By default, a flow logs collector will be attached to each VPC.
-
-Flow logs resources can be found in [main.tf](./main.tf)
+Flow log collectors can be added to a VPC by adding the `flow_logs_bucket_name` parameter to the `vpc` object. Any bucket must be declared in the `cos` variable that manages Cloud Object Storage. Click [here](#cloud-object-storage) to read more about provisioning Cloud Object Storage with this template
 
 ---
 
@@ -511,7 +510,7 @@ Cloud Object Storage components can be found in cos.tf.
 | atracker                    | atracker variables                                                                                                                        |
 | resource_groups             | A list of existing resource groups to reference and new groups to create                                                                  |
 | clusters                    | A list of clusters on vpc. Also can add list of worker_pools to the clusters                                                              |
-| cos                         | Object describing the cloud object storage instance. Set `use_data` to false to create instance                                           |
+| cos                         |"Object describing the cloud object storage instance, buckets, and keys. Set `use_data` to false to create instance
 | cos_resource_keys           | List of objects describing resource keys to create for cos instance                                                                       |
 | cos_authorization_policies  | List of authorization policies to be created for cos instance                                                                             |
 | cos_buckets                 | List of standard buckets to be created in desired cloud object storage instance                                                           |
@@ -524,7 +523,11 @@ Create feature branches to add additional components. To integrate code changes 
 
 If additional variables or added or existing variables are changed, update the [Module Variables](##module-variables) table. To automate this process, use the nodejs package [tfmdcli](https://www.npmjs.com/package/tfmdcli)
 
-Run `terraform fmt` on your codebase before opening pull requests
+To contribute, be sure to have the [GCAT TF Linter](https://github.ibm.com/GCAT/tf-linter) installed and then configure the corresponding pre-commit hook. 
+
+```
+$ ln pre-commit.sh .git/hooks/pre-commit 
+```
 
 ---
 
@@ -559,8 +562,6 @@ module "vsi_pattern" {
   security_groups                = var.security_groups
   virtual_private_endpoints      = var.virtual_private_endpoints
   cos                            = var.cos
-  cos_resource_keys              = var.cos_resource_keys
-  cos_buckets                    = var.cos_buckets
   service_endpoints              = var.service_endpoints
   key_protect                    = var.key_protect
   atracker                       = var.atracker
@@ -586,8 +587,6 @@ module "cluster_vsi_pattern" {
   security_groups                = var.security_groups
   virtual_private_endpoints      = var.virtual_private_endpoints
   cos                            = var.cos
-  cos_resource_keys              = var.cos_resource_keys
-  cos_buckets                    = var.cos_buckets
   service_endpoints              = var.service_endpoints
   key_protect                    = var.key_protect
   atracker                       = var.atracker
@@ -614,8 +613,6 @@ module "cluster_pattern" {
   security_groups                = var.security_groups
   virtual_private_endpoints      = var.virtual_private_endpoints
   cos                            = var.cos
-  cos_resource_keys              = var.cos_resource_keys
-  cos_buckets                    = var.cos_buckets
   service_endpoints              = var.service_endpoints
   key_protect                    = var.key_protect
   atracker                       = var.atracker

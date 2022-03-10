@@ -58,14 +58,11 @@ variable "resource_groups" {
     }, {
     name = "default"
     }, {
-    name   = "slz-cs-rg"
-    create = true
+    name = "slz-cs-rg"
     }, {
-    name   = "slz-management-rg"
-    create = true
+    name = "slz-management-rg"
     }, {
-    name   = "slz-workload-rg"
-    create = true
+    name = "slz-workload-rg"
   }]
 
   validation {
@@ -92,6 +89,7 @@ variable "vpcs" {
       default_network_acl_name    = optional(string)
       default_security_group_name = optional(string)
       default_routing_table_name  = optional(string)
+      flow_logs_bucket_name       = optional(string)
       address_prefixes = optional(
         object({
           zone-1 = optional(list(string))
@@ -172,6 +170,7 @@ variable "vpcs" {
         zone-2 = false
         zone-3 = false
       }
+      flow_logs_bucket_name = "management-bucket"
       network_acls = [
         {
           name = "management-acl"
@@ -252,8 +251,9 @@ variable "vpcs" {
       }
     },
     {
-      prefix         = "workload"
-      resource_group = "slz-workload-rg"
+      prefix                = "workload"
+      resource_group        = "slz-workload-rg"
+      flow_logs_bucket_name = "workload-bucket"
       use_public_gateways = {
         zone-1 = false
         zone-2 = false
@@ -346,25 +346,6 @@ variable "vpcs" {
 
 
 ##############################################################################
-# Flow Logs Variables
-##############################################################################
-
-variable "flow_logs" {
-  description = "List of variables for flow log to connect to each VSI instance. Set `use` to false to disable flow logs."
-  type = object({
-    cos_bucket_name = string
-    active          = bool
-  })
-  default = {
-    cos_bucket_name = "flowlogs-bucket"
-    active          = true
-  }
-}
-
-##############################################################################
-
-
-##############################################################################
 # Transit Gateway
 ##############################################################################
 
@@ -438,17 +419,18 @@ variable "vsi" {
   description = "A list describing VSI workloads to create"
   type = list(
     object({
-      name               = string
-      vpc_name           = string
-      subnet_names       = list(string)
-      ssh_keys           = list(string)
-      image_name         = string
-      machine_type       = string
-      vsi_per_subnet     = number
-      user_data          = optional(string)
-      resource_group     = optional(string)
-      enable_floating_ip = optional(bool)
-      security_groups    = optional(list(string))
+      name                            = string
+      vpc_name                        = string
+      subnet_names                    = list(string)
+      ssh_keys                        = list(string)
+      image_name                      = string
+      machine_type                    = string
+      vsi_per_subnet                  = number
+      user_data                       = optional(string)
+      resource_group                  = optional(string)
+      enable_floating_ip              = optional(bool)
+      security_groups                 = optional(list(string))
+      boot_volume_encryption_key_name = optional(string)
       security_group = optional(
         object({
           name = string
@@ -645,6 +627,7 @@ variable "virtual_private_endpoints" {
   type = list(
     object({
       service_name   = string
+      service_type   = string
       resource_group = optional(string)
       vpcs = list(
         object({
@@ -656,7 +639,8 @@ variable "virtual_private_endpoints" {
     })
   )
   default = [{
-    service_name = "cloud-object-storage"
+    service_name = "cos"
+    service_type = "cloud-object-storage"
     vpcs = [{
       name    = "management"
       subnets = ["vpe-zone-1", "vpe-zone-2", "vpe-zone-3"]
@@ -675,172 +659,238 @@ variable "virtual_private_endpoints" {
 ##############################################################################
 
 variable "cos" {
-  description = "Object describing the cloud object storage instance. Set `use_data` to false to create instance"
-  type = object({
-    service_name   = string
-    use_data       = bool
-    resource_group = string
-    plan           = optional(string)
-  })
+  description = "Object describing the cloud object storage instance, buckets, and keys. Set `use_data` to false to create instance"
+  type = list(
+    object({
+      name           = string
+      use_data       = optional(bool)
+      resource_group = string
+      plan           = optional(string)
+      buckets = list(object({
+        name                  = string
+        storage_class         = string
+        endpoint_type         = string
+        force_delete          = bool
+        single_site_location  = optional(string)
+        region_location       = optional(string)
+        cross_region_location = optional(string)
+        kms_key               = optional(string)
+        allowed_ip            = optional(list(string))
+        archive_rule = optional(object({
+          days    = number
+          enable  = bool
+          rule_id = optional(string)
+          type    = string
+        }))
+        activity_tracking = optional(object({
+          activity_tracker_crn = string
+          read_data_events     = bool
+          write_data_events    = bool
+        }))
+        metrics_monitoring = optional(object({
+          metrics_monitoring_crn  = string
+          request_metrics_enabled = optional(bool)
+          usage_metrics_enabled   = optional(bool)
+        }))
+      }))
+      keys = optional(
+        list(object({
+          name = string
+          role = string
+        }))
+      )
+    })
+  )
 
-  default = {
-    service_name   = "cos"
+  default = [{
+    name           = "cos"
     use_data       = false
     resource_group = "Default"
     plan           = "standard"
+    buckets = [
+      {
+        name          = "workload-bucket"
+        storage_class = "standard"
+        kms_key       = "slz-key"
+        endpoint_type = "public"
+        force_delete  = true
+      },
+      {
+        name          = "atracker-bucket"
+        storage_class = "standard"
+        endpoint_type = "public"
+        force_delete  = true
+      },
+      {
+        name          = "management-bucket"
+        storage_class = "standard"
+        endpoint_type = "public"
+        kms_key       = "slz-key"
+        force_delete  = true
+      }
+    ]
+    keys = [
+      {
+        name = "cos-bind-key"
+        role = "Writer"
+      }
+    ]
+  }]
+
+  validation {
+    error_message = "Each COS key must have a unique name."
+    condition = length(
+      flatten(
+        [
+          for instance in var.cos :
+          [
+            for keys in instance.keys :
+            keys.name
+          ]
+        ]
+      )
+      ) == length(
+      distinct(
+        flatten(
+          [
+            for instance in var.cos :
+            [
+              for keys in instance.keys :
+              keys.name
+            ]
+          ]
+        )
+      )
+    )
   }
 
   validation {
-    error_message = "Plan can only be `lite` or `standard`."
-    condition     = contains(["lite", "standard"], var.cos.plan)
+    error_message = "Plans for COS instances can only be `lite` or `standard`."
+    condition = length([
+      for instance in var.cos :
+      true if contains(["lite", "standard"], instance.plan)
+    ]) == length(var.cos)
   }
-}
-
-variable "cos_resource_keys" {
-  description = "List of objects describing resource keys to create for cos instance"
-  type = list(object({
-    name = string
-    role = string
-  }))
-
-  default = [
-    {
-      name = "cos-bind-key"
-      role = "Writer"
-    }
-  ]
-
-  validation {
-    error_message = "Resource key names must be unique."
-    condition     = length(distinct(var.cos_resource_keys.*.name)) == length(var.cos_resource_keys.*.name)
-  }
-}
-
-variable "cos_buckets" {
-  description = "List of standard buckets to be created in desired cloud object storage instance. Please note, logging and monitoring are not FS validated."
-  type = list(object({
-    name                  = string
-    storage_class         = string
-    endpoint_type         = string
-    force_delete          = bool
-    single_site_location  = optional(string)
-    region_location       = optional(string)
-    cross_region_location = optional(string)
-    kms_key               = optional(string)
-    allowed_ip            = optional(list(string))
-    archive_rule = optional(object({
-      days    = number
-      enable  = bool
-      rule_id = optional(string)
-      type    = string
-    }))
-    activity_tracking = optional(object({
-      activity_tracker_crn = string
-      read_data_events     = bool
-      write_data_events    = bool
-    }))
-    metrics_monitoring = optional(object({
-      metrics_monitoring_crn  = string
-      request_metrics_enabled = optional(bool)
-      usage_metrics_enabled   = optional(bool)
-    }))
-  }))
-
-  default = [
-    {
-      name          = "dev-bucket"
-      storage_class = "standard"
-      endpoint_type = "public"
-      force_delete  = true
-    },
-    {
-      name          = "atracker-bucket"
-      storage_class = "standard"
-      endpoint_type = "public"
-      force_delete  = true
-    },
-    {
-      name          = "flowlogs-bucket"
-      storage_class = "standard"
-      endpoint_type = "public"
-      kms_key       = "slz-key"
-      force_delete  = true
-    }
-  ]
 
   validation {
     error_message = "COS Bucket names must be unique."
-    condition     = length(distinct(var.cos_buckets.*.name)) == length(var.cos_buckets.*.name)
+    condition = length(
+      flatten([
+        for instance in var.cos :
+        instance.buckets.*.name
+      ])
+      ) == length(
+      distinct(
+        flatten([
+          for instance in var.cos :
+          instance.buckets.*.name
+        ])
+      )
+    )
   }
 
   # https://cloud.ibm.com/docs/cloud-object-storage?topic=cloud-object-storage-classes 
   validation {
     error_message = "Storage class can only be `standard`, `vault`, `cold`, or `smart`."
-    condition = length([
-      for bucket in var.cos_buckets :
-      bucket if contains(["standard", "vault", "cold", "smart"], bucket.storage_class)
-    ]) == length(var.cos_buckets)
+    condition = length(
+      flatten(
+        [
+          for instance in var.cos :
+          [
+            for bucket in instance.buckets :
+            true if contains(["standard", "vault", "cold", "smart"], bucket.storage_class)
+          ]
+        ]
+      )
+    ) == length(flatten([for instance in var.cos : [for bucket in instance.buckets : true]]))
   }
 
   # https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/resources/cos_bucket#endpoint_type 
   validation {
     error_message = "Endpoint type can only be `public`, `private`, or `direct`."
-    condition = length([
-      for bucket in var.cos_buckets :
-      bucket if contains(["public", "private", "direct"], bucket.endpoint_type)
-    ]) == length(var.cos_buckets)
-  }
-
-  validation {
-    error_message = "Exactly one parameter for the bucket's location must be set. Please choose one from `single_site_location`, `region_location`, or `cross_region_location`."
-    condition = length([
-      for bucket in var.cos_buckets :
-      bucket if length(setintersection([for key in keys(bucket) : key if lookup(bucket, key) != null], ["single_site_location", "region_location", "cross_region_location"])) <= 1
-    ]) == length(var.cos_buckets)
+    condition = length(
+      flatten(
+        [
+          for instance in var.cos :
+          [
+            for bucket in instance.buckets :
+            true if contains(["public", "private", "direct"], bucket.endpoint_type)
+          ]
+        ]
+      )
+    ) == length(flatten([for instance in var.cos : [for bucket in instance.buckets : true]]))
   }
 
   # https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/resources/cos_bucket#single_site_location
   validation {
     error_message = "All single site buckets must specify `ams03`, `che01`, `hkg02`, `mel01`, `mex01`, `mil01`, `mon01`, `osl01`, `par01`, `sjc04`, `sao01`, `seo01`, `sng01`, or `tor01`."
-    condition = length([
-      for bucket in var.cos_buckets :
-      bucket if bucket.single_site_location == null
-      ? true
-      : contains(["ams03", "che01", "hkg02", "mel01", "mex01", "mil01", "mon01", "osl01", "par01", "sjc04", "sao01", "seo01", "sng01", "tor01"], bucket.single_site_location)
-    ]) == length(var.cos_buckets)
+    condition = length(
+      [
+        for site_bucket in flatten(
+          [
+            for instance in var.cos :
+            [
+              for bucket in instance.buckets :
+              bucket if lookup(bucket, "single_site_location", null) != null
+            ]
+          ]
+        ) : site_bucket if !contains(["ams03", "che01", "hkg02", "mel01", "mex01", "mil01", "mon01", "osl01", "par01", "sjc04", "sao01", "seo01", "sng01", "tor01"], site_bucket.single_site_location)
+      ]
+    ) == 0
   }
 
   # https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/resources/cos_bucket#region_location
   validation {
     error_message = "All regional buckets must specify `au-syd`, `eu-de`, `eu-gb`, `jp-tok`, `us-east`, `us-south`, `ca-tor`, `jp-osa`, `br-sao`."
-    condition = length([
-      for bucket in var.cos_buckets :
-      bucket if bucket.region_location == null
-      ? true
-      : contains(["au-syd", "eu-de", "eu-gb", "jp-tok", "us-east", "us-south", "ca-tor", "jp-osa", "br-sao"], bucket.region_location)
-    ]) == length(var.cos_buckets)
+    condition = length(
+      [
+        for site_bucket in flatten(
+          [
+            for instance in var.cos :
+            [
+              for bucket in instance.buckets :
+              bucket if lookup(bucket, "region_location", null) != null
+            ]
+          ]
+        ) : site_bucket if !contains(["au-syd", "eu-de", "eu-gb", "jp-tok", "us-east", "us-south", "ca-tor", "jp-osa", "br-sao"], site_bucket.region_location)
+      ]
+    ) == 0
   }
 
   # https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/resources/cos_bucket#cross_region_location
   validation {
     error_message = "All cross-regional buckets must specify `us`, `eu`, `ap`."
-    condition = length([
-      for bucket in var.cos_buckets :
-      bucket if bucket.cross_region_location == null
-      ? true
-      : contains(["us", "eu", "ap"], bucket.cross_region_location)
-    ]) == length(var.cos_buckets)
+    condition = length(
+      [
+        for site_bucket in flatten(
+          [
+            for instance in var.cos :
+            [
+              for bucket in instance.buckets :
+              bucket if lookup(bucket, "cross_region_location", null) != null
+            ]
+          ]
+        ) : site_bucket if !contains(["us", "eu", "ap"], site_bucket.cross_region_location)
+      ]
+    ) == 0
   }
 
   # https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/resources/cos_bucket#archive_rule
   validation {
     error_message = "Each archive rule must specify a type of `Glacier` or `Accelerated`."
-    condition = length([
-      for bucket in var.cos_buckets :
-      bucket if bucket.archive_rule == null
-      ? true
-      : contains(["Glacier", "Accelerated"], bucket.archive_rule.type)
-    ]) == length(var.cos_buckets)
+    condition = length(
+      [
+        for site_bucket in flatten(
+          [
+            for instance in var.cos :
+            [
+              for bucket in instance.buckets :
+              bucket if lookup(bucket, "archive_rule", null) != null
+            ]
+          ]
+        ) : site_bucket if !contains(["Glacier", "Accelerated"], site_bucket.archive_rule.type)
+      ]
+    ) == 0
   }
 }
 
@@ -922,13 +972,13 @@ variable "atracker" {
   description = "atracker variables"
   type = object({
     resource_group        = string
-    bucket_name           = string
     receive_global_events = bool
+    collector_bucket_name = string
   })
   default = {
     resource_group        = "Default"
-    bucket_name           = "atracker-bucket"
     receive_global_events = true
+    collector_bucket_name = "atracker-bucket"
   }
 }
 
@@ -953,6 +1003,7 @@ variable "clusters" {
       pod_subnet         = optional(string) # Portable subnet for pods
       service_subnet     = optional(string) # Portable subnet for services
       resource_group     = string           # Resource Group used for cluster
+      cos_name           = optional(string) # Name of COS instance Required only for OpenShift clusters
       worker_pools = optional(list(
         object({
           name               = string           # Worker pool name
@@ -969,6 +1020,17 @@ variable "clusters" {
   validation {
     condition     = length([for type in flatten(var.clusters[*].kube_type) : true if type == "iks" || type == "openshift"]) == length(var.clusters)
     error_message = "Invalid value for kube_type entered. Valid values are `iks` or `openshift`."
+  }
+
+  # openshift clusters must have cos name
+  validation {
+    error_message = "OpenShift clusters must have a cos name associated with them for provision."
+    condition = length([
+      for openshift_cluster in [
+        for cluster in var.clusters :
+        cluster if cluster.kube_type == "openshift"
+      ] : openshift_cluster if openshift_cluster.cos_name == null
+    ]) == 0
   }
 
   # subnet_names validation
@@ -1011,4 +1073,5 @@ variable "wait_till" {
     ], var.wait_till)
   }
 }
+
 ##############################################################################

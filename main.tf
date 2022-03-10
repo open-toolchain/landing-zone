@@ -51,12 +51,21 @@ module "vpc" {
 ##############################################################################
 
 resource "ibm_is_flow_log" "flow_logs" {
-  for_each       = local.vpc_map
+  for_each = {
+    # For each network
+    for vpc_network in var.vpcs :
+    # Create a map containing the bucket name, id, and resource group if flow logs bucket name provided
+    (vpc_network.prefix) => {
+      vpc_id         = module.vpc[vpc_network.prefix].vpc_id
+      bucket         = ibm_cos_bucket.buckets[vpc_network.flow_logs_bucket_name].bucket_name
+      resource_group = vpc_network.resource_group == null ? null : local.resource_groups[vpc_network.resource_group]
+    } if vpc_network.flow_logs_bucket_name != null
+  }
   name           = "${each.key}-logs"
-  target         = module.vpc[each.value.prefix].vpc_id
-  active         = var.flow_logs.active
-  storage_bucket = ibm_cos_bucket.buckets[var.flow_logs.cos_bucket_name].bucket_name
-  resource_group = each.value.resource_group == null ? null : local.resource_groups[each.value.resource_group]
+  target         = each.value.vpc_id
+  active         = true
+  storage_bucket = each.value.bucket
+  resource_group = each.value.resource_group
 
   depends_on = [ibm_cos_bucket.buckets, ibm_iam_authorization_policy.policy]
 }

@@ -45,13 +45,17 @@ module "vsi" {
   vpc_id                = module.vpc[each.value.vpc_name].vpc_id
   subnets               = each.value.subnets
   image                 = each.value.image_name
+  boot_volume_encryption_key = each.value.boot_volume_encryption_key_name == null ? "" : [
+    for keys in module.key_protect.keys :
+    keys.id if keys.name == each.value.boot_volume_encryption_key_name
+  ][0]
   security_group_ids = each.value.security_groups == null ? [] : [
     for group in each.value.security_groups :
     ibm_is_security_group.security_group[group].id
   ]
   ssh_key_ids = [
     for ssh_key in each.value.ssh_keys :
-    module.ssh_keys.ssh_key_map[ssh_key].id
+    lookup(module.ssh_keys.ssh_key_map, ssh_key).id
   ]
   machine_type   = each.value.machine_type
   vsi_per_subnet = each.value.vsi_per_subnet

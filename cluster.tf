@@ -69,7 +69,7 @@ resource "ibm_container_vpc_cluster" "cluster" {
   tags              = var.tags
   wait_till         = var.wait_till
   entitlement       = each.value.entitlement
-  cos_instance_crn  = each.value.kube_type == "openshift" ? local.cos_instance_id : null
+  cos_instance_crn  = each.value.kube_type == "openshift" ? local.cos_instance_ids[each.value.cos_name] : null
   pod_subnet        = each.value.pod_subnet
   service_subnet    = each.value.service_subnet
 
