@@ -21,10 +21,16 @@ locals {
       name     = bucket.instance
       bind_key = "todd"
       # Get the first key of the COS instance and lookup credentials
-      bind_key = ibm_resource_key.key[
+      bind_key = length([
+        for instance in var.cos :
+        instance.keys if instance.name == bucket.instance && (instance.keys == null)
+      ]) == 0 || length([
+        for instance in var.cos :
+        instance.keys if instance.name == bucket.instance && (instance.keys == [])
+      ]) > 0 ? null : ibm_resource_key.key[
         [
           for instance in var.cos :
-          instance.keys[0].name if instance.keys != null && instance.name == bucket.instance
+          instance.keys[0].name if instance.keys != null && length(instance.keys) > 0 && instance.name == bucket.instance
         ][0]
       ].credentials.apikey
     }
