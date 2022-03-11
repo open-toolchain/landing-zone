@@ -9,3 +9,5 @@ provider.tf
 *.yaml
 dev.sh
 *.sh
+config_test/
+config_test.tf

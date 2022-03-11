@@ -25,6 +25,7 @@ This module creates a secure landing zone within a single region.
 11. [Contributing](#contributing)
 12. [Terraform Language Resources](#terraform-language-resources)
 13. [Using This Architecure as a Template for Multiple Patterns](#as-a-template-for-multiple-patterns)
+14. [Creating An Issue](#creating-an-issue)
 
 ---
 
@@ -620,3 +621,22 @@ module "cluster_pattern" {
   wait_till                      = var.wait_till
 }
 ```
+
+--- 
+
+## Creating an Issue
+
+As we develop the SLZ template, issues are bound to come up. When an issue comes up the following are required. Issues that do not have complete information will be **closed immediately**.
+
+### Enhancement Feature 
+
+- A detailed title that is either the source of a bug, or a user story for the feature that needs to be added.
+  - example `As a user, I want to be able to provision encryption keys using either HPCS or Key Protect`
+- Any additional information about the use case is helpful, so please be sure to include it.
+
+### Bug Fixes
+
+- A detailed title that is either the source of a bug
+  - example `When provisioning ROKS, network ALBs cannot be provisioned.`
+- If you are creating an issue related to a bug, a list of non-sensitive variables in code block format being used to create the architecture must be added to the issue description. This will enable us to recreate the issue locally and diagnose any problems that occur
+- Additionally, if there are any logging errors, please include those **as text or as part of a code block**.

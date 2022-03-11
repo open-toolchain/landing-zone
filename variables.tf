@@ -746,7 +746,7 @@ variable "cos" {
           [
             for keys in instance.keys :
             keys.name
-          ]
+          ] if contains(keys(instance), "keys")
         ]
       )
       ) == length(
@@ -757,7 +757,7 @@ variable "cos" {
             [
               for keys in instance.keys :
               keys.name
-            ]
+            ]  if contains(keys(instance), "keys")
           ]
         )
       )
@@ -1003,6 +1003,13 @@ variable "clusters" {
       service_subnet     = optional(string) # Portable subnet for services
       resource_group     = string           # Resource Group used for cluster
       cos_name           = optional(string) # Name of COS instance Required only for OpenShift clusters
+      kms_config = optional(
+        object({
+          crk_name         = string
+          instance_name    = string
+          private_endpoint = optional(bool)
+        })
+      )
       worker_pools = optional(list(
         object({
           name               = string           # Worker pool name

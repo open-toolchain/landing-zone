@@ -17,21 +17,21 @@ locals {
     # For each bucket
     for bucket in local.bucket_list :
     (bucket.name) => {
-      id       = local.cos_instance_ids[bucket.instance]
-      name     = bucket.instance
+      id   = local.cos_instance_ids[bucket.instance]
+      name = bucket.instance
       # Get the first key of the COS instance and lookup credentials
       bind_key = lookup([
-        for instance in var.cos:
+        for instance in var.cos :
         instance if instance.name == bucket.instance
-      ][0], "keys", null) == null ? null : lookup([
-        for instance in var.cos:
+        ][0], "keys", null) == null ? null : lookup([
+        for instance in var.cos :
         instance if instance.name == bucket.instance
-      ][0], "keys", null) == [] ? null : ibm_resource_key.key[
+        ][0], "keys", null) == [] ? null : ibm_resource_key.key[
         lookup([
-          for instance in var.cos:
+          for instance in var.cos :
           instance if instance.name == bucket.instance
         ][0], "keys", null)[0].name
-      ].credentials.apikey 
+      ].credentials.apikey
     }
   }
 }
