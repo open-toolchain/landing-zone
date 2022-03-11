@@ -3,33 +3,39 @@
 ##############################################################################
 
 resource "ibm_resource_instance" "kms" {
-  count             = var.kms.use_data == true ? 0 : 1
-  name              = var.kms.name
+  count             = var.key_management.use_data != true && var.key_management.use_hs_crypto != true ? 1 : 0 
+  name              = var.key_management.name
   service           = "kms"
   plan              = "tiered-pricing"
   location          = var.region
-  resource_group_id = var.kms.resource_group_id
+  resource_group_id = var.key_management.resource_group_id
 }
 
 data "ibm_resource_instance" "kms" {
-  count             = var.kms.use_data == true ? 1 : 0
-  name              = var.kms.name
-  resource_group_id = var.kms.resource_group_id
+  count             = var.key_management.use_data == true && var.key_management.use_hs_crypto != true ? 1 : 0 
+  name              = var.key_management.name
+  resource_group_id = var.key_management.resource_group_id
+}
+
+data "ibm_hpcs" "hpcs_instance" {
+  count             = var.key_management.use_hs_crypto == true ? 1 : 0
+  name              = var.key_management.name
+  resource_group_id = var.key_management.resource_group_id
 }
 
 locals {
-  kms_guid = var.kms.use_data == true ? data.ibm_resource_instance.kms[0].guid : ibm_resource_instance.kms[0].guid
-  kms_keys = {
-    for kms_key in var.kms_keys :
-    (kms_key.name) => kms_key
+  key_management_guid = var.key_management.use_data == true ? var.key_management.use_hs_crypto == true ? data.ibm_hpcs.hpcs_instance[0].guid : data.ibm_resource_instance.kms[0].guid : ibm_resource_instance.kms[0].guid
+  key_management_keys = {
+    for encryption_key in var.keys :
+    (encryption_key.name) => encryption_key
   }
   key_rings = distinct([
-    for kms_key in var.kms_keys :
-    kms_key.key_ring if kms_key.key_ring != null
+    for encryption_key in var.keys :
+    encryption_key.key_ring if encryption_key.key_ring != null
   ])
-  kms_key_policies = {
-    for kms_key in var.kms_keys :
-    (kms_key.name) => kms_key if kms_key.policies != null
+  key_management_key_policies = {
+    for encryption_key in var.keys :
+    (encryption_key.name) => encryption_key if encryption_key.policies != null
   }
 }
 
@@ -42,7 +48,7 @@ locals {
 
 resource "ibm_kms_key_rings" "rings" {
   for_each    = toset(local.key_rings)
-  instance_id = local.kms_guid
+  instance_id = local.key_management_guid
   key_ring_id = each.key
 }
 
@@ -54,8 +60,8 @@ resource "ibm_kms_key_rings" "rings" {
 ##############################################################################
 
 resource "ibm_kms_key" "key" {
-  for_each        = local.kms_keys
-  instance_id     = local.kms_guid
+  for_each        = local.key_management_keys
+  instance_id     = local.key_management_guid
   key_name        = each.value.name
   standard_key    = each.value.root_key == null ? null : !each.value.root_key
   payload         = each.value.payload
@@ -74,8 +80,8 @@ resource "ibm_kms_key" "key" {
 ##############################################################################
 
 resource "ibm_kms_key_policies" "key_policy" {
-  for_each      = local.kms_key_policies
-  instance_id   = local.kms_guid
+  for_each      = local.key_management_key_policies
+  instance_id   = local.key_management_guid
   endpoint_type = each.value.endpoint
   key_id        = ibm_kms_key.key[each.key].key_id
   # Dynamically create rotation block
