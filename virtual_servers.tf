@@ -46,7 +46,7 @@ module "vsi" {
   subnets               = each.value.subnets
   image                 = each.value.image_name
   boot_volume_encryption_key = each.value.boot_volume_encryption_key_name == null ? "" : [
-    for keys in module.key_protect.keys :
+    for keys in module.key_management.keys :
     keys.id if keys.name == each.value.boot_volume_encryption_key_name
   ][0]
   security_group_ids = each.value.security_groups == null ? [] : [
