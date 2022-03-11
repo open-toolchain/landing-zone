@@ -467,7 +467,7 @@ variable "vsi" {
           profile  = string
           capacity = optional(number)
           iops     = optional(number)
-          encryption_key  = optional(string)
+          kms_key  = optional(string)
         })
       ))
       load_balancers = optional(list(
@@ -912,13 +912,12 @@ variable "service_endpoints" {
   }
 }
 
-variable "key_management" {
+variable "key_protect" {
   description = "Key Protect instance variables"
   type = object({
     name           = string
     resource_group = string
     use_data       = optional(bool)
-    use_hs_crypto  = optional(bool)
     keys = optional(
       list(
         object({

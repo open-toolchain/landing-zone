@@ -14,17 +14,16 @@ variable "region" {
 # KMS Variables
 ##############################################################################
 
-variable "key_management" {
+variable "kms" {
   description = "Object describing the Key Protect instance"
   type = object({
     name              = string
-    use_hs_crypto     = optional(bool) # can be hpcs or keyprotect
     use_data          = optional(bool)
     resource_group_id = optional(string)
   })
 }
 
-variable "keys" {
+variable "kms_keys" {
   description = "List of keys to be created for the service"
   type = list(
     object({
@@ -52,16 +51,16 @@ variable "keys" {
       )
     })
   )
-  
+
   validation {
     error_message = "Each key must have a unique name."
-    condition     = length(distinct(var.keys.*.name)) == length(var.keys.*.name)
+    condition     = length(distinct(var.kms_keys.*.name)) == length(var.kms_keys.*.name)
   }
 
   validation {
     error_message = "Key endpoints can only be `public` or `private`."
     condition = length([
-      for kms_key in var.keys :
+      for kms_key in var.kms_keys :
       true if kms_key.endpoint != null && kms_key.endpoint != "public" && kms_key.endpoint != "private"
     ]) == 0
   }
@@ -71,7 +70,7 @@ variable "keys" {
     condition = length([
       for kms_key in [
         for rotation_key in [
-          for policy_key in var.keys :
+          for policy_key in var.kms_keys :
           policy_key if policy_key.policies != null
         ] :
         rotation_key if rotation_key.policies.rotation != null

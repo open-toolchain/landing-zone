@@ -2,16 +2,15 @@
 # Key Protect
 ##############################################################################
 
-module "key_management" {
+module "key_protect" {
   source = "./kms"
   region = var.region
-  key_management = {
-    name              = var.key_management.name
-    resource_group_id = var.key_management.resource_group == null ? null : local.resource_groups[var.key_management.resource_group]
-    use_data          = var.key_management.use_data
-    use_hs_crypto     = var.key_management.use_hs_crypto
+  kms = {
+    name              = var.key_protect.name
+    resource_group_id = var.key_protect.resource_group == null ? null : local.resource_groups[var.key_protect.resource_group]
+    use_data          = var.key_protect.use_data
   }
-  keys = var.key_management.keys == null ? [] : var.key_management.keys
+  kms_keys = var.key_protect.keys == null ? [] : var.key_protect.keys
 }
 
 
