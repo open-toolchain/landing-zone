@@ -19,20 +19,19 @@ locals {
     (bucket.name) => {
       id       = local.cos_instance_ids[bucket.instance]
       name     = bucket.instance
-      bind_key = "todd"
       # Get the first key of the COS instance and lookup credentials
-      bind_key = length([
-        for instance in var.cos :
-        instance.keys if instance.name == bucket.instance && (instance.keys == null)
-      ]) == 0 || length([
-        for instance in var.cos :
-        instance.keys if instance.name == bucket.instance && (instance.keys == [])
-      ]) > 0 ? null : ibm_resource_key.key[
-        [
-          for instance in var.cos :
-          instance.keys[0].name if instance.keys != null && length(instance.keys) > 0 && instance.name == bucket.instance
-        ][0]
-      ].credentials.apikey
+      bind_key = lookup([
+        for instance in var.cos:
+        instance if instance.name == bucket.instance
+      ][0], "keys", null) == null ? null : lookup([
+        for instance in var.cos:
+        instance if instance.name == bucket.instance
+      ][0], "keys", null) == [] ? null : ibm_resource_key.key[
+        lookup([
+          for instance in var.cos:
+          instance if instance.name == bucket.instance
+        ][0], "keys", null)[0].name
+      ].credentials.apikey 
     }
   }
 }
@@ -135,7 +134,7 @@ resource "ibm_cos_bucket" "buckets" {
   cross_region_location = each.value.cross_region_location
   allowed_ip            = each.value.allowed_ip
   key_protect = each.value.kms_key == null ? null : [
-    for key in module.key_management.keys :
+    for key in module.key_protect.keys :
     key.id if key.name == each.value.kms_key
   ][0]
   dynamic "archive_rule" {
