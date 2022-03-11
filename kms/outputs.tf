@@ -2,14 +2,14 @@
 # KMS Outputs
 ##############################################################################
 
-output "key_management_crn" {
+output "kms_crn" {
   description = "CRN for KMS instance"
-  value       =  var.key_management.use_data == true ? var.key_management.use_hs_crypto == true ? data.ibm_hpcs.hpcs_instance[0].crn : data.ibm_resource_instance.kms[0].crn : ibm_resource_instance.kms[0].crn
+  value       = var.kms.use_data == true ? data.ibm_resource_instance.kms[0].crn : ibm_resource_instance.kms[0].crn
 }
 
-output "key_management_guid" {
+output "kms_guid" {
   description = "GUID for KMS instance"
-  value       = local.key_management_guid
+  value       = local.kms_guid
 }
 
 ##############################################################################
@@ -34,7 +34,7 @@ output "key_rings" {
 output "keys" {
   description = "List of names and ids for keys created."
   value = [
-    for kms_key in var.keys :
+    for kms_key in var.kms_keys :
     {
       name = kms_key.name
       id   = ibm_kms_key.key[kms_key.name].id
@@ -46,7 +46,7 @@ output "keys" {
 output "key_map" {
   description = "Map of ids and keys for keys created"
   value = {
-    for kms_key in var.keys :
+    for kms_key in var.kms_keys :
     (kms_key.name) => {
       name = kms_key.name
       id   = ibm_kms_key.key[kms_key.name].id
