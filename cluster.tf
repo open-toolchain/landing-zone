@@ -82,7 +82,7 @@ resource "ibm_container_vpc_cluster" "cluster" {
   }
 
   dynamic "kms_config" {
-    for_each = each.value.kms_config == null ? [] : [each.value.kms_config] 
+    for_each = each.value.kms_config == null ? [] : [each.value.kms_config]
     content {
       crk_id      = module.key_protect.key_map[kms_config.value.crk_name].id
       instance_id = module.key_protect.kms_guid
