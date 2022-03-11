@@ -422,7 +422,7 @@ variable "vpn_gateways" {
       tags        = optional(list(string))
       connections = list(
         object({
-          peer_address   = list(string)
+          peer_address   = string
           preshared_key  = string
           local_cidrs    = optional(list(string))
           peer_cidrs     = optional(list(string))
