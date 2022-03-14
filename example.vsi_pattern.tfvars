@@ -140,12 +140,12 @@ vpcs = [
       ]
     }
     vpn_gateways = [
-        {
-           name        = "vpn"
-           subnet_name = "vpn-zone-1"
-           connections = [] 
-        }
-     ]
+      {
+        name        = "vpn"
+        subnet_name = "vpn-zone-1"
+        connections = []
+      }
+    ]
   },
   {
     prefix                = "workload"

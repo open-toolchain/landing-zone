@@ -38,18 +38,18 @@ resource_groups = [{
 # IBM Managed Services
 ##############################################################################
 key_management = {
-    name           = "kms"
-    resource_group = "Default"
-    use_data = false
-    use_hs_crypto = false
-    keys = [
-      {
-        name     = "slz-key"
-        root_key = true
-        key_ring = "slz-ring"
-      }
-    ]
-  }
+  name           = "kms"
+  resource_group = "Default"
+  use_data       = false
+  use_hs_crypto  = false
+  keys = [
+    {
+      name     = "slz-key"
+      root_key = true
+      key_ring = "slz-ring"
+    }
+  ]
+}
 
 ##############################################################################
 vpcs = [
@@ -140,12 +140,12 @@ vpcs = [
       ]
     }
     vpn_gateways = [
-        {
-           name        = "vpn"
-           subnet_name = "vpn-zone-1"
-           connections = [] 
-        }
-     ]
+      {
+        name        = "vpn"
+        subnet_name = "vpn-zone-1"
+        connections = []
+      }
+    ]
   },
   {
     prefix         = "workload"

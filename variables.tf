@@ -268,9 +268,9 @@ variable "vpcs" {
       }
       vpn_gateways = [
         {
-           name        = "vpn"
-           subnet_name = "vpn-zone-1"
-           connections = []
+          name        = "vpn"
+          subnet_name = "vpn-zone-1"
+          connections = []
         }
       ]
     },
@@ -488,11 +488,11 @@ variable "vsi" {
       )
       block_storage_volumes = optional(list(
         object({
-          name     = string
-          profile  = string
-          capacity = optional(number)
-          iops     = optional(number)
-          encryption_key  = optional(string)
+          name           = string
+          profile        = string
+          capacity       = optional(number)
+          iops           = optional(number)
+          encryption_key = optional(string)
         })
       ))
       load_balancers = optional(list(

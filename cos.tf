@@ -24,8 +24,8 @@ locals {
         for instance in var.cos :
         instance if instance.name == bucket.instance
         ][0], "keys", null) == null ? null : length(lookup([
-        for instance in var.cos :
-        instance if instance.name == bucket.instance
+          for instance in var.cos :
+          instance if instance.name == bucket.instance
         ][0], "keys", null)) == 0 ? null : ibm_resource_key.key[
         lookup([
           for instance in var.cos :
