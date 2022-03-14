@@ -39,6 +39,7 @@ output "keys" {
       name = kms_key.name
       id   = ibm_kms_key.key[kms_key.name].id
       crn  = ibm_kms_key.key[kms_key.name].crn
+      key_id = ibm_kms_key.key[kms_key.name].key_id
     }
   ]
 }
@@ -51,6 +52,7 @@ output "key_map" {
       name = kms_key.name
       id   = ibm_kms_key.key[kms_key.name].id
       crn  = ibm_kms_key.key[kms_key.name].crn
+      key_id = ibm_kms_key.key[kms_key.name].key_id
     }
   }
 }
