@@ -364,7 +364,7 @@ variable "vpcs" {
           }
         ]
       }
-      vpn_gateways = []
+      vpn_gateways = null
     },
   ]
 }
