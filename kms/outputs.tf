@@ -4,7 +4,7 @@
 
 output "key_management_crn" {
   description = "CRN for KMS instance"
-  value       =  var.key_management.use_data == true ? var.key_management.use_hs_crypto == true ? data.ibm_hpcs.hpcs_instance[0].crn : data.ibm_resource_instance.kms[0].crn : ibm_resource_instance.kms[0].crn
+  value       = var.key_management.use_data == true ? var.key_management.use_hs_crypto == true ? data.ibm_hpcs.hpcs_instance[0].crn : data.ibm_resource_instance.kms[0].crn : ibm_resource_instance.kms[0].crn
 }
 
 output "key_management_guid" {
@@ -36,9 +36,9 @@ output "keys" {
   value = [
     for kms_key in var.keys :
     {
-      name = kms_key.name
-      id   = ibm_kms_key.key[kms_key.name].id
-      crn  = ibm_kms_key.key[kms_key.name].crn
+      name   = kms_key.name
+      id     = ibm_kms_key.key[kms_key.name].id
+      crn    = ibm_kms_key.key[kms_key.name].crn
       key_id = ibm_kms_key.key[kms_key.name].key_id
     }
   ]
@@ -49,9 +49,9 @@ output "key_map" {
   value = {
     for kms_key in var.keys :
     (kms_key.name) => {
-      name = kms_key.name
-      id   = ibm_kms_key.key[kms_key.name].id
-      crn  = ibm_kms_key.key[kms_key.name].crn
+      name   = kms_key.name
+      id     = ibm_kms_key.key[kms_key.name].id
+      crn    = ibm_kms_key.key[kms_key.name].crn
       key_id = ibm_kms_key.key[kms_key.name].key_id
     }
   }

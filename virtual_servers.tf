@@ -46,7 +46,7 @@ module "vsi" {
   subnets               = each.value.subnets
   image                 = each.value.image_name
   boot_volume_encryption_key = each.value.boot_volume_encryption_key_name == null ? "" : [
-    for keys in module.key_protect.keys :
+    for keys in module.key_management.keys :
     keys.id if keys.name == each.value.boot_volume_encryption_key_name
   ][0]
   security_group_ids = each.value.security_groups == null ? [] : [
@@ -66,13 +66,13 @@ module "vsi" {
     for volume in each.value.block_storage_volumes :
     # Merge volume and add encryption key
     {
-      name = volume.name
-      profile = volume.profile
+      name     = volume.name
+      profile  = volume.profile
       capacity = volume.capacity
-      iops = volume.iops
+      iops     = volume.iops
       encryption_key = lookup(volume, "encryption_key", null) == null ? null : [
-        for key in module.key_protect.keys :
-        key.id if key.name == volume.kms_key
+        for key in module.key_management.keys :
+        key.id if key.name == volume.encryption_key
       ][0]
     }
   ]

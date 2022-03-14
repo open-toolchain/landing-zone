@@ -6,7 +6,7 @@ locals {
   vpn_gateway_map = {
     # Convert list to map with name as the key
     for gateway in var.vpn_gateways :
-    "${var.prefix}-${gateway.name}"=> gateway
+    "${var.prefix}-${gateway.name}" => gateway
   }
 
   # List of subnet names used by VPN gateways
@@ -15,7 +15,7 @@ locals {
   # For each contained subnet, create a map linking the subnet name to the ID of the subnet after creation
   vpn_subnet_map = {
     for subnet in ibm_is_subnet.subnet :
-    (replace(subnet.name, "${var.prefix}-",  "")) => subnet.id if contains(local.vpn_subnet_names, replace(subnet.name, "${var.prefix}-",  ""))
+    (replace(subnet.name, "${var.prefix}-", "")) => subnet.id if contains(local.vpn_subnet_names, replace(subnet.name, "${var.prefix}-", ""))
   }
 
   # Create a list of all VPN gateway connections
