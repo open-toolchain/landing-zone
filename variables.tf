@@ -746,7 +746,7 @@ variable "cos" {
           [
             for keys in instance.keys :
             keys.name
-          ] if contains(keys(instance), "keys")
+          ] if lookup(instance, "keys", false) != false
         ]
       )
       ) == length(
@@ -757,7 +757,7 @@ variable "cos" {
             [
               for keys in instance.keys :
               keys.name
-            ]  if contains(keys(instance), "keys")
+            ] if lookup(instance, "keys", false) != false
           ]
         )
       )
