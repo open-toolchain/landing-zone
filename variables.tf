@@ -159,6 +159,23 @@ variable "vpcs" {
           acl_name       = string
         }))
       })
+      vpn_gateways = list(
+        object({
+          name        = string
+          subnet_name = string # Do not include prefix, use same name as in `var.subnets`
+          mode        = optional(string)
+          tags        = optional(list(string))
+          connections = list(
+            object({
+              peer_address   = string
+              preshared_key  = string
+              local_cidrs    = optional(list(string))
+              peer_cidrs     = optional(list(string))
+              admin_state_up = optional(bool)
+            })
+          )
+        })
+      )
     })
   )
   default = [
@@ -249,6 +266,13 @@ variable "vpcs" {
           }
         ]
       }
+      vpn_gateways = [
+        {
+           name        = "vpn"
+           subnet_name = "vpn-zone-1"
+           connections = []
+        }
+      ]
     },
     {
       prefix                = "workload"
@@ -338,6 +362,7 @@ variable "vpcs" {
           }
         ]
       }
+      vpn_gateways = []
     },
   ]
 }

@@ -139,6 +139,13 @@ vpcs = [
         }
       ]
     }
+    vpn_gateways = [
+        {
+           name        = "vpn"
+           subnet_name = "vpn-zone-1"
+           connections = [] 
+        }
+     ]
   },
   {
     prefix         = "workload"
@@ -226,6 +233,7 @@ vpcs = [
         }
       ]
     }
+    vpn_gateways = []
   },
 ]
 

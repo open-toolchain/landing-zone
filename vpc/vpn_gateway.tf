@@ -6,16 +6,16 @@ locals {
   vpn_gateway_map = {
     # Convert list to map with name as the key
     for gateway in var.vpn_gateways :
-    (gateway.name) => gateway
+    "${var.prefix}-${gateway.name}"=> gateway
   }
 
   # List of subnet names used by VPN gateways
-  vpn_subnet_names = var.vpn_gateways.*.name
+  vpn_subnet_names = var.vpn_gateways.*.subnet_name
 
   # For each contained subnet, create a map linking the subnet name to the ID of the subnet after creation
   vpn_subnet_map = {
     for subnet in ibm_is_subnet.subnet :
-    (subnet.name) => subnet.id if contains(local.vpn_subnet_names, subnet.name)
+    (replace(subnet.name, "${var.prefix}-",  "")) => subnet.id if contains(local.vpn_subnet_names, replace(subnet.name, "${var.prefix}-",  ""))
   }
 
   # Create a list of all VPN gateway connections
@@ -49,7 +49,7 @@ locals {
 resource "ibm_is_vpn_gateway" "gateway" {
   for_each       = local.vpn_gateway_map
   name           = "${var.prefix}-${each.value.name}"
-  subnet         = local.vpn_subnet_map[each.value.subnet]
+  subnet         = ibm_is_subnet.subnet["${var.prefix}-${each.value.subnet_name}"].id
   mode           = each.value.mode
   resource_group = var.resource_group_id
   tags           = each.value.tags
