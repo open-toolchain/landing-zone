@@ -31,7 +31,7 @@ locals {
         description                 = "Allow flow logs write access  cloud object storage instance"
         roles                       = ["Writer"]
         target_service_name         = "cloud-object-storage"
-        target_resource_instance_id = local.cos_instance_ids[instance.name]
+        target_resource_instance_id = split(":", local.cos_instance_ids[instance.name])[7]
       }
     }
   )
