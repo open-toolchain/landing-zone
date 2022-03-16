@@ -117,8 +117,7 @@
   ],
   "ssh_keys": [
     {
-      "name": "slz-test-ssh-key",
-      "public_key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDiwEV+8av41iV0DQ4PpEnO9AKBqcc/nGZSjX0cPyRcAZsFCJGWmR0mNVSwJI1AdEq0Hg14YJ0KRRkBS+khzNrEmDiYcGK+MSIw2rjBQbpR6mR1TTMUpslso34/CWe3kEnIJhSsbTD3P3tM/3drGaX6GdDUdHFwmlp0sN1VUdtb9xH0Xa9jmwrP/4sdO4YJ8BIoiy1RuLj5EH+B7SKXfX8ZnGp3N9enmM2sIjWdOkbq1LoRDWxeZaRojbSivH7P084KOgDCtLgBsxUqkkIxDSQ94fuTSTk/6ZHPbh9ol2YeYZOB6Ohll1vBFu6ZUDqRV8mnRNhoqOBXdAET7NWurHpaBsqFWDZ+C8gYtAgDh03rZgoZGay43jfUqB10eMzQv8I6q1JkEJ8fk2e46EBMD8jU3UpLzwQyHdUS/gkh5QB8BgXTWuFB6yYmxIc32XsiFRYK4y5vAhQtHTlNwRvfdtJtou2tuNEYUbFzeqaR1TBZ/m1Hctogb9VDinTmJ4TnZpNq1M9CFNDZFWNgfvwIeyhlAxA4oVoh5a2yFV+/cz6TG+J3di7t/F3x90whA26Yjz5S1lYvfuV1ci7A9WcXwld+nD7ZwBonA1VbmyA2haHrwaPgMuuTtm4v63dHpzgvbFH9llM3RD+ZXntVd6Vspdags05+lGBhPhl+PigxgnbtUw== Jennifer.Valle@ibm.com"
+      "name": "slz-test-ssh-key"
     }
   ],
   "transit_gateway_connections": ["management", "workload"],
