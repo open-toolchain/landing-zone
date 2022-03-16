@@ -152,7 +152,7 @@ variable "wait_till" {
 variable "override" {
   description = "Override default values with custom JSON template. This uses the file `override.json` to allow users to create a fully customized environment."
   type        = bool
-  default     = true
+  default     = false
 }
 
 ##############################################################################

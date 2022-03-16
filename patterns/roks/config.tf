@@ -26,7 +26,8 @@ locals {
         flow_logs_bucket_name = "${network}-bucket"
         network_acls = [
           {
-            name = "${network}-acl"
+            name              = "${network}-acl"
+            add_cluster_rules = true
             rules = [
               {
                 name        = "allow-ibm-inbound"
@@ -154,53 +155,32 @@ locals {
       receive_global_events = true
       collector_bucket_name = "atracker-bucket"
     }
-    vsi = [
+    vsi = []
+    clusters = [
       for network in var.vpcs :
       {
-        name                            = "${network}-server"
-        vpc_name                        = network
-        subnet_names                    = ["vsi-zone-1", "vsi-zone-2", "vsi-zone-3"]
-        image_name                      = var.vsi_image_name
-        vsi_per_subnet                  = 1
-        machine_type                    = var.vsi_instance_profile
-        boot_volume_encryption_key_name = "${var.prefix}-vsi-volume-key"
-        security_group = {
-          name     = network
-          vpc_name = network
-          rules = flatten([
-            [
-              {
-                name      = "allow-ibm-inbound"
-                source    = "161.26.0.0/16"
-                direction = "inbound"
-              }
-            ],
-            [
-              for direction in ["inbound", "outbound"] :
-              [
-                {
-                  name      = "allow-vpc-${direction}"
-                  source    = "10.0.0.0/8"
-                  direction = direction
-                }
-
-              ]
-            ],
-            [
-              for port in [53, 80, 443] :
-              {
-                name      = "allow-ibm-tcp-${port}-outbound"
-                source    = "161.26.0.0/16"
-                direction = "outbound"
-                tcp = {
-                  port_min = port
-                  port_max = port
-                }
-              }
+        name     = "${network}-cluster"
+        vpc_name = network
+        subnet_names = [
+          for zone in range(1, var.zones) :
+          "vsi-zone-${zone}"
+        ]
+        workers_per_subnet = var.workers_per_zone
+        machine_type       = var.flavor
+        kube_type          = "openshift"
+        resource_group     = "Default"
+        cos_name           = "cos"
+        worker_pools = [
+          {
+            name     = "logging-worker-pool"
+            vpc_name = network
+            subnet_names = [
+              for zone in range(1, var.zones) :
+              "vsi-zone-${zone}"
             ]
-          ])
-        },
-        ssh_keys = ["${var.prefix}-ssh-key"]
+            workers_per_subnet = var.workers_per_zone
+            flavor             = var.flavor
+        }]
       }
     ]
   }
