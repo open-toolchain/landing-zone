@@ -1,4 +1,4 @@
-ibmcloud_api_key        = ""
+ibmcloud_api_key        =  "< add user data here >"
 TF_VERSION              = "1.0"
 prefix                  = "< add user data here >"
 region                  = "< add user data here >"
