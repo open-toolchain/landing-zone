@@ -213,7 +213,7 @@ locals {
           for zone in range(1, var.zones) :
           "vsi-zone-${zone}"
         ]
-        workers_per_subnet = 2
+        workers_per_subnet = var.workers_per_zone
         machine_type       = var.flavor
         kube_type          = "openshift"
         resource_group     = "Default"
@@ -226,7 +226,7 @@ locals {
               for zone in range(1, var.zones) :
               "vsi-zone-${zone}"
             ]
-            workers_per_subnet = 1
+            workers_per_subnet = var.workers_per_zone
             flavor             = var.flavor
         }]
       }

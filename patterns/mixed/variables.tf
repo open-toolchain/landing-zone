@@ -121,6 +121,12 @@ variable "flavor" {
   default     = "bx2.16x64"
 }
 
+variable "workers_per_zone" {
+  description = "Number of workers in each zone of the cluster. OpenShift requires at least 2 workers per sone for high availability."
+  type        = number
+  default     = 2
+}
+
 variable "wait_till" {
   description = "To avoid long wait times when you run your Terraform code, you can specify the stage when you want Terraform to mark the cluster resource creation as completed. Depending on what stage you choose, the cluster creation might not be fully completed and continues to run in the background. However, your Terraform code can continue to run without waiting for the cluster to be fully created. Supported args are `MasterNodeReady`, `OneWorkerNodeReady`, and `IngressReady`"
   type        = string
