@@ -63,7 +63,7 @@ locals {
             for subnet in(network == "management" && zone == 1 ? ["vsi", "vpe", "vpn"] : ["vsi", "vpe"]) :
             {
               name           = "${subnet}-zone-${zone}"
-              cidr           = "10.${zone + (index(var.vpcs, network) * 3)}0.${zone + index(["vsi", "vpe", "vpn"], subnet)}0.0/24"
+              cidr           = "10.${zone + (index(var.vpcs, network) * 3)}0.${1 + index(["vsi", "vpe", "vpn"], subnet)}0.0/24"
               public_gateway = false
               acl_name       = "${network}-acl"
             }
