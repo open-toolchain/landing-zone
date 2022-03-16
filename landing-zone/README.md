@@ -31,7 +31,7 @@ This module creates a secure landing zone within a single region.
 
 ## VPC
 
-![vpc-module](./.docs/vpc-module.png)
+![vpc-module](../.docs/vpc-module.png)
 
 This template allows users to create any number of VPCs in a single region. The VPC network and components are created by the [Cloud Schematics VPC module](https://github.com/Cloud-Schematics/multizone-vpc-module). VPC components can be found in [main.tf](./main.tf)
 
@@ -271,7 +271,7 @@ The `security_group` variable type is as follows:
 
 ## Virtual Servers
 
-![Virtual Servers](./.docs/vsi-lb.png)
+![Virtual Servers](../.docs/vsi-lb.png)
 
 This module uses the [Cloud Schematics VSI Module](https://github.com/Cloud-Schematics/vsi-module) to let users create any number of VSI workloads. The VSI Module covers the following resources:
 

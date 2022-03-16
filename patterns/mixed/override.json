@@ -283,13 +283,13 @@
         "zone-2": [
           {
             "acl_name": "workload-acl",
-            "cidr": "10.50.20.0/24",
+            "cidr": "10.50.10.0/24",
             "name": "vsi-zone-2",
             "public_gateway": false
           },
           {
             "acl_name": "workload-acl",
-            "cidr": "10.50.30.0/24",
+            "cidr": "10.50.20.0/24",
             "name": "vpe-zone-2",
             "public_gateway": false
           }
@@ -297,13 +297,13 @@
         "zone-3": [
           {
             "acl_name": "workload-acl",
-            "cidr": "10.60.30.0/24",
+            "cidr": "10.60.10.0/24",
             "name": "vsi-zone-3",
             "public_gateway": false
           },
           {
             "acl_name": "workload-acl",
-            "cidr": "10.60.40.0/24",
+            "cidr": "10.60.20.0/24",
             "name": "vpe-zone-3",
             "public_gateway": false
           }
