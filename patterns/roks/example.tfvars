@@ -9,4 +9,4 @@ hs_crypto_instance_name = null
 zones                   = 3
 flavor                  = "bx2.16x64"
 wait_till               = "IngressReady"
-override                = true
+override                = false

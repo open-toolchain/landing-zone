@@ -13,4 +13,4 @@ vsi_per_subnet          = 1
 zones                   = 3
 flavor                  = "bx2.16x64"
 wait_till               = "IngressReady"
-override                = true
+override                = false
