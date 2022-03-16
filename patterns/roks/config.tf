@@ -12,12 +12,7 @@ locals {
         create = group == "Default" || group == "default" ? false : true
       }
     ]
-    ssh_keys = [
-      {
-        name       = "${var.prefix}-ssh-key"
-        public_key = var.ssh_public_key
-      }
-    ]
+    ssh_keys = []
     vpcs = [
       for network in var.vpcs :
       {

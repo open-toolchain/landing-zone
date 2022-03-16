@@ -11,21 +11,15 @@
       "machine_type": "bx2.16x64",
       "name": "management-cluster",
       "resource_group": "Default",
-      "subnet_names": [
-        "vsi-zone-1",
-        "vsi-zone-2"
-      ],
+      "subnet_names": ["vsi-zone-1", "vsi-zone-2"],
       "vpc_name": "management",
       "worker_pools": [
         {
           "flavor": "bx2.16x64",
           "name": "logging-worker-pool",
-          "subnet_names": [
-            "vsi-zone-1",
-            "vsi-zone-2"
-          ],
+          "subnet_names": ["vsi-zone-1", "vsi-zone-2"],
           "vpc_name": "management",
-          "workers_per_subnet": 1
+          "workers_per_subnet": 2
         }
       ],
       "workers_per_subnet": 2
@@ -36,21 +30,15 @@
       "machine_type": "bx2.16x64",
       "name": "workload-cluster",
       "resource_group": "Default",
-      "subnet_names": [
-        "vsi-zone-1",
-        "vsi-zone-2"
-      ],
+      "subnet_names": ["vsi-zone-1", "vsi-zone-2"],
       "vpc_name": "workload",
       "worker_pools": [
         {
           "flavor": "bx2.16x64",
           "name": "logging-worker-pool",
-          "subnet_names": [
-            "vsi-zone-1",
-            "vsi-zone-2"
-          ],
+          "subnet_names": ["vsi-zone-1", "vsi-zone-2"],
           "vpc_name": "workload",
-          "workers_per_subnet": 1
+          "workers_per_subnet": 2
         }
       ],
       "workers_per_subnet": 2
@@ -90,12 +78,7 @@
           "storage_class": "standard"
         }
       ],
-      "keys": [
-        {
-          "name": "cos-bind-key",
-          "role": "Writer"
-        }
-      ],
+      "keys": [{ "name": "cos-bind-key", "role": "Writer" }],
       "name": "atracker-cos",
       "plan": "standard",
       "resource_group": "slz-test-service-rg",
@@ -126,36 +109,19 @@
     }
   ],
   "resource_groups": [
-    {
-      "create": false,
-      "name": "Default"
-    },
-    {
-      "create": true,
-      "name": "slz-test-management-rg"
-    },
-    {
-      "create": true,
-      "name": "slz-test-workload-rg"
-    },
-    {
-      "create": true,
-      "name": "slz-test-service-rg"
-    },
-    {
-      "create": true,
-      "name": "slz-test-transit-gateway-rg"
-    }
+    { "create": false, "name": "Default" },
+    { "create": true, "name": "slz-test-management-rg" },
+    { "create": true, "name": "slz-test-workload-rg" },
+    { "create": true, "name": "slz-test-service-rg" },
+    { "create": true, "name": "slz-test-transit-gateway-rg" }
   ],
   "ssh_keys": [
     {
-      "name": "slz-test-ssh-key"
+      "name": "slz-test-ssh-key",
+      "public_key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDiwEV+8av41iV0DQ4PpEnO9AKBqcc/nGZSjX0cPyRcAZsFCJGWmR0mNVSwJI1AdEq0Hg14YJ0KRRkBS+khzNrEmDiYcGK+MSIw2rjBQbpR6mR1TTMUpslso34/CWe3kEnIJhSsbTD3P3tM/3drGaX6GdDUdHFwmlp0sN1VUdtb9xH0Xa9jmwrP/4sdO4YJ8BIoiy1RuLj5EH+B7SKXfX8ZnGp3N9enmM2sIjWdOkbq1LoRDWxeZaRojbSivH7P084KOgDCtLgBsxUqkkIxDSQ94fuTSTk/6ZHPbh9ol2YeYZOB6Ohll1vBFu6ZUDqRV8mnRNhoqOBXdAET7NWurHpaBsqFWDZ+C8gYtAgDh03rZgoZGay43jfUqB10eMzQv8I6q1JkEJ8fk2e46EBMD8jU3UpLzwQyHdUS/gkh5QB8BgXTWuFB6yYmxIc32XsiFRYK4y5vAhQtHTlNwRvfdtJtou2tuNEYUbFzeqaR1TBZ/m1Hctogb9VDinTmJ4TnZpNq1M9CFNDZFWNgfvwIeyhlAxA4oVoh5a2yFV+/cz6TG+J3di7t/F3x90whA26Yjz5S1lYvfuV1ci7A9WcXwld+nD7ZwBonA1VbmyA2haHrwaPgMuuTtm4v63dHpzgvbFH9llM3RD+ZXntVd6Vspdags05+lGBhPhl+PigxgnbtUw== Jennifer.Valle@ibm.com"
     }
   ],
-  "transit_gateway_connections": [
-    "management",
-    "workload"
-  ],
+  "transit_gateway_connections": ["management", "workload"],
   "transit_gateway_resource_group": "slz-test-service-rg",
   "virtual_private_endpoints": [
     {
@@ -164,19 +130,11 @@
       "vpcs": [
         {
           "name": "management",
-          "subnets": [
-            "vpe-zone-1",
-            "vpe-zone-2",
-            "vpe-zone-3"
-          ]
+          "subnets": ["vpe-zone-1", "vpe-zone-2", "vpe-zone-3"]
         },
         {
           "name": "workload",
-          "subnets": [
-            "vpe-zone-1",
-            "vpe-zone-2",
-            "vpe-zone-3"
-          ]
+          "subnets": ["vpe-zone-1", "vpe-zone-2", "vpe-zone-3"]
         }
       ]
     }
@@ -271,11 +229,7 @@
         "zone-3": false
       },
       "vpn_gateways": [
-        {
-          "connections": [],
-          "name": "vpn",
-          "subnet_name": "vpn-zone-1"
-        }
+        { "connections": [], "name": "vpn", "subnet_name": "vpn-zone-1" }
       ]
     },
     {
@@ -360,13 +314,7 @@
         "zone-2": false,
         "zone-3": false
       },
-      "vpn_gateways": [
-        {
-          "connections": [],
-          "name": null,
-          "subnet_name": null
-        }
-      ]
+      "vpn_gateways": [{ "connections": [], "name": null, "subnet_name": null }]
     }
   ],
   "vsi": [
@@ -397,40 +345,25 @@
             "direction": "outbound",
             "name": "allow-ibm-tcp-53-outbound",
             "source": "161.26.0.0/16",
-            "tcp": {
-              "port_max": 53,
-              "port_min": 53
-            }
+            "tcp": { "port_max": 53, "port_min": 53 }
           },
           {
             "direction": "outbound",
             "name": "allow-ibm-tcp-80-outbound",
             "source": "161.26.0.0/16",
-            "tcp": {
-              "port_max": 80,
-              "port_min": 80
-            }
+            "tcp": { "port_max": 80, "port_min": 80 }
           },
           {
             "direction": "outbound",
             "name": "allow-ibm-tcp-443-outbound",
             "source": "161.26.0.0/16",
-            "tcp": {
-              "port_max": 443,
-              "port_min": 443
-            }
+            "tcp": { "port_max": 443, "port_min": 443 }
           }
         ],
         "vpc_name": "management"
       },
-      "ssh_keys": [
-        "slz-test-ssh-key"
-      ],
-      "subnet_names": [
-        "vsi-zone-1",
-        "vsi-zone-2",
-        "vsi-zone-3"
-      ],
+      "ssh_keys": ["slz-test-ssh-key"],
+      "subnet_names": ["vsi-zone-1", "vsi-zone-2", "vsi-zone-3"],
       "vpc_name": "management",
       "vsi_per_subnet": 1
     },
@@ -461,40 +394,25 @@
             "direction": "outbound",
             "name": "allow-ibm-tcp-53-outbound",
             "source": "161.26.0.0/16",
-            "tcp": {
-              "port_max": 53,
-              "port_min": 53
-            }
+            "tcp": { "port_max": 53, "port_min": 53 }
           },
           {
             "direction": "outbound",
             "name": "allow-ibm-tcp-80-outbound",
             "source": "161.26.0.0/16",
-            "tcp": {
-              "port_max": 80,
-              "port_min": 80
-            }
+            "tcp": { "port_max": 80, "port_min": 80 }
           },
           {
             "direction": "outbound",
             "name": "allow-ibm-tcp-443-outbound",
             "source": "161.26.0.0/16",
-            "tcp": {
-              "port_max": 443,
-              "port_min": 443
-            }
+            "tcp": { "port_max": 443, "port_min": 443 }
           }
         ],
         "vpc_name": "workload"
       },
-      "ssh_keys": [
-        "slz-test-ssh-key"
-      ],
-      "subnet_names": [
-        "vsi-zone-1",
-        "vsi-zone-2",
-        "vsi-zone-3"
-      ],
+      "ssh_keys": ["slz-test-ssh-key"],
+      "subnet_names": ["vsi-zone-1", "vsi-zone-2", "vsi-zone-3"],
       "vpc_name": "workload",
       "vsi_per_subnet": 1
     }
