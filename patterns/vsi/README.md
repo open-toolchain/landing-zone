@@ -20,4 +20,27 @@ vsi_instance_profile    | string       | VSI image profile. Use the IBM Cloud CL
 vsi_per_subnet          | number       | Number of Virtual Servers to create on each VSI subnet.                                                                                                                         |           | 1
 override                | bool         | Override default values with custom JSON template. This uses the file `override.json` to allow users to create a fully customized environment.                                  |           | false
 
+## Using override.json
+
+To create a fully customized environment based on the starting template, users can use [override.json](./override.json) by setting the template `override` variable to `true`.
+
+### Variable Definitions
+
+By using the variable deifnitions found in our [landing zone module](../../landing-zone/) any number and custom configuration of VPC components, VSI workoads, and clusters can be created. Currently `override.json` is set to contain the default environment configuration.
+
+### Getting Your Environment
+
+This module outputs `config`, a JSON encoded definition of your environment based on the defaults for Landing Zone and any variables changed using `override.json`. By using this output, it's easy to configure multiple additional workloads, VPCs, or subnets in existing VPCs to the default environment.
+
+### Overriding Only Some Veriables
+
+`override.json` does not need to contain all elements. As an example override.json could be:
+```json
+{
+    "enable_transit_gateway": false
+}
+```
+
+In this use case, each other value would be the default configuration, just with a transit gateway disabled.
+
 # Technical Docs go here

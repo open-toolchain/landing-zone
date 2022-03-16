@@ -24,4 +24,28 @@ workers_per_zone        | number       | Number of workers in each zone of the c
 wait_till               | string       | To avoid long wait times when you run your Terraform code, you can specify the stage when you want Terraform to mark the cluster resource creation as completed. Depending on what stage you choose, the cluster creation might not be fully completed and continues to run in the background. However, your Terraform code can continue to run without waiting for the cluster to be fully created. Supported args are `MasterNodeReady`, `OneWorkerNodeReady`, and `IngressReady` |           | IngressReady
 override                | bool         | Override default values with custom JSON template. This uses the file `override.json` to allow users to create a fully customized environment.                                                                                                                                                                                                                                                                                                                                      |           | true
 
+
+## Using override.json
+
+To create a fully customized environment based on the starting template, users can use [override.json](./override.json) by setting the template `override` variable to `true`.
+
+### Variable Definitions
+
+By using the variable deifnitions found in our [landing zone module](../../landing-zone/) any number and custom configuration of VPC components, VSI workoads, and clusters can be created. Currently `override.json` is set to contain the default environment configuration.
+
+### Getting Your Environment
+
+This module outputs `config`, a JSON encoded definition of your environment based on the defaults for Landing Zone and any variables changed using `override.json`. By using this output, it's easy to configure multiple additional workloads, VPCs, or subnets in existing VPCs to the default environment.
+
+### Overriding Only Some Veriables
+
+`override.json` does not need to contain all elements. As an example override.json could be:
+```json
+{
+    "enable_transit_gateway": false
+}
+```
+
+In this use case, each other value would be the default configuration, just with a transit gateway disabled. This allows users to change just the values needed.
+
 # Technical Docs go here

@@ -4,7 +4,7 @@
 
 output "config" {
   description = "Output configuration as encoded JSON"
-  value       = jsonencode(local.config)
+  value       = jsonencode(local.env)
 }
 
 ##############################################################################

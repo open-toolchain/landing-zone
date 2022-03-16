@@ -11,13 +11,13 @@
       "machine_type": "bx2.16x64",
       "name": "management-cluster",
       "resource_group": "Default",
-      "subnet_names": ["vsi-zone-1", "vsi-zone-2"],
+      "subnet_names": ["vsi-zone-1", "vsi-zone-2", "vsi-zone-3"],
       "vpc_name": "management",
       "worker_pools": [
         {
           "flavor": "bx2.16x64",
           "name": "logging-worker-pool",
-          "subnet_names": ["vsi-zone-1", "vsi-zone-2"],
+          "subnet_names": ["vsi-zone-1", "vsi-zone-2", "vsi-zone-3"],
           "vpc_name": "management",
           "workers_per_subnet": 2
         }
@@ -30,13 +30,13 @@
       "machine_type": "bx2.16x64",
       "name": "workload-cluster",
       "resource_group": "Default",
-      "subnet_names": ["vsi-zone-1", "vsi-zone-2"],
+      "subnet_names": ["vsi-zone-1", "vsi-zone-2", "vsi-zone-3"],
       "vpc_name": "workload",
       "worker_pools": [
         {
           "flavor": "bx2.16x64",
           "name": "logging-worker-pool",
-          "subnet_names": ["vsi-zone-1", "vsi-zone-2"],
+          "subnet_names": ["vsi-zone-1", "vsi-zone-2", "vsi-zone-3"],
           "vpc_name": "workload",
           "workers_per_subnet": 2
         }
