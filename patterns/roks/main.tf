@@ -2,7 +2,7 @@
 # Landing Zone
 ##############################################################################
 
-module landing-zone {
+module "landing-zone" {
   source                         = "../../landing-zone"
   ibmcloud_api_key               = var.ibmcloud_api_key
   prefix                         = var.prefix

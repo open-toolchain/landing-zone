@@ -54,14 +54,16 @@ variable "resource_groups" {
   default = [{
     name = "Default"
     }, {
-    name = "default"
+    name   = "slz-cs-rg"
+    create = true
     }, {
-    name = "slz-cs-rg"
+    name   = "slz-management-rg"
+    create = true
     }, {
-    name = "slz-management-rg"
-    }, {
-    name = "slz-workload-rg"
+    name   = "slz-workload-rg"
+    create = true
   }]
+
 
   validation {
     error_message = "Each group must have a unique name."
@@ -285,8 +287,7 @@ variable "vpcs" {
       }
       network_acls = [
         {
-          name              = "workload-acl"
-          add_cluster_rules = true
+          name = "workload-acl"
           rules = [
             {
               name        = "allow-ibm-inbound"
@@ -362,9 +363,10 @@ variable "vpcs" {
           }
         ]
       }
-      vpn_gateways = null
+      vpn_gateways = []
     },
   ]
+
 }
 
 ##############################################################################
@@ -412,8 +414,8 @@ variable "ssh_keys" {
   )
   default = [
     {
-      name           = "jv-dev-ssh-key"
-      resource_group = "default"
+      name       = "slz-key"
+      public_key = "<USER DEFINED INPUT>"
     }
   ]
 
@@ -543,99 +545,122 @@ variable "vsi" {
       ))
     })
   )
-  default = [{
-    name           = "management-server"
-    vpc_name       = "management"
-    vsi_per_subnet = 1
-    subnet_names   = ["vsi-zone-1", "vsi-zone-2", "vsi-zone-3"]
-    image_name     = "ibm-ubuntu-16-04-5-minimal-amd64-1"
-    machine_type   = "cx2-2x4"
-    block_storage_volumes = [
-      {
-        name           = "kms-test-volume"
-        profile        = "general-purpose"
-        encryption_key = "slz-key"
-    }]
-
-    security_group = {
-      name     = "management"
-      vpc_name = "management"
-      rules = [{
-        name      = "allow-ibm-inbound"
-        source    = "161.26.0.0/16"
-        direction = "inbound"
-        },
-        {
-          name      = "allow-ibm-tcp-80-outbound"
-          source    = "161.26.0.0/16"
-          direction = "outbound"
-          tcp = {
-            port_min = 80
-            port_max = 80
+  default = [
+    {
+      name           = "management-server"
+      vpc_name       = "management"
+      resource_group = "slz-management-rg"
+      vsi_per_subnet = 1
+      subnet_names   = ["vsi-zone-1", "vsi-zone-2", "vsi-zone-3"]
+      image_name     = "ibm-ubuntu-16-04-5-minimal-amd64-1"
+      machine_type   = "cx2-2x4"
+      security_group = {
+        name     = "management"
+        vpc_name = "management"
+        rules = [
+          {
+            name      = "allow-ibm-inbound"
+            source    = "161.26.0.0/16"
+            direction = "inbound"
+          },
+          {
+            name      = "allow-vpc-inbound"
+            source    = "10.0.0.0/8"
+            direction = "outbound"
+          },
+          {
+            name      = "allow-vpc-outbound"
+            source    = "10.0.0.0/8"
+            direction = "outbound"
+          },
+          {
+            name      = "allow-ibm-tcp-80-outbound"
+            source    = "161.26.0.0/16"
+            direction = "outbound"
+            tcp = {
+              port_min = 80
+              port_max = 80
+            }
+          },
+          {
+            name      = "allow-ibm-tcp-443-outbound"
+            source    = "161.26.0.0/16"
+            direction = "outbound"
+            tcp = {
+              port_min = 443
+              port_max = 443
+            }
+          },
+          {
+            name      = "allow-ibm-udp-53-outbound"
+            source    = "161.26.0.0/16"
+            direction = "outbound"
+            udp = {
+              port_min = 53
+              port_max = 53
+            }
           }
-          }, {
-          name      = "allow-ibm-tcp-443-outbound"
-          source    = "161.26.0.0/16"
-          direction = "outbound"
-          tcp = {
-            port_min = 443
-            port_max = 443
-          }
-          }, {
-          name      = "allow-ibm-udp-53-outbound"
-          source    = "161.26.0.0/16"
-          direction = "outbound"
-          udp = {
-            port_min = 53
-            port_max = 53
-          }
-        }
-      ]
+        ]
+      },
+      ssh_keys = ["slz-key"]
     },
-    ssh_keys = ["jv-dev-ssh-key"]
-    }, {
-    name           = "workload-server"
-    vpc_name       = "workload"
-    vsi_per_subnet = 1
-    subnet_names   = ["vsi-zone-1", "vsi-zone-2", "vsi-zone-3"]
-    image_name     = "ibm-ubuntu-16-04-5-minimal-amd64-1"
-    machine_type   = "cx2-2x4"
-    security_group = {
-      name     = "workload"
-      vpc_name = "workload"
-      rules = [
-        {
-          name      = "allow-ibm-inbound"
-          source    = "161.26.0.0/16"
-          direction = "inbound"
-          }, {
-          name      = "allow-ibm-tcp-80-outbound"
-          source    = "161.26.0.0/16"
-          direction = "outbound"
-          tcp = {
-            port_min = 80
-            port_max = 80
+    {
+      name           = "workload-server"
+      vpc_name       = "workload"
+      resource_group = "slz-workload-rg"
+      vsi_per_subnet = 1
+      subnet_names   = ["vsi-zone-1", "vsi-zone-2", "vsi-zone-3"]
+      image_name     = "ibm-ubuntu-16-04-5-minimal-amd64-1"
+      machine_type   = "cx2-2x4"
+      security_group = {
+        name     = "workload"
+        vpc_name = "workload"
+        rules = [
+          {
+            name      = "allow-ibm-inbound"
+            source    = "161.26.0.0/16"
+            direction = "inbound"
+          },
+          {
+            name      = "allow-vpc-inbound"
+            source    = "10.0.0.0/8"
+            direction = "outbound"
+          },
+          {
+            name      = "allow-vpc-outbound"
+            source    = "10.0.0.0/8"
+            direction = "outbound"
+          },
+          {
+            name      = "allow-ibm-tcp-80-outbound"
+            source    = "161.26.0.0/16"
+            direction = "outbound"
+            tcp = {
+              port_min = 80
+              port_max = 80
+            }
+          },
+          {
+            name      = "allow-ibm-tcp-443-outbound"
+            source    = "161.26.0.0/16"
+            direction = "outbound"
+            tcp = {
+              port_min = 443
+              port_max = 443
+            }
+          },
+          {
+            name      = "allow-ibm-udp-53-outbound"
+            source    = "161.26.0.0/16"
+            direction = "outbound"
+            udp = {
+              port_min = 53
+              port_max = 53
+            }
           }
-          }, {
-          name      = "allow-ibm-tcp-443-outbound"
-          source    = "161.26.0.0/16"
-          direction = "outbound"
-          tcp = {
-            port_min = 443
-            port_max = 443
-          }
-          }, {
-          name      = "allow-ibm-udp-53-outbound"
-          source    = "161.26.0.0/16"
-          direction = "outbound"
-          udp = {
-            port_min = 53
-            port_max = 53
-          }
-        }
-      ]
-    }
-    ssh_keys = ["jv-dev-ssh-key"]
+        ]
+      }
+      ssh_keys = ["slz-key"]
     }
   ]
 
@@ -1107,7 +1132,6 @@ variable "atracker" {
 ##############################################################################
 # Cluster variables
 ##############################################################################
-
 
 variable "clusters" {
   description = "A list describing clusters workloads to create"
