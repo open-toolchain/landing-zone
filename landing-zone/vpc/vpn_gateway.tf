@@ -6,7 +6,7 @@ locals {
   vpn_gateway_map = {
     # Convert list to map with name as the key
     for gateway in var.vpn_gateways :
-    "${var.prefix}-${gateway.name}" => gateway
+    "${var.prefix}-${gateway.name}" => gateway if gateway.name != null
   }
 
   # List of subnet names used by VPN gateways
@@ -28,7 +28,7 @@ locals {
       merge(connection, {
         gateway_name    = "${var.prefix}-${gateway.name}"
         connection_name = "${gateway.name}-connection-${index(gateway.connections, connection) + 1}"
-      })
+      }) if gateway.name != null
     ]
   ])
 

@@ -2,20 +2,6 @@
 # Account Variables
 ##############################################################################
 
-# Uncomment this variable if running locally
-variable "ibmcloud_api_key" {
-  description = "The IBM Cloud platform API key needed to deploy IAM enabled resources."
-  type        = string
-  sensitive   = true
-}
-
-# Comment out if not running in schematics
-# variable "TF_VERSION" {
-#   default     = "1.0"
-#   type        = string
-#   description = "The version of the Terraform engine that's used in the Schematics workspace."
-# }
-
 variable "prefix" {
   description = "A unique identifier for resources. Must begin with a letter. This prefix will be prepended to any resources provisioned by this template."
   type        = string
@@ -159,25 +145,24 @@ variable "vpcs" {
           acl_name       = string
         }))
       })
-      vpn_gateways = optional(
-        list(
-          object({
-            name        = string
-            subnet_name = string # Do not include prefix, use same name as in `var.subnets`
-            mode        = optional(string)
-            tags        = optional(list(string))
-            connections = list(
-              object({
-                peer_address   = string
-                preshared_key  = string
-                local_cidrs    = optional(list(string))
-                peer_cidrs     = optional(list(string))
-                admin_state_up = optional(bool)
-              })
-            )
-          })
-        )
+      vpn_gateways = list(
+        object({
+          name        = string
+          subnet_name = string # Do not include prefix, use same name as in `var.subnets`
+          mode        = optional(string)
+          tags        = optional(list(string))
+          connections = list(
+            object({
+              peer_address   = string
+              preshared_key  = string
+              local_cidrs    = optional(list(string))
+              peer_cidrs     = optional(list(string))
+              admin_state_up = optional(bool)
+            })
+          )
+        })
       )
+
     })
   )
   default = [

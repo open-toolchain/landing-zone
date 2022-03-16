@@ -93,7 +93,7 @@ variable "boot_volume_encryption_key" {
 variable "enable_floating_ip" {
   description = "Create a floating IP for each virtual server created"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "create_security_group" {

@@ -1,10 +1,21 @@
 ##############################################################################
+# IBM Cloud Provider
+##############################################################################
+
+provider "ibm" {
+  ibmcloud_api_key = var.ibmcloud_api_key
+  region           = var.region
+  ibmcloud_timeout = 60
+}
+
+##############################################################################
+
+##############################################################################
 # Landing Zone
 ##############################################################################
 
 module "landing-zone" {
   source                         = "../../landing-zone"
-  ibmcloud_api_key               = var.ibmcloud_api_key
   prefix                         = var.prefix
   region                         = var.region
   tags                           = var.tags
