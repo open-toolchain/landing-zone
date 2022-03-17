@@ -121,6 +121,15 @@ locals {
         keys = []
       }
     ]
+    vpn_gateways = [
+      {
+        name           = "management-gateway"
+        vpc_name       = "management"
+        subnet_name    = "vpn-zone-1"
+        resource_group = "${var.prefix}-management-rg"
+        connections    = []
+      }
+    ]
     key_management = {
       name           = "${var.prefix}-slz-kms"
       resource_group = "${var.prefix}-service-rg"
@@ -198,7 +207,9 @@ locals {
         },
         ssh_keys = ["${var.prefix}-ssh-key"]
       }
+
     ]
+
   }
   ##############################################################################
   # Compile Environment for Config output
