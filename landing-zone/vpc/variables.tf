@@ -406,32 +406,3 @@ variable "routes" {
 }
 
 ##############################################################################
-
-
-##############################################################################
-# VPN Gateways
-##############################################################################
-
-variable "vpn_gateways" {
-  description = "List defining the information needed to create a VPN service to securely connect your VPC to another private network"
-  type = list(
-    object({
-      name        = string
-      subnet_name = string # Do not include prefix, use same name as in `var.subnets`
-      mode        = optional(string)
-      tags        = optional(list(string))
-      connections = list(
-        object({
-          peer_address   = string
-          preshared_key  = string
-          local_cidrs    = optional(list(string))
-          peer_cidrs     = optional(list(string))
-          admin_state_up = optional(bool)
-        })
-      )
-    })
-  )
-  default = []
-}
-
-##############################################################################

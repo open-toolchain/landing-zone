@@ -203,14 +203,7 @@
         "zone-1": false,
         "zone-2": false,
         "zone-3": false
-      },
-      "vpn_gateways": [
-        {
-          "connections": [],
-          "name": "vpn",
-          "subnet_name": "vpn-zone-1"
-        }
-      ]
+      }
     },
     {
       "flow_logs_bucket_name": "workload-bucket",
@@ -292,14 +285,7 @@
         "zone-1": false,
         "zone-2": false,
         "zone-3": false
-      },
-      "vpn_gateways": [
-        {
-          "connections": [],
-          "name": null,
-          "subnet_name": null
-        }
-      ]
+      }
     }
   ],
   "vsi": [

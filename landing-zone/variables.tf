@@ -145,23 +145,23 @@ variable "vpcs" {
           acl_name       = string
         }))
       })
-      vpn_gateways = list(
-        object({
-          name        = string
-          subnet_name = string # Do not include prefix, use same name as in `var.subnets`
-          mode        = optional(string)
-          tags        = optional(list(string))
-          connections = list(
-            object({
-              peer_address   = string
-              preshared_key  = string
-              local_cidrs    = optional(list(string))
-              peer_cidrs     = optional(list(string))
-              admin_state_up = optional(bool)
-            })
-          )
-        })
-      )
+      # vpn_gateways = list(
+      #   object({
+      #     name        = string
+      #     subnet_name = string # Do not include prefix, use same name as in `var.subnets`
+      #     mode        = optional(string)
+      #     tags        = optional(list(string))
+      #     connections = list(
+      #       object({
+      #         peer_address   = string
+      #         preshared_key  = string
+      #         local_cidrs    = optional(list(string))
+      #         peer_cidrs     = optional(list(string))
+      #         admin_state_up = optional(bool)
+      #       })
+      #     )
+      #   })
+      # )
 
     })
   )
@@ -352,6 +352,29 @@ variable "vpcs" {
       vpn_gateways = null
     },
   ]
+}
+
+variable "vpn_gateways" {
+  description = "List of VPN Gateways to create."
+  type = list(
+    object({
+      name           = string
+      vpc_name       = string
+      subnet_name    = string # Do not include prefix, use same name as in `var.subnets`
+      mode           = optional(string)
+      resource_group = optional(string)
+      connections = list(
+        object({
+          peer_address   = string
+          preshared_key  = string
+          local_cidrs    = optional(list(string))
+          peer_cidrs     = optional(list(string))
+          admin_state_up = optional(bool)
+        })
+      )
+    })
+  )
+  default = []
 }
 
 ##############################################################################

@@ -22,6 +22,7 @@ module "landing-zone" {
   tags                           = var.tags
   resource_groups                = local.env.resource_groups
   vpcs                           = local.env.vpcs
+  vpn_gateways                   = local.env.vpn_gateways
   enable_transit_gateway         = local.env.enable_transit_gateway
   transit_gateway_resource_group = local.env.transit_gateway_resource_group
   transit_gateway_connections    = local.env.transit_gateway_connections

@@ -27,7 +27,6 @@ module "vpc" {
   network_acls                = each.value.network_acls
   use_public_gateways         = each.value.use_public_gateways
   subnets                     = each.value.subnets
-  vpn_gateways                = each.value.vpn_gateways == null ? [] : each.value.vpn_gateways
 }
 
 

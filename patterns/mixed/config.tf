@@ -70,19 +70,6 @@ locals {
             }
           ]
         }
-        vpn_gateways = network == "management" ? [
-          {
-            name        = "vpn"
-            subnet_name = "vpn-zone-1"
-            connections = []
-          }
-          ] : [
-          {
-            name        = null
-            subnet_name = null
-            connections = []
-          }
-        ]
       }
     ]
     enable_transit_gateway         = true
@@ -231,11 +218,21 @@ locals {
         }]
       }
     ]
+    vpn_gateways = [
+      {
+        name           = "management-gateway"
+        vpc_name       = "management"
+        subnet_name    = "vpn-zone-1"
+        resource_group = "${var.prefix}-management-rg"
+        connections    = []
+      }
+    ]
   }
 
   env = {
     resource_groups                = lookup(local.override, "resource_groups", local.config.resource_groups)
     vpcs                           = lookup(local.override, "vpcs", local.config.vpcs)
+    vpn_gateways                   = lookup(local.override, "vpn_gateways", local.config.vpn_gateways)
     enable_transit_gateway         = lookup(local.override, "enable_transit_gateway", local.config.enable_transit_gateway)
     transit_gateway_resource_group = lookup(local.override, "transit_gateway_resource_group", local.config.transit_gateway_resource_group)
     transit_gateway_connections    = lookup(local.override, "transit_gateway_connections", local.config.transit_gateway_connections)

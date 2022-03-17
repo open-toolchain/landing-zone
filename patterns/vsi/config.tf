@@ -69,19 +69,15 @@ locals {
             }
           ]
         }
-        vpn_gateways = network == "management" ? [
-          {
-            name        = "vpn"
-            subnet_name = "vpn-zone-1"
-            connections = []
-          }
-          ] : [
-          {
-            name        = null
-            subnet_name = null
-            connections = []
-          }
-        ]
+      }
+    ]
+    vpn_gateways = [
+      {
+        name           = "management-gateway"
+        vpc_name       = "management"
+        subnet_name    = "vpn-zone-1"
+        resource_group = "${var.prefix}-management-rg"
+        connections    = []
       }
     ]
     enable_transit_gateway         = true

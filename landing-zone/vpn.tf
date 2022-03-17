@@ -1,38 +1,33 @@
 ##############################################################################
-# VPN Locals
+# VPN Gateway Locals
 ##############################################################################
 
 locals {
   vpn_gateway_map = {
-    # Convert list to map with name as the key
     for gateway in var.vpn_gateways :
-    "${var.prefix}-${gateway.name}" => gateway if gateway.name != null
+    (gateway.name) => {
+      vpc_id = module.vpc[gateway.vpc_name].vpc_id
+      subnet_id = [
+        for subnet in module.vpc[gateway.vpc_name].subnet_zone_list :
+        subnet if subnet.name == "${var.prefix}-${gateway.vpc_name}-${gateway.subnet_name}"
+      ][0].id
+      mode           = gateway.mode
+      connections    = gateway.connections
+      resource_group = gateway.resource_group
+    }
   }
 
-  # List of subnet names used by VPN gateways
-  vpn_subnet_names = var.vpn_gateways.*.subnet_name
-
-  # For each contained subnet, create a map linking the subnet name to the ID of the subnet after creation
-  vpn_subnet_map = {
-    for subnet in ibm_is_subnet.subnet :
-    (replace(subnet.name, "${var.prefix}-", "")) => subnet.id if contains(local.vpn_subnet_names, replace(subnet.name, "${var.prefix}-", ""))
-  }
-
-  # Create a list of all VPN gateway connections
   vpn_connection_list = flatten([
-    # For each gateway
     for gateway in var.vpn_gateways :
     [
-      # Return the connection object with fields added for the gateway name and connection name
       for connection in gateway.connections :
-      merge(connection, {
+      merge({
         gateway_name    = "${var.prefix}-${gateway.name}"
         connection_name = "${gateway.name}-connection-${index(gateway.connections, connection) + 1}"
-      }) if gateway.name != null
+      }, gateway.connections)
     ]
   ])
 
-  # Convert connection list into map
   vpn_connection_map = {
     for connection in local.vpn_connection_list :
     (connection.connection_name) => connection
@@ -43,24 +38,17 @@ locals {
 
 
 ##############################################################################
-# Create VPN Gateway resources
+# Create VPN Gateways
 ##############################################################################
 
 resource "ibm_is_vpn_gateway" "gateway" {
   for_each       = local.vpn_gateway_map
-  name           = "${var.prefix}-${each.value.name}"
-  subnet         = ibm_is_subnet.subnet["${var.prefix}-${each.value.subnet_name}"].id
+  name           = "${var.prefix}-${each.key}"
+  subnet         = each.value.subnet_id
   mode           = each.value.mode
-  resource_group = var.resource_group_id
-  tags           = each.value.tags
+  resource_group = each.value.resource_group == null ? null : local.resource_groups[each.value.resource_group]
+  tags           = var.tags
 }
-
-##############################################################################
-
-
-##############################################################################
-# Create VPN Gateway Connection resources
-##############################################################################
 
 resource "ibm_is_vpn_gateway_connection" "gateway_connection" {
   for_each       = local.vpn_connection_map
