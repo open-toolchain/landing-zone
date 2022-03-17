@@ -3,10 +3,11 @@
 ##############################################################################
 
 locals {
-  override = jsondecode(var.override ? file("./override.json") : "{}")
+  override            = jsondecode(var.override ? file("./override.json") : "{}")
+  resource_group_list = var.hs_crypto_resource_group == null ? ["Default", "service", "transit-gateway"] : ["Default", "service", "transit-gateway", var.hs_crypto_resource_group]
   config = {
     resource_groups = [
-      for group in concat(["Default", "service", "transit-gateway"], var.vpcs) :
+      for group in distinct(concat(["Default", "service", "transit-gateway"], var.vpcs)) :
       {
         name   = group == "Default" || group == "default" ? group : "${var.prefix}-${group}-rg"
         create = group == "Default" || group == "default" ? false : true

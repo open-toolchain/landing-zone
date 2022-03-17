@@ -67,6 +67,12 @@ variable "hs_crypto_instance_name" {
   default     = null
 }
 
+variable "hs_crypto_resource_group" {
+  description = "If you're using Hyper Protect Crypto services in a resource group other than `Default`, provide the name here."
+  type        = string
+  default     = null
+}
+
 ##############################################################################
 
 
