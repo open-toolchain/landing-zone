@@ -84,11 +84,28 @@ The toolchain requires authorization to access your repository.  If it does not 
 - [GitLab](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html)
 - [Bitbucket](https://confluence.atlassian.com/bitbucketserver/personal-access-tokens-939515499.html)
 
-You can manager your authorizations via [Manage Git Authorizations](https://cloud.ibm.com/devops/git)
+You can manage your authorizations via [Manage Git Authorizations](https://cloud.ibm.com/devops/git)
 
 ---
 
 ## Patterns
+
+The [landing zone module](./landing-zone/) can be used to create a fully cusomizable VPC environment. The three patterns below are each starting templates that can be used to quickly get started with Landing Zone. These patterns can be found in the [patterns](./patterns/) directory.
+
+Each of these patterns creates:
+- A resource group for cloud services and for each VPC.
+- Object storage instances for flow logs and activity tracker
+- Encryption keys in either a Key Protect or Hyper Protect Crypto Services instance
+- A management and workload VPC connected by a transit gateway
+- A flow log collector for each VPC
+- All nessecary networking rules to allow communication
+- Virtual Private endpoints for Cloud Object storage in each VPC
+- A VPN Gateway in the Management VPC
+
+Each pattern will create an identical deployment on the VPC
+- Virtual Server (VSI) Pattern will deploy identical virtual servers across the VSI subnet tier in each VPC
+- Red Hat OpenShift Kubernetes (ROKS) Pattern will deploy identical clusters across the VSI subnet tier in each VPC
+- The Mixed pattern will provision both of the above
 
 ### Virtual Server Pattern
 
