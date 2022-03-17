@@ -9,6 +9,7 @@
     4. [Repository Authorization](#repository-authorization)
     5. [(Optional) Setting Up Hyper Protect Crypto Services](#optional-setting-up-hyper-protect-crypto-services)
 2. [Patterns](#patterns)
+3. [Customizing Your Environment](#customizing-your-environment)
 ---
 
 ## Prerequisites
