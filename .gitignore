@@ -11,3 +11,4 @@ dev.sh
 *.sh
 config_test/
 config_test.tf
+dev.*
