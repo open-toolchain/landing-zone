@@ -229,7 +229,7 @@ locals {
     service_endpoints              = lookup(local.override, "service_endpoints", "private")
     key_management                 = lookup(local.override, "key_management", local.config.key_management)
     atracker                       = lookup(local.override, "atracker", local.config.atracker)
-    clusters                       = lookup(local.override, "clusters", local.config.clusters)
+    clusters                       = lookup(local.override, "clusters", [])
     wait_till                      = lookup(local.override, "wait_till", "IngressReady")
   }
   ##############################################################################
