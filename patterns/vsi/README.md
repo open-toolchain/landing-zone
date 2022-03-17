@@ -2,6 +2,9 @@
 
 This template allows a user to create a landing zone
 
+
+![mixed](../../.docs/roks.png)
+
 ## Module Variables
 
 Name                    | Type         | Description                                                                                                                                                                     | Sensitive | Default
