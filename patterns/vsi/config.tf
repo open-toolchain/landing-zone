@@ -200,9 +200,13 @@ locals {
       }
     ]
   }
+  ##############################################################################
+  # Compile Environment for Config output
+  ##############################################################################
   env = {
     resource_groups                = lookup(local.override, "resource_groups", local.config.resource_groups)
     vpcs                           = lookup(local.override, "vpcs", local.config.vpcs)
+    vpn_gateways                   = lookup(local.override, "vpn_gateways", local.config.vpn_gateways)
     enable_transit_gateway         = lookup(local.override, "enable_transit_gateway", local.config.enable_transit_gateway)
     transit_gateway_resource_group = lookup(local.override, "transit_gateway_resource_group", local.config.transit_gateway_resource_group)
     transit_gateway_connections    = lookup(local.override, "transit_gateway_connections", local.config.transit_gateway_connections)
@@ -214,9 +218,10 @@ locals {
     service_endpoints              = lookup(local.override, "service_endpoints", "private")
     key_management                 = lookup(local.override, "key_management", local.config.key_management)
     atracker                       = lookup(local.override, "atracker", local.config.atracker)
-    clusters                       = lookup(local.override, "clusters", [])
+    clusters                       = lookup(local.override, "clusters", local.config.clusters)
     wait_till                      = lookup(local.override, "wait_till", "IngressReady")
   }
+  ##############################################################################
 }
 
 ##############################################################################

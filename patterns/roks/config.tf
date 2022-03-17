@@ -6,7 +6,7 @@ locals {
   override = jsondecode(var.override ? file("./override.json") : "{}")
   config = {
     resource_groups = [
-      for group in concat(["Default", "service", "transit-gateway"], var.vpcs) :
+      for group in concat(["Default", "service"], var.vpcs) :
       {
         name   = group == "Default" || group == "default" ? group : "${var.prefix}-${group}-rg"
         create = group == "Default" || group == "default" ? false : true
@@ -175,6 +175,9 @@ locals {
       }
     ]
   }
+  ##############################################################################
+  # Compile Environment for Config output
+  ##############################################################################
   env = {
     resource_groups                = lookup(local.override, "resource_groups", local.config.resource_groups)
     vpcs                           = lookup(local.override, "vpcs", local.config.vpcs)
@@ -193,6 +196,7 @@ locals {
     clusters                       = lookup(local.override, "clusters", local.config.clusters)
     wait_till                      = lookup(local.override, "wait_till", "IngressReady")
   }
+  ##############################################################################
 }
 
 ##############################################################################
