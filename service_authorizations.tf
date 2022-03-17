@@ -11,14 +11,14 @@ locals {
         source_service_name         = "server-protect"
         description                 = "Allow block storage volumes to be encrypted by KMS instance"
         roles                       = ["Reader"]
-        target_service_name         = "kms"
+        target_service_name         = var.key_management.use_hs_crypto == true ? "hs-crypto" : "kms"
         target_resource_instance_id = module.key_management.key_management_guid
       }
       cos-to-kms = {
         source_service_name         = "cloud-object-storage"
         description                 = "Allow COS instance to read from KMS instance"
         roles                       = ["Reader"]
-        target_service_name         = "kms"
+        target_service_name         = var.key_management.use_hs_crypto == true ? "hs-crypto" : "kms"
         target_resource_instance_id = module.key_management.key_management_guid
       }
     },
