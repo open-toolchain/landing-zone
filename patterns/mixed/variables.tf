@@ -24,6 +24,11 @@ variable "prefix" {
   }
 }
 
+variable "ssh_public_key" {
+  description = "Public SSH Key for VSI creation."
+  type        = string
+}
+
 variable "region" {
   description = "Region where VPC will be created. To find your VPC region, use `ibmcloud is regions` command to find available regions."
   type        = string
@@ -79,11 +84,6 @@ variable "hs_crypto_resource_group" {
 ##############################################################################
 # Virtual Server Variables
 ##############################################################################
-
-variable "ssh_public_key" {
-  description = "Public SSH Key for VSI creation."
-  type        = string
-}
 
 variable "vsi_image_name" {
   description = "VSI image name. Use the IBM Cloud CLI command `ibmcloud is images` to see availabled images."

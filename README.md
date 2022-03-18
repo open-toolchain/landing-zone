@@ -9,7 +9,9 @@
     4. [Repository Authorization](#repository-authorization)
     5. [(Optional) Setting Up Hyper Protect Crypto Services](#optional-setting-up-hyper-protect-crypto-services)
 2. [Patterns](#patterns)
+3. [Getting Started](#getting-started)
 3. [Default Landing Zone Configuration](#default-landing-zone-configuration)
+    - [Pattern Variables](#pattern-variables)
     - [Resource Groups](#resoure-groups)
     - [Cloud Services](#cloud-services)
     - [VPC Infrastructure](#vpc-infrastructure)
@@ -126,7 +128,21 @@ Each pattern will create an identical deployment on the VPC
 
 --- 
 
+## Getting Started 
+
+docs go here
+
+---
+
 ## Default Landing Zone Configuration
+
+---
+
+### Pattern Variables
+
+Each Landing Zone pattern takes in a small number of variables, enabling you to quickly and easily get started with IBM Cloud
+
+
 
 ---
 
@@ -242,3 +258,21 @@ Using the COS bucket provisioned for each VPC network, a flow log collector is c
 #### Virtual Private Endpoints
 
 Each VPC dyamically has a Virtual Private Endpoint addess for the `cos` instance created in each zone of that VPC's `vpe` subnet tier.
+
+---
+
+### Virtual Sever Deployments
+
+---
+
+### OpenShift Cluster Deployments
+
+---
+
+## Customizing Your Environment
+
+### Adding Additional VPCs
+
+
+
+### Overriding Variables

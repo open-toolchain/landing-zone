@@ -29,6 +29,11 @@ variable "region" {
   type        = string
 }
 
+variable "ssh_public_key" {
+  description = "Public SSH Key for VSI creation."
+  type        = string
+}
+
 variable "tags" {
   description = "List of tags to apply to resources created by this module."
   type        = list(string)
@@ -79,11 +84,6 @@ variable "hs_crypto_resource_group" {
 ##############################################################################
 # Virtual Server Variables
 ##############################################################################
-
-variable "ssh_public_key" {
-  description = "Public SSH Key for VSI creation."
-  type        = string
-}
 
 variable "vsi_image_name" {
   description = "VSI image name. Use the IBM Cloud CLI command `ibmcloud is images` to see availabled images."

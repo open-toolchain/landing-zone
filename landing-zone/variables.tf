@@ -332,7 +332,7 @@ variable "vpcs" {
         ]
       }
       vpn_gateways = null
-    },
+    }
   ]
 }
 
