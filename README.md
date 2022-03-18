@@ -13,7 +13,8 @@
     - [Resource Groups](#resoure-groups)
     - [Cloud Services](#cloud-services)
     - [VPC Infrastructure](#vpc-infrastructure)
-3. [Customizing Your Environment](#customizing-your-environment)
+4. [Customizing Your Environment](#customizing-your-environment)
+5. [Running the scripts locally](#running-the-scripts-locally)
 ---
 
 ## Prerequisites
@@ -242,3 +243,16 @@ Using the COS bucket provisioned for each VPC network, a flow log collector is c
 #### Virtual Private Endpoints
 
 Each VPC dyamically has a Virtual Private Endpoint addess for the `cos` instance created in each zone of that VPC's `vpe` subnet tier.
+
+----
+
+## Running the scripts locally
+
+To run the scripts locally, follow these steps:
+
+1. Install Terraform CLI and IBM Cloud Provider plug-in with [these steps](https://cloud.ibm.com/docs/ibm-cloud-provider-for-terraform?topic=ibm-cloud-provider-for-terraform-getting-started).
+2. Select the pattern that you want to provision. Modify the corresponding `example.tfvars` file with values such as IBM Cloud API key, prefix, region, etc.
+3. Run `terraform init` to initialize the working directory and configuration.
+4. Run `terraform plan` to preview the changes that Terraform plans to make to your infrastructure.
+5. Run `terraform apply` to execute the plan to create or modify your infrastructure.
+6. Once you no longer need the infrastructure, you can run `terraform destroy` to delete the resources.
