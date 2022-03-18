@@ -140,15 +140,50 @@ docs go here
 
 ### Pattern Variables
 
-Each Landing Zone pattern takes in a small number of variables, enabling you to quickly and easily get started with IBM Cloud
+Each Landing Zone pattern takes in a small number of variables, enabling you to quickly and easily get started with IBM Cloud. Each pattern requires only the `ibmcloud_api_key`, `prefix`, and `region` variables to get started (the `ssh_public_key` must also be provided by the user when creating a pattern that uses Virtual Servers). 
 
+#### Variables Available in Each Pattern
 
+Name                     | Type         | Description                                                                                                                                                                     | Sensitive | Default
+------------------------ | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ----------------------------------
+ibmcloud_api_key         | string       | The IBM Cloud platform API key needed to deploy IAM enabled resources.                                                                                                          | true      | 
+TF_VERSION               | string       | The version of the Terraform engine that's used in the Schematics workspace.                                                                                                    |           | 1.0
+prefix                   | string       | A unique identifier for resources. Must begin with a letter. This prefix will be prepended to any resources provisioned by this template.                                       |           | 
+region                   | string       | Region where VPC will be created. To find your VPC region, use `ibmcloud is regions` command to find available regions.                                                         |           | 
+tags                     | list(string) | List of tags to apply to resources created by this module.                                                                                                                      |           | []
+vpcs                     | list(string) | List of VPCs to create                                                                                                                                                          |           | ["management", "workload"]
+enable_transit_gateway   | bool         | Create transit gateway                                                                                                                                                          |           | true
+hs_crypto_instance_name  | string       | Optionally, you can bring you own Hyper Protect Crypto Service instance for key management. If you would like to use that instance, add the name here. Otherwise, leave as null |           | null
+hs_crypto_resource_group | string       | If you're using Hyper Protect Crypto services in a resource group other than `Default`, provide the name here.                                                                  |           | null
+override                 | bool         | Override default values with custom JSON template. This uses the file `override.json` to allow users to create a fully customized environment.                                  |           | false
+
+#### Variables for Patterns Including Virtual Servers
+
+For the [mixed pattern](./patterns/mixed/) and [vsi pattern](./patterns/vsi)
+
+Name                     | Type         | Description                                                                                                                                                                     | Sensitive | Default
+------------------------ | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ----------------------------------
+ssh_public_key           | string       | Public SSH Key for VSI creation.                                                                                                                                                |           | 
+vsi_image_name           | string       | VSI image name. Use the IBM Cloud CLI command `ibmcloud is images` to see availabled images.                                                                                    |           | ibm-ubuntu-16-04-5-minimal-amd64-1
+vsi_instance_profile     | string       | VSI image profile. Use the IBM Cloud CLI command `ibmcloud is instance-profiles` to see available image profiles.                                                               |           | cx2-2x4
+vsi_per_subnet           | number       | Number of Virtual Servers to create on each VSI subnet.                                                                                                                         |           | 1
+
+#### Variables for Patterns Including OpenShift Clusters
+
+For the [mixed pattern](./patterns/mixed/) and the [roks pattern](./patterns/roks/) these variables are available to the user.
+
+Name                     | Type         | Description                                                                                                                                                                     | Sensitive | Default
+------------------------ | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ----------------------------------
+zones                    | number       | Number of zones to provision clusters for each VPC. At least one zone is required. Can be 1, 2, or 3 zones.                                                                                                                                                                                                                                                                                                                                                                         |           | 3
+flavor                   | string       | Machine type for cluster. Use the IBM Cloud CLI command `ibmcloud ks flavors` to find valid machine types                                                                                                                                                                                                                                                                                                                                                                           |           | bx2.16x64
+workers_per_zone         | number       | Number of workers in each zone of the cluster. OpenShift requires at least 2 workers per sone for high availability.                                                                                                                                                                                                                                                                                                                                                                |           | 2
+wait_till                | string       | To avoid long wait times when you run your Terraform code, you can specify the stage when you want Terraform to mark the cluster resource creation as completed. Depending on what stage you choose, the cluster creation might not be fully completed and continues to run in the background. However, your Terraform code can continue to run without waiting for the cluster to be fully created. Supported args are `MasterNodeReady`, `OneWorkerNodeReady`, and `IngressReady` |           | IngressReady
 
 ---
 
 ### Resource Groups
 
-Each of these resource groups will have the `prefix` variable and a hyphen prepended to the name
+Each of these resource groups will have the `prefix` variable and a hyphen prepended to the name (ex. `slz-management-rg` if the prefix is `slz`).
 
 Name            | Description
 ----------------|------------------------------------------------

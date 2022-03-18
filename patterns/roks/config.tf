@@ -151,7 +151,7 @@ locals {
     clusters = [
       for network in var.vpcs :
       {
-        name     = "${var.prefix}-${network}-cluster"
+        name     = "${network}-cluster"
         vpc_name = network
         subnet_names = [
           for zone in range(1, var.zones) :
