@@ -306,6 +306,8 @@ locals {
     wait_till                      = lookup(local.override, "wait_till", "IngressReady")
   }
   ##############################################################################
+
+  string = "\"${jsonencode(local.env)}\""
 }
 
 ##############################################################################
@@ -315,7 +317,7 @@ locals {
 ##############################################################################
 
 data "external" "format_output" {
-  program = ["node", "../.scripts/output.js", jsonencode(local.env)]
+  program = ["bash", "../.scripts/bash_output.sh", local.string]
 }
 
 ##############################################################################
