@@ -281,7 +281,7 @@ locals {
 ##############################################################################
 
 data "external" "format_output" {
-  program = ["node", "../.scripts/output.js", jsonencode(local.env)]
+  program = ["python3", "../.scripts/output.py", local.string]
 }
 
 ##############################################################################

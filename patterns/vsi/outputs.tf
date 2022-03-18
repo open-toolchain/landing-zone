@@ -4,7 +4,7 @@
 
 output "config" {
   description = "Output configuration as encoded JSON"
-  value       = local.string
+  value       = data.external.format_output.result.data
 }
 
 ##############################################################################

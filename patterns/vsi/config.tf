@@ -317,7 +317,7 @@ locals {
 ##############################################################################
 
 data "external" "format_output" {
-  program = ["bash", "../.scripts/bash_output.sh", local.string]
+  program = ["python3", "../.scripts/output.py", local.string]
 }
 
 ##############################################################################
