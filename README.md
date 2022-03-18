@@ -251,7 +251,8 @@ Each VPC dyamically has a Virtual Private Endpoint addess for the `cos` instance
 To run the scripts locally, follow these steps:
 
 1. Install Terraform CLI and IBM Cloud Provider plug-in with [these steps](https://cloud.ibm.com/docs/ibm-cloud-provider-for-terraform?topic=ibm-cloud-provider-for-terraform-getting-started).
-2. Select the pattern that you want to provision. Modify the corresponding `example.tfvars` file with values such as IBM Cloud API key, prefix, region, etc.
+2. Select the pattern that you want to provision. By default, terraform uses `terraform.tfvars` file as environment variables. You can copy the values of `example.tfvars` to your `terraform.tfvars`, or specify which `*.tfvars` file to use with `-var-file=FILENAME` option when you run `terraform plan` and `terraform apply` later.
+3. Provide your `tfvars` file with required variables, such as IBM Cloud API key, prefix, etc.
 3. Run `terraform init` to initialize the working directory and configuration.
 4. Run `terraform plan` to preview the changes that Terraform plans to make to your infrastructure.
 5. Run `terraform apply` to execute the plan to create or modify your infrastructure.
