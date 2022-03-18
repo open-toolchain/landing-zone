@@ -317,7 +317,7 @@ locals {
 ##############################################################################
 
 data "external" "format_output" {
-  program = ["python3", "../.scripts/output.py", local.string]
+  program = ["python3", "../utils/output.py", local.string]
 }
 
 ##############################################################################
