@@ -78,10 +78,6 @@
       "name": "Default"
     },
     {
-      "create": false,
-      "name": "default"
-    },
-    {
       "create": true,
       "name": "slz-management-rg"
     },
@@ -92,10 +88,6 @@
     {
       "create": true,
       "name": "slz-service-rg"
-    },
-    {
-      "create": true,
-      "name": "slz-transit-gateway-rg"
     }
   ],
   "transit_gateway_connections": ["management", "workload"],

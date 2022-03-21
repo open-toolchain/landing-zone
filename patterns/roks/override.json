@@ -112,8 +112,7 @@
     { "create": false, "name": "Default" },
     { "create": true, "name": "slz-management-rg" },
     { "create": true, "name": "slz-workload-rg" },
-    { "create": true, "name": "slz-service-rg" },
-    { "create": true, "name": "slz-transit-gateway-rg" }
+    { "create": true, "name": "slz-service-rg" }  
   ],
   "ssh_keys": [],
   "transit_gateway_connections": ["management", "workload"],
