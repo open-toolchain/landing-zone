@@ -429,12 +429,7 @@ variable "ssh_keys" {
       resource_group = optional(string)
     })
   )
-  default = [
-    {
-      name           = "jv-dev-ssh-key"
-      resource_group = "default"
-    }
-  ]
+  default = []
 
   validation {
     error_message = "Each SSH key must have a unique name."
