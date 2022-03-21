@@ -3,7 +3,7 @@
 This template allows a user to create a landing zone
 
 
-![vsi](../../.docs/vsi.png)
+![vsi](../../.docs/images/vsi.png)
 
 ## Module Variables
 
