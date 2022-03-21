@@ -35,8 +35,8 @@ resource "ibm_is_security_group_rule" "default_vpc_rule" {
   dynamic "icmp" {
     for_each = each.value.icmp == null ? [] : [each.value]
     content {
-      type = each.value.icmp.type
-      code = each.value.icmp.code
+      type = lookup(each.value.icmp, "type", null)
+      code = lookup(each.value.icmp, "code", null)
     }
   }
 }
