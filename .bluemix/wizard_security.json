@@ -1,0 +1,9 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "messages": {
+    "$i18n": "locales.yml"
+  },
+  "title": "Security Configuration",
+  "longDescription": "Security configuration for the toolchain",
+  "type": "object"
+}

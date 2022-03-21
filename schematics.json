@@ -1,0 +1,29 @@
+{
+   "name": "<WORKSPACE_NAME>",
+   "type": [
+       "terraform_v1.0"
+   ],
+   "location": "us-south",
+   "description": "SLZ Pattern Schematics",
+   "tags": [],
+   "template_repo": {
+       "url": "<SCHEMATICS_REPOSITORY>"
+   },
+   "template_data": [
+       {
+       "folder": "patterns/<SCHEMATICS_PATTERN>",
+       "type": "terraform_v1.0",
+       "env_values":[
+       ],
+       "variablestore": [
+       {
+         "name": "ibmcloud_api_key",
+         "value": "<IBMCLOUD_API_KEY>",
+         "type": "string",
+         "secure": true,
+         "description":"IBM Cloud API Key"
+       }
+       ]
+   }
+   ]
+}

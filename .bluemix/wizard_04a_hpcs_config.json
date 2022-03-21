@@ -1,0 +1,118 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "messages": {
+        "$i18n": "locales.yml"
+    },
+    "title": {
+      "$ref": "#/messages/wizard.hpcs_config.title"
+    },
+    "longDescription": {
+      "$ref": "#/messages/wizard.hpcs_config.longDescription"
+    },
+    "type": "object",
+    "properties": {
+      "admin1_sigkey": {
+        "description": {
+          "$ref": "#/messages/wizard.hpcs_config.admin1_sigkey.description"
+        },
+        "placeholder": {
+          "$ref": "#/messages/wizard.hpcs_config.admin1_sigkey.placeholder"
+        }
+      },
+      "admin1_pass": {
+        "description": {
+          "$ref": "#/messages/wizard.hpcs_config.admin1_pass.description"
+        },
+        "placeholder": {
+          "$ref": "#/messages/wizard.hpcs_config.admin1_pass.placeholder"
+        }
+      },
+      "admin2_sigkey": {
+        "description": {
+          "$ref": "#/messages/wizard.hpcs_config.admin2_sigkey.description"
+        },
+        "placeholder": {
+          "$ref": "#/messages/wizard.hpcs_config.admin2_sigkey.placeholder"
+        }
+      },
+      "admin2_pass": {
+        "description": {
+          "$ref": "#/messages/wizard.hpcs_config.admin2_pass.description"
+        },
+        "placeholder": {
+          "$ref": "#/messages/wizard.hpcs_config.admin2_pass.placeholder"
+        }
+      },
+      "admin3_sigkey": {
+        "description": {
+          "$ref": "#/messages/wizard.hpcs_config.admin3_sigkey.description"
+        },
+        "placeholder": {
+          "$ref": "#/messages/wizard.hpcs_config.admin3_sigkey.placeholder"
+        }
+      },
+      "admin3_pass": {
+        "description": {
+          "$ref": "#/messages/wizard.hpcs_config.admin3_pass.description"
+        },
+        "placeholder": {
+          "$ref": "#/messages/wizard.hpcs_config.admin3_pass.placeholder"
+        }
+      }
+    },
+    "required": ["admin1_sigkey","admin1_pass"],
+    "form": [
+      {
+        "type": "validator",
+        "url": "/devops/validator/validator-v1.html"
+      },
+      {
+        "title": {
+          "$ref": "#/messages/wizard.hpcs_config.admin1_sigkey.title"
+        },
+        "key": "admin1_sigkey",
+        "type": "text",
+        "readonly": false
+      },
+      {
+        "title": {
+          "$ref": "#/messages/wizard.hpcs_config.admin1_pass.title"
+        },
+        "key": "admin1_pass",
+        "type": "text",
+        "readonly": false
+      },
+      {
+        "title": {
+          "$ref": "#/messages/wizard.hpcs_config.admin2_sigkey.title"
+        },
+        "key": "admin2_sigkey",
+        "type": "text",
+        "readonly": false
+      },
+      {
+        "title": {
+          "$ref": "#/messages/wizard.hpcs_config.admin2_pass.title"
+        },
+        "key": "admin2_pass",
+        "type": "text",
+        "readonly": false
+      },
+      {
+        "title": {
+          "$ref": "#/messages/wizard.hpcs_config.admin3_sigkey.title"
+        },
+        "key": "admin3_sigkey",
+        "type": "text",
+        "readonly": false
+      },
+      {
+        "title": {
+          "$ref": "#/messages/wizard.hpcs_config.admin3_pass.title"
+        },
+        "key": "admin3_pass",
+        "type": "text",
+        "readonly": false
+      }
+    ]
+  }

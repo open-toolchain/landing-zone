@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "messages": {
+    "$i18n": "locales.yml"
+  },
+  "title": {
+    "$ref": "#/messages/wizard.deploymentPattern.title"
+  },
+  "description": "",
+  "longDescription": {
+    "$ref": "#/messages/wizard.deploymentPattern.longDescription"
+  },
+  "type": "object",
+  "properties": {
+    "deployment-pattern": {
+      "type": "string",
+      "enum": [{
+          "name": {
+            "$ref": "#/messages/wizard.deploymentPattern.vsi.title"
+          },
+          "value": "vsi"
+        },  
+        {
+          "name": {
+            "$ref": "#/messages/wizard.deploymentPattern.roks.title"
+          },
+          "value": "roks"
+        },
+        {
+          "name": {
+            "$ref": "#/messages/wizard.deploymentPattern.mixed.title"
+          },
+          "value": "mixed"
+        }
+      ]
+    }
+  },
+  "form": [ 
+  {
+    "type": "tilegroup",
+    "key": "deployment-pattern",
+    "display": {
+      "showLabel": false,
+      "orientation": "vertical"
+    }
+  }]
+}

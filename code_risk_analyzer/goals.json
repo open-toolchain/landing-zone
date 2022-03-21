@@ -1,0 +1,392 @@
+{
+	"scc_goals": [{
+			"scc_goal_id": "3000009"
+		},
+		{
+			"scc_goal_id": "3000010"
+		},
+		{
+			"scc_goal_id": "3000012"
+		},
+		{
+			"scc_goal_id": "3000013"
+		},
+		{
+			"scc_goal_id": "3000014"
+		},
+		{
+			"scc_goal_id": "3000015"
+		},
+		{
+			"scc_goal_id": "3000016"
+		},
+		{
+			"scc_goal_id": "3000017"
+		},
+		{
+			"scc_goal_id": "3000018"
+		},
+		{
+			"scc_goal_id": "3000019"
+		},
+		{
+			"scc_goal_id": "3000020"
+		},
+		{
+			"scc_goal_id": "3000021"
+		},
+		{
+			"scc_goal_id": "3000022"
+		},
+		{
+			"scc_goal_id": "3000023"
+		},
+		{
+			"scc_goal_id": "3000024"
+		},
+		{
+			"scc_goal_id": "3000025"
+		},
+		{
+			"scc_goal_id": "3000026"
+		},
+		{
+			"scc_goal_id": "3000027"
+		},
+		{
+			"scc_goal_id": "3000028"
+		},
+		{
+			"scc_goal_id": "3000029"
+		},
+		{
+			"scc_goal_id": "3000030"
+		},
+		{
+			"scc_goal_id": "3000031"
+		},
+		{
+			"scc_goal_id": "3000032"
+		},
+		{
+			"scc_goal_id": "3000033"
+		},
+		{
+			"scc_goal_id": "3000034"
+		},
+		{
+			"scc_goal_id": "3000035"
+		},
+		{
+			"scc_goal_id": "3000038"
+		},
+		{
+			"scc_goal_id": "3000101"
+		},
+		{
+			"scc_goal_id": "3000103"
+		},
+		{
+			"scc_goal_id": "3000104"
+		},
+		{
+			"scc_goal_id": "3000105"
+		},
+		{
+			"scc_goal_id": "3000106"
+		},
+		{
+			"scc_goal_id": "3000108"
+		},
+		{
+			"scc_goal_id": "3000233"
+		},
+		{
+			"scc_goal_id": "3000234"
+		},
+		{
+			"scc_goal_id": "3000235"
+		},
+		{
+			"scc_goal_id": "3000306"
+		},
+		{
+			"scc_goal_id": "3000307"
+		},
+		{
+			"scc_goal_id": "3000404"
+		},
+		{
+			"scc_goal_id": "3000405"
+		},
+		{
+			"scc_goal_id": "3000406"
+		},
+		{
+			"scc_goal_id": "3000407"
+		},
+		{
+			"scc_goal_id": "3000410"
+		},
+		{
+			"scc_goal_id": "3000411"
+		},
+		{
+			"scc_goal_id": "3000412"
+		},
+		{
+			"scc_goal_id": "3000413"
+		},
+		{
+			"scc_goal_id": "3000414"
+		},
+		{
+			"scc_goal_id": "3000415"
+		},
+		{
+			"scc_goal_id": "3000416"
+		},
+		{
+			"scc_goal_id": "3000417"
+		},
+		{
+			"scc_goal_id": "3000418"
+		},
+		{
+			"scc_goal_id": "3000419"
+		},
+		{
+			"scc_goal_id": "3000420"
+		},
+		{
+			"scc_goal_id": "3000421"
+		},
+		{
+			"scc_goal_id": "3000422"
+		},
+		{
+			"scc_goal_id": "3000423"
+		},
+		{
+			"scc_goal_id": "3000424"
+		},
+		{
+			"scc_goal_id": "3000425"
+		},
+		{
+			"scc_goal_id": "3000426"
+		},
+		{
+			"scc_goal_id": "3000427"
+		},
+		{
+			"scc_goal_id": "3000428"
+		},
+		{
+			"scc_goal_id": "3000429"
+		},
+		{
+			"scc_goal_id": "3000430"
+		},
+		{
+			"scc_goal_id": "3000431"
+		},
+		{
+			"scc_goal_id": "3000432"
+		},
+		{
+			"scc_goal_id": "3000433"
+		},
+		{
+			"scc_goal_id": "3000434"
+		},
+		{
+			"scc_goal_id": "3000437"
+		},
+		{
+			"scc_goal_id": "3000441"
+		},
+		{
+			"scc_goal_id": "3000442"
+		},
+		{
+			"scc_goal_id": "3000444"
+		},
+		{
+			"scc_goal_id": "3000445"
+		},
+		{
+			"scc_goal_id": "3000446"
+		},
+		{
+			"scc_goal_id": "3000447"
+		},
+		{
+			"scc_goal_id": "3000448"
+		},
+		{
+			"scc_goal_id": "3000449"
+		},
+		{
+			"scc_goal_id": "3000453"
+		},
+		{
+			"scc_goal_id": "3000454"
+		},
+		{
+			"scc_goal_id": "3000455"
+		},
+		{
+			"scc_goal_id": "3000458"
+		},
+		{
+			"scc_goal_id": "3000460"
+		},
+		{
+			"scc_goal_id": "3000463"
+		},
+		{
+			"scc_goal_id": "3000464"
+		},
+		{
+			"scc_goal_id": "3000465"
+		},
+		{
+			"scc_goal_id": "3000466"
+		},
+		{
+			"scc_goal_id": "3000468"
+		},
+		{
+			"scc_goal_id": "3000469"
+		},
+		{
+			"scc_goal_id": "3000601"
+		},
+		{
+			"scc_goal_id": "3000602"
+		},
+		{
+			"scc_goal_id": "3000623"
+		},
+		{
+			"scc_goal_id": "3000628"
+		},
+		{
+			"scc_goal_id": "3000635"
+		},
+		{
+			"scc_goal_id": "3000636"
+		},
+		{
+			"scc_goal_id": "3000639"
+		},
+		{
+			"scc_goal_id": "3000701"
+		},
+		{
+			"scc_goal_id": "3000702"
+		},
+		{
+			"scc_goal_id": "3000703"
+		},
+		{
+			"scc_goal_id": "3000704"
+		},
+		{
+			"scc_goal_id": "3000705"
+		},
+		{
+			"scc_goal_id": "3000706"
+		},
+		{
+			"scc_goal_id": "3000707"
+		},
+		{
+			"scc_goal_id": "3000708"
+		},
+		{
+			"scc_goal_id": "3000709"
+		},
+		{
+			"scc_goal_id": "3000710"
+		},
+		{
+			"scc_goal_id": "3000711"
+		},
+		{
+			"scc_goal_id": "3000712"
+		},
+		{
+			"scc_goal_id": "3000713"
+		},
+		{
+			"scc_goal_id": "3000714"
+		},
+		{
+			"scc_goal_id": "3000715"
+		},
+		{
+			"scc_goal_id": "3000716"
+		},
+		{
+			"scc_goal_id": "3000717"
+		},
+		{
+			"scc_goal_id": "3000718"
+		},
+		{
+			"scc_goal_id": "3000719"
+		},
+		{
+			"scc_goal_id": "3000720"
+		},
+		{
+			"scc_goal_id": "3000723"
+		},
+		{
+			"scc_goal_id": "3000724"
+		}
+	],
+	"scc_goal_parameters": {
+		"allowed_admins_per_account": 10,
+
+		"api_keys_rotated_days": 90,
+
+		"account_owner_last_login_days": 30,
+
+		"no_of_admins_for_iam": 3,
+
+		"no_of_service_id_admins_for_iam": 3,
+
+		"no_of_managers_for_iam": 0,
+
+		"no_of_service_id_managers_for_iam": 0,
+
+		"iam_service_ids_max_count": 3,
+
+		"hpcs_crypto_units": 3,
+
+		"hpcs_rotation_policy": 1,
+
+		"ssh_port": 22,
+
+		"rdp_port": 3389,
+
+		"pre_shared_key": 24,
+
+		"dns_port": 53,
+
+		"vm_nic_count": 1,
+
+		"no_of_admins_for_container_registry ": 3,
+
+		"no_of_service_id_admins_for_container_registry": 3,
+
+		"no_of_managers_for_container_registry": 0,
+
+		"no_of_service_id_managers_for_container_registry": 0,
+
+		"access_tokens_expire": 120
+	}
+}

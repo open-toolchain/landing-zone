@@ -1,0 +1,28 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: destroy-pipeline
+spec:
+  params:
+    - name: pipeline-debug
+      default: "false"
+      description: Enable debug output within pipeline
+    - name: schematics-wksp
+      default: "test-schematics"
+      description: Schematics workspace name
+    - name: confirm-deletion
+      default: "no"
+      description: Confirm deletion of resources
+  tasks:
+    - name: workspace
+      taskRef:
+        name: task-destroy-resources
+      workspaces:
+      params:
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+        - name: schematics-wksp
+          value: $(params.schematics-wksp)
+        - name: confirm-deletion
+          value: $(params.confirm-deletion)

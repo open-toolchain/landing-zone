@@ -1,0 +1,71 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "messages": {
+        "$i18n": "locales.yml"
+    },
+    "title": {
+      "$ref": "#/messages/wizard.optional.tools.app-cicd.title"
+    },
+    "longDescription": {
+      "$ref": "#/messages/wizard.optional.tools.app-cicd.description"
+    },
+    "type": "object",
+    "properties": {
+      "app_cicd_webhookurl": {
+        "description": {
+          "$ref": "#/messages/wizard.optional.tools.app-cicd.webhook.description"
+        },
+        "type": "string",
+        "placeholder": {
+          "$ref": "#/messages/wizard.optional.tools.app-cicd.webhook.placeHolder"
+        }
+      },
+      "app_cicd_header_key": {
+        "type": "string",
+        "description": {
+          "$ref": "#/messages/wizard.optional.tools.app-cicd.header-key.description"
+        },
+        "placeholder": {
+          "$ref": "#/messages/wizard.optional.tools.app-cicd.header-key.placeHolder"
+        }
+      },
+      "app_cicd_token": {
+        "description": {
+          "$ref": "#/messages/wizard.optional.tools.app-cicd.token.description"
+        },
+        "type": "text",
+        "placeholder": {
+          "$ref": "#/messages/wizard.optional.tools.app-cicd.token.placeHolder"
+        }
+      }
+    },
+    "required": ["app_cicd_webhookurl", "app_cicd_header_key", "app_cicd_token"],
+    "form": [
+      {
+        "type": "validator",
+        "url": "/devops/validator/validator-v1.html"
+      },
+      {
+        "title": {
+          "$ref": "#/messages/wizard.optional.tools.app-cicd.webhook.title"
+        },
+        "key": "app_cicd_webhookurl",
+        "type": "string"
+      },
+      {
+        "title": {
+          "$ref": "#/messages/wizard.optional.tools.app-cicd.header-key.title"
+        },
+        "key": "app_cicd_header_key",
+        "type": "string"
+      },
+      {
+        "title": {
+          "$ref": "#/messages/wizard.optional.tools.app-cicd.token.title"
+        },
+        "type": "text",
+        "readonly": false,
+        "key": "app_cicd_token"
+      }
+    ]
+  }

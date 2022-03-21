@@ -1,0 +1,133 @@
+---
+version: "3"
+messages:
+  $i18n: locales.yml
+template:
+  name:
+    $ref: "#/messages/template.name"
+  description:
+    $ref: "#/messages/template.description"
+  header: "![](images/toolchain.svg?localize)"
+  icon: ./images/vpc.svg
+  required:
+    - draservicebroker
+    - infrastructureRepo
+    - infrastructure-pipeline
+    - resources-destroy-pipeline
+    - fortress
+  info:
+    git url: >
+      "[" + $env.repository + "]" +
+        "(" + $env.repository + ")"
+    git branch: >
+      "[" + $env.branch + "]" +
+        "(" + $env.repository +
+          "/tree/" + $env.branch + ")"
+    hosted_region: ""
+  wizard:
+    $ref: wizard.yml
+toolchain:
+  name: "slz-toolchain-{{timestamp}}"
+  template:
+    getting_started:
+      $ref: "#/messages/template.gettingStarted"
+
+
+services:
+  devops-insights:
+    service_id: 'draservicebroker' 
+
+  infrastructureRepo:
+    service_id: >
+      if ( $env.ENABLE_SETUP_WIZARD === 'true' ) {
+        'hostedgit';
+      } else {
+        $env.source_provider ? $env.source_provider : 'hostedgit';
+      }
+    parameters:
+      repo_name: "slz-{{form.deployment_pattern.parameters.deployment-pattern}}-{{timestamp}}"
+      repo_url: "https://github.ibm.com/slz-v2-poc/vpc-and-vsi-pattern2"
+        #>
+        #if ( $env.template.info.hosted_region !== "" ) {
+        #  "https://{{template.info.hosted_region}}.git.cloud.ibm.com/open-toolchain/slzone-{{form.deployment_pattern.parameters.deployment-pattern}}-pattern"
+        #} else {
+        #  "https://github.com/open-toolchain/slzone-{{form.deployment_pattern.parameters.deployment-pattern}}-pattern"
+        #} 
+      source_repo_url: "https://github.ibm.com/slz-v2-poc/vpc-and-vsi-pattern2"
+        #>
+        #if ( $env.template.info.hosted_region !== "" ) {
+        #  "https://{{template.info.hosted_region}}.git.cloud.ibm.com/open-toolchain/slzone-{{form.deployment_pattern.parameters.deployment-pattern}}-pattern"
+        #} else {
+        #  "https://github.com/open-toolchain/slzone-{{form.deployment_pattern.parameters.deployment-pattern}}-pattern"
+        #} 
+      type: $env.type || 'clone'
+      has_issues: true
+      enable_traceability: true
+      legal: true
+      source_provider: 'hostedgit'
+  
+  infrastructure-pipeline:
+    service_id: pipeline
+    parameters:
+      name: infrastructure-pipeline
+      label: infrastructure-pipeline
+      type: tekton
+      ui_pipeline: true
+      services:
+        - infrastructureRepo
+      configuration:
+        content:
+          $text: infrastructure-pipeline.yml
+        env:
+          PIPELINE_REPO: infrastructureRepo
+          PIPELINE_REPO_BRANCH: 'master'
+          PATTERN: "{{form.deployment_pattern.parameters.deployment-pattern}}"
+          API_KEY: "{{form.wizard_schematics.parameters.ibmcloud-api-key}}"
+          APP_CICD_WEBHOOKURL: "{{form.wizard_app_cicd.parameters.app_cicd_webhookurl}}"
+          APP_CICD_HEADER_KEY: "{{form.wizard_app_cicd.parameters.app_cicd_header_key}}"
+          APP_CICD_TOKEN: "{{form.wizard_app_cicd.parameters.app_cicd_token}}"
+          SCHEMATICS_WORKSPACE_NAME: '{{services.infrastructureRepo.parameters.repo_name}}'
+          KMS_SERVICE: '{{form.wizard_kms_service.parameters.kmsService}}'
+          HPCS_ADMIN1_SIGKEY: '{{form.wizard_hpcs_config.parameters.admin1_sigkey}}'
+          HPCS_ADMIN1_PASS: '{{form.wizard_hpcs_config.parameters.admin1_pass}}'
+          HPCS_ADMIN2_SIGKEY: '{{form.wizard_hpcs_config.parameters.admin2_sigkey}}'
+          HPCS_ADMIN2_PASS: '{{form.wizard_hpcs_config.parameters.admin2_pass}}'
+          HPCS_ADMIN3_SIGKEY: '{{form.wizard_hpcs_config.parameters.admin2_sigkey}}'
+          HPCS_ADMIN3_PASS: '{{form.wizard_hpcs_config.parameters.admin3_pass}}'
+          HPCS_RG: '{{form.wizard_preprovisioned_hpcs.parameters.resource_group}}'
+          HPCS_INSTANCE_NAME: '{{form.wizard_preprovisioned_hpcs.parameters.instance_name}}'
+
+  resources-destroy-pipeline:
+    service_id: pipeline
+    parameters:
+      name: resources-destroy-pipeline
+      label: resources-destroy-pipeline
+      type: tekton
+      ui_pipeline: true
+      services:
+        - infrastructureRepo
+      configuration:
+        content:
+          $text: resources-destroy-pipeline.yml
+        env:
+          PIPELINE_REPO: infrastructureRepo
+          PIPELINE_REPO_BRANCH: 'master'
+          API_KEY: "{{form.wizard_schematics.parameters.ibmcloud-api-key}}"
+          SCHEMATICS_WORKSPACE_NAME: '{{services.infrastructureRepo.parameters.repo_name}}'
+  
+  fortress:
+    service_id: security_compliance
+    parameters:
+      name: >
+        $env.sccName ? '{{sccName}}' : 'compliance'
+      trigger_scan: >
+        $env.triggerSccScan ? '{{triggerSccScan}}' : 'disabled'
+      profile: >
+        $env.sccProfile ? '{{sccProfile}}' : 'IBM Cloud Best Practices Controls 1.0'
+      scope: >
+        $env.sccScope ? '{{sccScope}}' : ''
+      api-key: >
+        $env.sccAPIKey ? '{{sccAPIKey}}' : ''
+      evidence_repo_name: >
+        $env.evidence_repo_name ? '{{evidence_repo_name}}' : '{{form.infrastructureRepo.parameters.repo_url}}'
+

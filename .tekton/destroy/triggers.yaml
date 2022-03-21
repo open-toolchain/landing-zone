@@ -1,0 +1,51 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: TriggerTemplate
+metadata:
+  name: triggertemplate-git-trigger
+spec:
+  params:
+    - name: pipeline-debug
+      default: "false"
+    - name: schematics-wksp
+      value: $(params.schematics-wksp)
+    - name: confirm-deletion
+      value: $(params.confirm-deletion)  
+    - name: triggerName
+      default: "git-pr-process"
+  resourcetemplates:
+    - apiVersion: tekton.dev/v1beta1
+      kind: PipelineRun
+      metadata:
+        name: $(params.triggerName)-$(uid)
+      spec:
+        pipelineRef:
+          name: destroy-pipeline
+        params:
+          - name: pipeline-debug
+            value: $(params.pipeline-debug)
+          - name: schematics-wksp
+            value: $(params.schematics-wksp)
+          - name: confirm-deletion
+            value: $(params.confirm-deletion)
+
+---
+apiVersion: tekton.dev/v1beta1
+kind: TriggerBinding
+metadata:
+  name: triggerbinding-git-trigger-manual
+spec:
+  params:
+    - name: triggerName
+      value: manual-trigger
+---
+apiVersion: tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: eventlistener-git-trigger-manual
+spec:
+  triggers:
+    - binding:
+        name: triggerbinding-git-trigger-manual
+      template:
+        name: triggertemplate-git-trigger

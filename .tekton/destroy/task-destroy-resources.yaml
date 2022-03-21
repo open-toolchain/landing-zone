@@ -1,0 +1,104 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: task-destroy-resources
+spec:
+  params:
+    - name: pipeline-debug
+      description: toggles debug mode for the pipeline
+      default: "false"
+    - name: schematics-wksp
+      description: The schematics workspace name 
+      default: ""
+    - name: confirm-deletion
+      description: Confirmation to delete resources
+      default: "no"
+
+  stepTemplate:
+    env:
+      - name: PIPELINE_DEBUG
+        value: $(params.pipeline-debug)
+      - name: IBMCLOUD_API_KEY
+        valueFrom:
+          secretKeyRef:
+            name: secure-properties
+            key: apikey
+      - name: SCHEMATICS_WKSP
+        value: "$(params.schematics-wksp)"
+      - name: CONFIRM_DELETION
+        value: "$(params.confirm-deletion)"
+  steps:
+    - name: destroy-resources-task
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.3
+      imagePullPolicy: Always
+      command: ["/bin/bash", "-c"]
+      args:
+        - |
+          #!/bin/bash -e
+
+          if [[ "${PIPELINE_DEBUG}" == "true" ]]; then
+            pwd
+            env
+            trap env EXIT
+            set -x
+          fi
+
+          if [[ "${CONFIRM_DELETION}" != "yes" ]]; then
+            echo "Confirm deletion is set to ${CONFIRM_DELETION}.  Set to \"yes\" if you want to delete the resources"
+            exit 0;
+          fi
+
+          REGION="--no-region"
+         
+          # force login (required by schematics cli)
+          ibmcloud login --apikey $IBMCLOUD_API_KEY $REGION
+
+          echo "Retrieving workspace id"
+          ibmcloud terraform workspace list
+          OUTPUT=$(ibmcloud terraform workspace list --output json | jq ".workspaces[] | select(.name==\"$SCHEMATICS_WKSP\")")
+          echo $OUTPUT
+          if [[ $? -ne 0 || "XX_" == "XX_${OUTPUT}" ]]; then 
+            echo "Unable to find workspace name ${SCHEMATICS_WKSP}"
+            exit 1
+          fi 
+
+          WORKSPACE_ID=$(echo "${OUTPUT}" | jq -r .id)
+          echo "Workspace $WORKSPACE_ID"
+         
+          # run terraform destroy resource
+          echo "ibmcloud terraform destroy --id $WORKSPACE_ID --force"
+          ACTIVITY=$(ibmcloud terraform destroy -id $WORKSPACE_ID --json --force)
+          ACTIVITY_ID=$(echo $ACTIVITY | jq -r ".activityid")
+          echo "Activity ID   $ACTIVITY_ID"
+          # poll until status is no longer INPROGRESS, or if there is an error
+          error_count = 0
+          while :
+          do
+            STATUS=$(ibmcloud terraform workspace action --id $WORKSPACE_ID --act-id $ACTIVITY_ID --json)
+            
+            RET_VAL=$?
+            if [ $RET_VAL -ne 0 ]; then
+              echo $STATUS
+
+              error_count=$((error_count + 1))
+              if [ $error_count -gt 5 ]; then
+                exit $RET_VAL
+              fi
+            else
+              STATUS_VALUE=$(echo $STATUS | jq -r ".status")
+              echo "Polling for status: $STATUS_VALUE"
+              if [ "$STATUS_VALUE" = "FAILED" ]; then
+                ibmcloud terraform logs --id $WORKSPACE_ID --act-id $ACTIVITY_ID
+                exit 1
+              elif [ "$STATUS_VALUE" == "CREATED" ]; then  
+                continue
+              elif [ "$STATUS_VALUE" != "INPROGRESS" ]; then  
+                break
+              fi
+            fi
+            # sleep for 5 seconds, while waiting for completion
+            sleep 5
+          done
+          ibmcloud terraform logs --id $WORKSPACE_ID --act-id $ACTIVITY_ID
+    
