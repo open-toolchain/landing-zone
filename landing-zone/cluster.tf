@@ -1,6 +1,5 @@
-
 ##############################################################################
-# Find valid IKS/Roks cluster version
+# Find valid IKS/ROKS Cluster versions for region
 ##############################################################################
 
 data "ibm_container_cluster_versions" "cluster_versions" {}
@@ -9,16 +8,21 @@ data "ibm_container_cluster_versions" "cluster_versions" {}
 
 
 ##############################################################################
-# Create IKS/ROKS on VPC Cluster
+# Cluster Locals
 ##############################################################################
+
 locals {
   # Convert list to map
   worker_pools_map = flatten([
+    # For each cluster
     for cluster_group in var.clusters : [
-      for worker_pool_group in cluster_group.worker_pools : merge(worker_pool_group, {
+      # For each worker pool associated with that cluster
+      for worker_pool_group in cluster_group.worker_pools :
+      merge(worker_pool_group, {
         # Add Cluster Name
         cluster_name = "${var.prefix}-${cluster_group.name}"
-        entitlement  = cluster_group.kube_type == "iks" ? null : cluster_group.entitlement
+        # Add entitlement for openshift workers
+        entitlement = cluster_group.kube_type == "iks" ? null : cluster_group.entitlement
         # resource group
         resource_group = cluster_group.resource_group
         # Add VPC ID
@@ -57,6 +61,13 @@ locals {
   }
 
 }
+
+##############################################################################
+
+
+##############################################################################
+# Create IKS/ROKS on VPC Cluster
+##############################################################################
 
 resource "ibm_container_vpc_cluster" "cluster" {
   for_each          = local.clusters_map
@@ -102,7 +113,7 @@ resource "ibm_container_vpc_cluster" "cluster" {
 
 
 ##############################################################################
-# Worker Pool
+# Create Worker Pools
 ##############################################################################
 
 resource "ibm_container_vpc_worker_pool" "pool" {

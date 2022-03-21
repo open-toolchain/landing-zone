@@ -10,8 +10,8 @@ locals {
   # Add HPCS resource group if included
   resource_group_list = (
     var.hs_crypto_resource_group == null
-    ? ["Default", "service", "transit-gateway"]
-    : ["Default", "service", "transit-gateway", var.hs_crypto_resource_group]
+    ? ["Default", "service"]
+    : ["Default", "service", var.hs_crypto_resource_group]
   )
 
   ##############################################################################

@@ -6,7 +6,7 @@ locals {
   # Convert list to map
   vsi_map = {
     for vsi_group in var.vsi :
-    (vsi_group.name) => merge(vsi_group, {
+    ("${var.prefix}-${vsi_group.name}") => merge(vsi_group, {
       # Add VPC ID
       vpc_id = module.vpc[vsi_group.vpc_name].vpc_id
       subnets = [
