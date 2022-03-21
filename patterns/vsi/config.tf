@@ -52,6 +52,24 @@ locals {
         prefix                = network
         resource_group        = "${var.prefix}-${network}-rg"
         flow_logs_bucket_name = "${network}-bucket"
+        default_security_group_rules = [{
+          name      = "allow-inbound-ping"
+          direction = "inbound"
+          remote    = "0.0.0.0/0"
+          icmp = {
+            type = 8
+          }
+          },
+          {
+            name      = "allow-inbound-ssh"
+            direction = "inbound"
+            remote    = "0.0.0.0/0"
+            tcp = {
+              port_min = 22
+              port_max = 22
+            }
+          }
+        ]
         network_acls = [
           {
             name = "${network}-acl"

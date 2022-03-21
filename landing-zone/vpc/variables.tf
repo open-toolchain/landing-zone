@@ -335,19 +335,19 @@ variable "security_group_rules" {
     })
   )
 
-  default = [    {
-      name      = "allow-inbound-ping"
-      direction = "inbound"
-      remote    = "0.0.0.0/0"
-      icmp      = {
-        type = 8
-      }
+  default = [{
+    name      = "allow-inbound-ping"
+    direction = "inbound"
+    remote    = "0.0.0.0/0"
+    icmp = {
+      type = 8
+    }
     },
     {
       name      = "allow-inbound-ssh"
       direction = "inbound"
       remote    = "0.0.0.0/0"
-      tcp       = {
+      tcp = {
         port_min = 22
         port_max = 22
       }

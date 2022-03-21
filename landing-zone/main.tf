@@ -22,6 +22,7 @@ module "vpc" {
   use_manual_address_prefixes = each.value.use_manual_address_prefixes
   default_network_acl_name    = each.value.default_network_acl_name
   default_security_group_name = each.value.default_security_group_name
+  security_group_rules        = each.value.default_security_group_rules
   default_routing_table_name  = each.value.default_routing_table_name
   address_prefixes            = each.value.address_prefixes
   network_acls                = each.value.network_acls
