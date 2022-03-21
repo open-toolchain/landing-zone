@@ -81,23 +81,7 @@ locals {
             ]
           }
         ]
-        default_security_group_rules = [{
-          name      = "allow-inbound-ping"
-          direction = "inbound"
-          remote    = "0.0.0.0/0"
-          icmp = {
-            type = 8
-          }
-          },
-          {
-            name      = "allow-inbound-ssh"
-            direction = "inbound"
-            remote    = "0.0.0.0/0"
-            tcp = {
-              port_min = 22
-              port_max = 22
-            }
-          }
+        default_security_group_rules = [
         ]
         use_public_gateways = {
           zone-1 = false

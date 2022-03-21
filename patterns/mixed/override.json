@@ -183,23 +183,7 @@
   "vpcs": [
       {
           "default_security_group_rules": [
-              {
-                  "direction": "inbound",
-                  "icmp": {
-                      "type": 8
-                  },
-                  "name": "allow-inbound-ping",
-                  "remote": "0.0.0.0/0"
-              },
-              {
-                  "direction": "inbound",
-                  "name": "allow-inbound-ssh",
-                  "remote": "0.0.0.0/0",
-                  "tcp": {
-                      "port_max": 22,
-                      "port_min": 22
-                  }
-              }
+
           ],
           "flow_logs_bucket_name": "management-bucket",
           "network_acls": [
@@ -291,23 +275,7 @@
       },
       {
           "default_security_group_rules": [
-              {
-                  "direction": "inbound",
-                  "icmp": {
-                      "type": 8
-                  },
-                  "name": "allow-inbound-ping",
-                  "remote": "0.0.0.0/0"
-              },
-              {
-                  "direction": "inbound",
-                  "name": "allow-inbound-ssh",
-                  "remote": "0.0.0.0/0",
-                  "tcp": {
-                      "port_max": 22,
-                      "port_min": 22
-                  }
-              }
+
           ],
           "flow_logs_bucket_name": "workload-bucket",
           "network_acls": [
