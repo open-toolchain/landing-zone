@@ -3,28 +3,57 @@
 ##############################################################################
 
 locals {
-  override            = jsondecode(var.override ? file("./override.json") : "{}")
-  resource_group_list = var.hs_crypto_resource_group == null ? ["Default", "service", "transit-gateway"] : ["Default", "service", "transit-gateway", var.hs_crypto_resource_group]
+  # If override is true, parse the JSON from override.json otherwise parse empty string
+  # Empty string is used to avoid type conflicts with unary operators
+  override = jsondecode(var.override ? file("./override.json") : "{}")
+
+  # Add HPCS resource group if included
+  resource_group_list = (
+    var.hs_crypto_resource_group == null
+    ? ["Default", "service"]
+    : ["Default", "service", var.hs_crypto_resource_group]
+  )
+
+  ##############################################################################
+  # Dynamic configuration for landing zone environment
+  ##############################################################################
   config = {
+    ##############################################################################
+    # Create a resource group for each group in the list, and for each VPC
+    # get default, Default and hs crypto if included. 
+    ##############################################################################
     resource_groups = [
-      for group in distinct(concat(["Default", "service", "transit-gateway"], var.vpcs)) :
+      for group in distinct(concat(local.resource_group_list, var.vpcs)) :
       {
         name   = group == "Default" || group == "default" ? group : "${var.prefix}-${group}-rg"
-        create = group == "Default" || group == "default" ? false : true
+        create = (group == "Default" || group == "default" || group == var.hs_crypto_resource_group) ? false : true
       }
     ]
+    ##############################################################################
+
+    ##############################################################################
+    # SSH Keys
+    # > Add ssh public key to config
+    ##############################################################################
     ssh_keys = [
       {
         name       = "${var.prefix}-ssh-key"
         public_key = var.ssh_public_key
       }
     ]
+    ##############################################################################
+
+    ##############################################################################
+    # Create one VPC for each name in VPC variable
+    ##############################################################################
     vpcs = [
       for network in var.vpcs :
       {
         prefix                = network
         resource_group        = "${var.prefix}-${network}-rg"
         flow_logs_bucket_name = "${network}-bucket"
+        default_security_group_rules = [
+        ]
         network_acls = [
           {
             name = "${network}-acl"
@@ -58,10 +87,18 @@ locals {
           zone-2 = false
           zone-3 = false
         }
+        ##############################################################################
+        # Dynamically create subnets for each VPC and each zone.
+        # > if the VPC is first in the list, it will create a VPN subnet tier in
+        #   zone 1
+        # > otherwise two VPC tiers are created `vsi` and `vpe`
+        # > subnet CIDRs are dynamically calculated based on the index of the VPC
+        #   network, the zone, and the tier
+        ##############################################################################
         subnets = {
           for zone in [1, 2, 3] :
           "zone-${zone}" => [
-            for subnet in(network == "management" && zone == 1 ? ["vsi", "vpe", "vpn"] : ["vsi", "vpe"]) :
+            for subnet in(network == var.vpcs[0] && zone == 1 ? ["vsi", "vpe", "vpn"] : ["vsi", "vpe"]) :
             {
               name           = "${subnet}-zone-${zone}"
               cidr           = "10.${zone + (index(var.vpcs, network) * 3)}0.${1 + index(["vsi", "vpe", "vpn"], subnet)}0.0/24"
@@ -72,19 +109,21 @@ locals {
         }
       }
     ]
-    vpn_gateways = [
-      {
-        name           = "management-gateway"
-        vpc_name       = "management"
-        subnet_name    = "vpn-zone-1"
-        resource_group = "${var.prefix}-management-rg"
-        connections    = []
-      }
-    ]
+    ##############################################################################
+
+    ##############################################################################
+    # Transit Gateway Variables
+    ##############################################################################
     enable_transit_gateway         = true
     transit_gateway_resource_group = "${var.prefix}-service-rg"
     transit_gateway_connections    = var.vpcs
+    ##############################################################################
+
+    ##############################################################################
+    # Object Storage Variables
+    ##############################################################################
     object_storage = [
+      # Activity Tracker COS instance
       {
         name           = "atracker-cos"
         use_data       = false
@@ -99,17 +138,20 @@ locals {
             force_delete  = true
           }
         ]
+        # Key is needed to initialize actibity tracker
         keys = [{
           name = "cos-bind-key"
           role = "Writer"
         }]
       },
+      # COS instance for everything else
       {
         name           = "cos"
         use_data       = false
         resource_group = "${var.prefix}-service-rg"
         plan           = "standard"
         buckets = [
+          # Create one flow log bucket for each VPC network
           for network in var.vpcs :
           {
             name          = "${network}-bucket"
@@ -122,20 +164,17 @@ locals {
         keys = []
       }
     ]
-    vpn_gateways = [
-      {
-        name           = "management-gateway"
-        vpc_name       = "management"
-        subnet_name    = "vpn-zone-1"
-        resource_group = "${var.prefix}-management-rg"
-        connections    = []
-      }
-    ]
+    ##############################################################################
+
+    ##############################################################################
+    # Key Management variables
+    ##############################################################################
     key_management = {
       name           = "${var.prefix}-slz-kms"
       resource_group = "${var.prefix}-service-rg"
       use_hs_crypto  = var.hs_crypto_instance_name == null ? false : true
       keys = [
+        # Create encryption keys for landing zone, activity tracker, and vsi boot volume
         for service in ["slz", "atracker", "vsi-volume"] :
         {
           name     = "${var.prefix}-${service}-key"
@@ -144,23 +183,40 @@ locals {
         }
       ]
     }
+    ##############################################################################
+
+    ##############################################################################
+    # Virtual Private endpoints
+    ##############################################################################
     virtual_private_endpoints = [{
       service_name = "cos"
       service_type = "cloud-object-storage"
-      vpcs = [{
-        name    = "management"
-        subnets = ["vpe-zone-1", "vpe-zone-2", "vpe-zone-3"]
-        }, {
-        name    = "workload"
-        subnets = ["vpe-zone-1", "vpe-zone-2", "vpe-zone-3"]
-      }]
+      vpcs = [
+        # Create VPE for each VPC in VPE tier
+        for network in var.vpcs :
+        {
+          name    = network
+          subnets = ["vpe-zone-1", "vpe-zone-2", "vpe-zone-3"]
+        }
+      ]
     }]
+    ##############################################################################
+
+    ##############################################################################
+    # Activity Tracker Config
+    ##############################################################################
     atracker = {
-      resource_group        = "Default"
+      resource_group        = "${var.prefix}-service-rg"
       receive_global_events = true
       collector_bucket_name = "atracker-bucket"
     }
+    ##############################################################################
+
+    ##############################################################################
+    # VSI Configuration
+    ##############################################################################
     vsi = [
+      # Create an identical VSI deployment in each VPC
       for network in var.vpcs :
       {
         name                            = "${network}-server"
@@ -174,6 +230,7 @@ locals {
           name     = network
           vpc_name = network
           rules = flatten([
+            # Create single array from dynamically generated and static arrays
             [
               {
                 name      = "allow-ibm-inbound"
@@ -181,6 +238,7 @@ locals {
                 direction = "inbound"
               }
             ],
+            # Dynamically create rule to allow inbound and outbound network traffic
             [
               for direction in ["inbound", "outbound"] :
               [
@@ -192,6 +250,7 @@ locals {
 
               ]
             ],
+            # For each port in the list, create an inbound rule to allow traffic out to IBM CIDR
             [
               for port in [53, 80, 443] :
               {
@@ -208,10 +267,25 @@ locals {
         },
         ssh_keys = ["${var.prefix}-ssh-key"]
       }
-
     ]
+    ##############################################################################
 
+    ##############################################################################
+    # VPN Gateway
+    # > Create a gateway in first vpc
+    ##############################################################################
+    vpn_gateways = [
+      {
+        name           = "${var.vpcs[0]}-gateway"
+        vpc_name       = "${var.vpcs[0]}"
+        subnet_name    = "vpn-zone-1"
+        resource_group = "${var.prefix}-${var.vpcs[0]}-rg"
+        connections    = []
+      }
+    ]
+    ##############################################################################
   }
+
   ##############################################################################
   # Compile Environment for Config output
   ##############################################################################
@@ -234,6 +308,18 @@ locals {
     wait_till                      = lookup(local.override, "wait_till", "IngressReady")
   }
   ##############################################################################
+
+  string = "\"${jsonencode(local.env)}\""
+}
+
+##############################################################################
+
+##############################################################################
+# Convert Environment to escaped readable string
+##############################################################################
+
+data "external" "format_output" {
+  program = ["python3", "../../scripts/output.py", local.string]
 }
 
 ##############################################################################

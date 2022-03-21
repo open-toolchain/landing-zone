@@ -1,5 +1,5 @@
 ##############################################################################
-# Atracker
+# Activity Tracker and Route
 ##############################################################################
 
 resource "ibm_atracker_target" "atracker_target" {
@@ -12,6 +12,7 @@ resource "ibm_atracker_target" "atracker_target" {
   name        = "${var.prefix}-atracker"
   target_type = "cloud_object_storage"
 
+  # Wait for buckets and auth policies to ensure successful provision
   depends_on = [ibm_cos_bucket.buckets, ibm_iam_authorization_policy.policy]
 }
 

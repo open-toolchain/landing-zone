@@ -74,8 +74,35 @@ variable "vpcs" {
       classic_access              = optional(bool)
       default_network_acl_name    = optional(string)
       default_security_group_name = optional(string)
-      default_routing_table_name  = optional(string)
-      flow_logs_bucket_name       = optional(string)
+      default_security_group_rules = optional(
+        list(
+          object({
+            name      = string
+            direction = string
+            remote    = string
+            tcp = optional(
+              object({
+                port_max = optional(number)
+                port_min = optional(number)
+              })
+            )
+            udp = optional(
+              object({
+                port_max = optional(number)
+                port_min = optional(number)
+              })
+            )
+            icmp = optional(
+              object({
+                type = optional(number)
+                code = optional(number)
+              })
+            )
+          })
+        )
+      )
+      default_routing_table_name = optional(string)
+      flow_logs_bucket_name      = optional(string)
       address_prefixes = optional(
         object({
           zone-1 = optional(list(string))
@@ -548,7 +575,7 @@ variable "vsi" {
         profile        = "general-purpose"
         encryption_key = "slz-key"
     }]
-
+  
     security_group = {
       name     = "management"
       vpc_name = "management"

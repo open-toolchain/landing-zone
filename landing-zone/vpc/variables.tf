@@ -336,10 +336,23 @@ variable "security_group_rules" {
   )
 
   default = [{
-    name      = "allow-all-inbound"
+    name      = "allow-inbound-ping"
     direction = "inbound"
     remote    = "0.0.0.0/0"
-  }]
+    icmp = {
+      type = 8
+    }
+    },
+    {
+      name      = "allow-inbound-ssh"
+      direction = "inbound"
+      remote    = "0.0.0.0/0"
+      tcp = {
+        port_min = 22
+        port_max = 22
+      }
+    }
+  ]
 
   validation {
     error_message = "Security group rules can only have one of `icmp`, `udp`, or `tcp`."

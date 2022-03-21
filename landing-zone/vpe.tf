@@ -12,9 +12,13 @@ locals {
       id  = local.cos_instance_ids[endpoint.service_name]
     }
   }
+
+  # Create a list of gateways
   vpe_gateway_list = flatten([
+    # fore each service
     for service in var.virtual_private_endpoints :
     [
+      # for each VPC create an object for the endpoints to be created
       for vpcs in service.vpcs :
       {
         name                = "${vpcs.name}-${service.service_name}"
@@ -25,16 +29,24 @@ locals {
       }
     ]
   ])
+
+  # Convert gateway list to map
   vpe_gateway_map = {
     for gateway in local.vpe_gateway_list :
     (gateway.name) => gateway
   }
+
+  # Get a list of subnets to create VPE reserved addressess
   subnet_reserved_ip_list = flatten([
+    # For each service
     for service in var.virtual_private_endpoints :
     [
+      # For each VPC attached to that service
       for vpcs in service.vpcs :
       [
+        # For each subnet where a VPE will be created
         for subnet in vpcs.subnets :
+        # Create reserved IP object
         {
           ip_name      = "${vpcs.name}-${service.service_name}-gateway-${subnet}-ip"
           gateway_name = "${vpcs.name}-${service.service_name}"
@@ -46,6 +58,8 @@ locals {
       ]
     ]
   ])
+
+  # Convert object to list 
   reserved_ip_map = {
     for subnet in local.subnet_reserved_ip_list :
     (subnet.ip_name) => subnet

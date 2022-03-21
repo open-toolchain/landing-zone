@@ -2,7 +2,7 @@
 
 This template allows a user to create a landing zone
 
-![landing zone](../../.docs/mixed.png)
+![landing zone](../../.docs/images/mixed.png)
 
 ## Module Variables
 

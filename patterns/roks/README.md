@@ -2,7 +2,7 @@
 
 This template allows a user to create a landing zone
 
-![roks](../../.docs/roks.png)
+![roks](../../.docs/images/roks.png)
 
 ## Module Variables
 

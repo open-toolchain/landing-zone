@@ -3,8 +3,11 @@
 ##############################################################################
 
 locals {
+  # Create map of VPN connections
   vpn_gateway_map = {
+    # for each gateway
     for gateway in var.vpn_gateways :
+    # Create a key for the gate way with an object containing options and subnet IDs
     (gateway.name) => {
       vpc_id = module.vpc[gateway.vpc_name].vpc_id
       subnet_id = [
@@ -17,6 +20,7 @@ locals {
     }
   }
 
+  # List of VPN gateway connections
   vpn_connection_list = flatten([
     for gateway in var.vpn_gateways :
     [
@@ -28,6 +32,7 @@ locals {
     ]
   ])
 
+  # Convert list to map
   vpn_connection_map = {
     for connection in local.vpn_connection_list :
     (connection.connection_name) => connection

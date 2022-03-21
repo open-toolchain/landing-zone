@@ -23,15 +23,15 @@ locals {
       bind_key = lookup([
         for instance in var.cos :
         instance if instance.name == bucket.instance
-        ][0], "keys", null) == null ? null : length(lookup([
+        ][0], "keys", null) == null ? null : length(lookup([ # If keys is null return null
           for instance in var.cos :
-          instance if instance.name == bucket.instance
+          instance if instance.name == bucket.instance # If length of keys array is 0 return null
         ][0], "keys", null)) == 0 ? null : ibm_resource_key.key[
         lookup([
           for instance in var.cos :
           instance if instance.name == bucket.instance
         ][0], "keys", null)[0].name
-      ].credentials.apikey
+      ].credentials.apikey # Otherwise get credentials from first key
     }
   }
 }
