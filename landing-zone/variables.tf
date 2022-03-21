@@ -575,7 +575,7 @@ variable "vsi" {
         profile        = "general-purpose"
         encryption_key = "slz-key"
     }]
-
+  
     security_group = {
       name     = "management"
       vpc_name = "management"
