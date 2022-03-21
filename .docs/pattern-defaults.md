@@ -74,9 +74,13 @@ Name            | Description
 
 ## Cloud Services
 
+![services](./images/resources.png)
+
 ### Key Management
 
 By default a Key Protect instance is created unless the `hs_crypto_instance_name` variable is provided. Key Protect instances by default will be provisioned in the `service-rg` resource group.
+
+---
 
 #### Keys
 
@@ -96,6 +100,8 @@ Name            | Description
 `atracker-cos`  | Object storage for Activity Tracker
 `cos`           | Object storage
 
+---
+
 #### Object Storage Buckets
 
 Name                | Instance       | Encryption Key | Description
@@ -103,6 +109,8 @@ Name                | Instance       | Encryption Key | Description
 `atracker-bucket`   | `atracker-cos` | `atracker-key` | Bucket for activity tracker logs
 `management-bucket` | `cos`          | `slz-key`      | Bucket for flow logs from Management VPC
 `workload-bucket`   | `cos`          | `slz-key`      | Bucket for flow logs from Workload VPC
+
+---
 
 #### Object Storage API Keys
 
@@ -169,11 +177,15 @@ Name         | Zone | Subnet CIDR
 
 Using the COS bucket provisioned for each VPC network, a flow log collector is created.
 
+![flow logs](./images/flowlogs.png)
+
 ----
 
 ### Virtual Private Endpoints
 
 Each VPC dyamically has a Virtual Private Endpoint addess for the `cos` instance created in each zone of that VPC's `vpe` subnet tier.
+
+![vpe](./images/vpe.png)
 
 ---
 
