@@ -112,15 +112,15 @@ Each pattern will create an identical deployment on the VPC
 
 ### Virtual Server Pattern
 
-![vsi](./.docs/vsi.png)
+![vsi](./.docs/images/vsi.png)
 
 ### Red Hat OpenShift Pattern
 
-![vsi](./.docs/roks.png)
+![vsi](./.docs/images/roks.png)
 
 ### Mixed Pattern
 
-![vsi](./.docs/mixed.png)
+![vsi](./.docs/images/mixed.png)
 
 --- 
 

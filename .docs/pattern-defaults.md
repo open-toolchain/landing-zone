@@ -118,6 +118,8 @@ An [Activity Tracker](url-here) instance is provisioned for this architecture.
 
 ## VPC Infrastructure
 
+![network](./images/network.png)
+
 By default, two VPCs ae created `management` and `workload`. All the components for the management VPC are provisioned in the `management-rg` resource group and the workload VPC components are all provisioned in the `workload-rg` resource group.
 
 ---
