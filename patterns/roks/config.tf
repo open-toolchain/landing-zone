@@ -37,9 +37,9 @@ locals {
     vpcs = [
       for network in var.vpcs :
       {
-        prefix                = network
-        resource_group        = "${var.prefix}-${network}-rg"
-        flow_logs_bucket_name = "${network}-bucket"
+        prefix                       = network
+        resource_group               = "${var.prefix}-${network}-rg"
+        flow_logs_bucket_name        = "${network}-bucket"
         default_security_group_rules = []
         network_acls = [
           {
@@ -219,6 +219,7 @@ locals {
         kube_type          = "openshift"
         resource_group     = "Default"
         cos_name           = "cos"
+        entitlement        = var.entitlement
         # By default, create dedicated pool for logging
         worker_pools = [
           {
