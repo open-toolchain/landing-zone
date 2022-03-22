@@ -1141,7 +1141,6 @@ variable "clusters" {
       kms_config = optional(
         object({
           crk_name         = string
-          instance_name    = string
           private_endpoint = optional(bool)
         })
       )
