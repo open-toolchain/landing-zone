@@ -48,7 +48,7 @@ variable "tags" {
 ##############################################################################
 
 variable "vpcs" {
-  description = "List of VPCs to create"
+  description = "List of VPCs to create. The first VPC in this list will always be considered the `management` VPC, and will be where the VPN Gateway is connected."
   type        = list(string)
   default     = ["management", "workload"]
 }
