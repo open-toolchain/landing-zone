@@ -24,7 +24,7 @@ data "ibm_hpcs" "hpcs_instance" {
 }
 
 locals {
-  key_management_guid = var.key_management.use_data == true ? var.key_management.use_hs_crypto == true ? data.ibm_hpcs.hpcs_instance[0].guid : data.ibm_resource_instance.kms[0].guid : ibm_resource_instance.kms[0].guid
+  key_management_guid = var.key_management.use_hs_crypto == true ? data.ibm_hpcs.hpcs_instance[0].guid : var.key_management.use_data == null ? ibm_resource_instance.kms[0].guid :  data.ibm_resource_instance.kms[0].guid
   key_management_keys = {
     for encryption_key in var.keys :
     (encryption_key.name) => encryption_key
