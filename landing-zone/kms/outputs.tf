@@ -4,7 +4,7 @@
 
 output "key_management_crn" {
   description = "CRN for KMS instance"
-  value       =  var.key_management.use_hs_crypto == true ? data.ibm_hpcs.hpcs_instance[0].crn : var.key_management.use_data == true ? data.ibm_resource_instance.kms[0].crn : ibm_resource_instance.kms[0].crn
+  value       = var.key_management.use_hs_crypto == true ? data.ibm_hpcs.hpcs_instance[0].crn : var.key_management.use_data == true ? data.ibm_resource_instance.kms[0].crn : ibm_resource_instance.kms[0].crn
 }
 
 output "key_management_guid" {
