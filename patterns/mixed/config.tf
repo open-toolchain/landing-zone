@@ -55,7 +55,7 @@ locals {
         network_acls = [
           {
             name              = "${network}-acl"
-            add_cluster_rules = true
+            add_cluster_rules = false
             rules = [
               {
                 name        = "allow-ibm-inbound"
@@ -288,7 +288,7 @@ locals {
         workers_per_subnet = var.workers_per_zone
         machine_type       = var.flavor
         kube_type          = "openshift"
-        resource_group     = "Default"
+        resource_group     = "${var.prefix}-${var.vpcs[1]}-rg"
         cos_name           = "cos"
         entitlement        = var.entitlement
         # By default, create dedicated pool for logging
