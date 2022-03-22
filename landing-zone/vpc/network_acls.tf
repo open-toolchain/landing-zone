@@ -9,7 +9,7 @@ locals {
       name        = "roks-create-worker-nodes-inbound"
       action      = "allow"
       source      = "161.26.0.0/16"
-      destination = "0.0.0.0/0"
+      destination = var.network_cidr != null ? var.network_cidr : "0.0.0.0/0"
       direction   = "inbound"
       tcp         = null
       udp         = null
@@ -19,7 +19,7 @@ locals {
       name        = "roks-create-worker-nodes-outbound"
       action      = "allow"
       destination = "161.26.0.0/16"
-      source      = "0.0.0.0/0"
+      source      = var.network_cidr != null ? var.network_cidr : "0.0.0.0/0"
       direction   = "outbound"
       tcp         = null
       udp         = null
@@ -29,7 +29,7 @@ locals {
       name        = "roks-nodes-to-service-inbound"
       action      = "allow"
       source      = "166.8.0.0/14"
-      destination = "0.0.0.0/0"
+      destination = var.network_cidr != null ? var.network_cidr : "0.0.0.0/0"
       direction   = "inbound"
       tcp         = null
       udp         = null
@@ -39,7 +39,7 @@ locals {
       name        = "roks-nodes-to-service-outbound"
       action      = "allow"
       destination = "166.8.0.0/14"
-      source      = "0.0.0.0/0"
+      source      = var.network_cidr != null ? var.network_cidr : "0.0.0.0/0"
       direction   = "outbound"
       tcp         = null
       udp         = null
@@ -50,7 +50,7 @@ locals {
       name        = "allow-app-incoming-traffic-requests"
       action      = "allow"
       source      = "0.0.0.0/0"
-      destination = "0.0.0.0/0"
+      destination = var.network_cidr != null ? var.network_cidr : "0.0.0.0/0"
       direction   = "inbound"
       tcp = {
         source_port_min = 30000
@@ -62,7 +62,7 @@ locals {
     {
       name        = "allow-app-outgoing-traffic-requests"
       action      = "allow"
-      source      = "0.0.0.0/0"
+      source      = var.network_cidr != null ? var.network_cidr : "0.0.0.0/0"
       destination = "0.0.0.0/0"
       direction   = "outbound"
       tcp = {
@@ -76,7 +76,7 @@ locals {
       name        = "allow-lb-incoming-traffic-requests"
       action      = "allow"
       source      = "0.0.0.0/0"
-      destination = "0.0.0.0/0"
+      destination = var.network_cidr != null ? var.network_cidr : "0.0.0.0/0"
       direction   = "inbound"
       tcp = {
         port_min        = 443
@@ -88,7 +88,7 @@ locals {
     {
       name        = "allow-lb-outgoing-traffic-requests"
       action      = "allow"
-      source      = "0.0.0.0/0"
+      source      = var.network_cidr != null ? var.network_cidr : "0.0.0.0/0"
       destination = "0.0.0.0/0"
       direction   = "outbound"
       tcp = {

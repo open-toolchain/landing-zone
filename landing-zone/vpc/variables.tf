@@ -30,6 +30,12 @@ variable "tags" {
 # Optional VPC Variables
 ##############################################################################
 
+variable network_cidr {
+  description = "Network CIDR for the VPC. This is used to manage network ACL rules for cluster provisioning."
+  type        = string
+  default     = "10.0.0.0/8"
+}
+
 variable "vpc_name" {
   description = "Name for vpc. If left null, one will be generated using the prefix for this module."
   type        = string

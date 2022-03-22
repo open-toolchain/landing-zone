@@ -265,6 +265,7 @@ locals {
     vpcs                           = lookup(local.override, "vpcs", local.config.vpcs)
     vpn_gateways                   = lookup(local.override, "vpn_gateways", local.config.vpn_gateways)
     enable_transit_gateway         = lookup(local.override, "enable_transit_gateway", local.config.enable_transit_gateway)
+    network_cidr                   = lookup(local.override, "network_cidr", var.network_cidr)
     transit_gateway_resource_group = lookup(local.override, "transit_gateway_resource_group", local.config.transit_gateway_resource_group)
     transit_gateway_connections    = lookup(local.override, "transit_gateway_connections", local.config.transit_gateway_connections)
     ssh_keys                       = lookup(local.override, "ssh_keys", [])

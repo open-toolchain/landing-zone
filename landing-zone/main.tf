@@ -18,6 +18,7 @@ module "vpc" {
   region                      = var.region
   prefix                      = "${var.prefix}-${each.value.prefix}"
   vpc_name                    = "vpc"
+  network_cidr                = var.network_cidr
   classic_access              = each.value.classic_access
   use_manual_address_prefixes = each.value.use_manual_address_prefixes
   default_network_acl_name    = each.value.default_network_acl_name
