@@ -142,17 +142,17 @@ docs go here
 
 ---
 
-
-
 ## Customizing Your Environment
+
+---
 
 ### Adding Additional VPCs
 
-
+---
 
 ### Overriding Variables
 
-
+----
 
 ## Creating an Issue
 
