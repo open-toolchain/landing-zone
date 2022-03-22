@@ -278,7 +278,7 @@ locals {
         vpc_name = var.vpcs[1]
         subnet_names = [
           # For the number of zones in zones variable, get that many subnet names
-          for zone in range(1, var.zones) :
+          for zone in range(1, var.zones + 1) :
           "vsi-zone-${zone}"
         ]
         workers_per_subnet = var.workers_per_zone
@@ -293,7 +293,7 @@ locals {
             name     = "logging-worker-pool"
             vpc_name = var.vpcs[1]
             subnet_names = [
-              for zone in range(1, var.zones) :
+              for zone in range(1, var.zones + 1) :
               "vsi-zone-${zone}"
             ]
             entitlement        = var.entitlement
