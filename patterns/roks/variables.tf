@@ -98,9 +98,9 @@ variable "flavor" {
 }
 
 variable "workers_per_zone" {
-  description = "Number of workers in each zone of the cluster. OpenShift requires at least 2 workers per sone for high availability."
+  description = "Number of workers in each zone of the cluster. OpenShift requires at least 2 workers."
   type        = number
-  default     = 2
+  default     = 1
 }
 
 variable "wait_till" {

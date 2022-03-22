@@ -1130,7 +1130,7 @@ variable "clusters" {
       name               = string           # Name of Cluster
       vpc_name           = string           # Name of VPC
       subnet_names       = list(string)     # List of vpc subnets for cluster
-      workers_per_subnet = number           # Worker nodes per subnet. Min 2 per subnet for openshift
+      workers_per_subnet = number           # Worker nodes per subnet.
       machine_type       = string           # Worker node flavor
       kube_type          = string           # iks or openshift
       entitlement        = optional(string) # entitlement option for openshift
@@ -1187,8 +1187,8 @@ variable "clusters" {
 
   # min. workers_per_subnet=2 (default pool) for openshift validation
   validation {
-    condition     = length([for n in flatten(var.clusters[*]) : false if(n.kube_type == "openshift" && n.workers_per_subnet < 2)]) == 0
-    error_message = "For openshift cluster workers_per_subnet needs to be 2 or more."
+    condition     = length([for n in flatten(var.clusters[*]) : false if(n.kube_type == "openshift" && (length(n.subnet_names) * n.workers_per_subnet < 2))]) == 0
+    error_message = "For openshift cluster workers needs to be 2 or more."
   }
 
   # worker_pool name validation

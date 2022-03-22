@@ -46,14 +46,14 @@ services:
       }
     parameters:
       repo_name: "slz-{{form.deployment_pattern.parameters.deployment-pattern}}-{{timestamp}}"
-      repo_url: "https://github.ibm.com/slz-v2-poc/vpc-and-vsi-pattern2"
+      repo_url: "https://github.ibm.com/slz-v2-poc/landing-zone"
         #>
         #if ( $env.template.info.hosted_region !== "" ) {
         #  "https://{{template.info.hosted_region}}.git.cloud.ibm.com/open-toolchain/slzone-{{form.deployment_pattern.parameters.deployment-pattern}}-pattern"
         #} else {
         #  "https://github.com/open-toolchain/slzone-{{form.deployment_pattern.parameters.deployment-pattern}}-pattern"
         #} 
-      source_repo_url: "https://github.ibm.com/slz-v2-poc/vpc-and-vsi-pattern2"
+      source_repo_url: "https://github.ibm.com/slz-v2-poc/landing-zone"
         #>
         #if ( $env.template.info.hosted_region !== "" ) {
         #  "https://{{template.info.hosted_region}}.git.cloud.ibm.com/open-toolchain/slzone-{{form.deployment_pattern.parameters.deployment-pattern}}-pattern"
