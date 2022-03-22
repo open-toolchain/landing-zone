@@ -21,6 +21,8 @@
 
 Each Landing Zone pattern takes in a small number of variables, enabling you to quickly and easily get started with IBM Cloud. Each pattern requires only the `ibmcloud_api_key`, `prefix`, and `region` variables to get started (the `ssh_public_key` must also be provided by the user when creating a pattern that uses Virtual Servers). 
 
+---
+
 ### Variables Available in Each Pattern
 
 Name                     | Type         | Description                                                                                                                                                                     | Sensitive | Default
@@ -35,6 +37,8 @@ enable_transit_gateway   | bool         | Create transit gateway                
 hs_crypto_instance_name  | string       | Optionally, you can bring you own Hyper Protect Crypto Service instance for key management. If you would like to use that instance, add the name here. Otherwise, leave as null |           | null
 hs_crypto_resource_group | string       | If you're using Hyper Protect Crypto services in a resource group other than `Default`, provide the name here.                                                                  |           | null
 override                 | bool         | Override default values with custom JSON template. This uses the file `override.json` to allow users to create a fully customized environment.                                  |           | false
+
+---
 
 ### Variables for Patterns Including Virtual Servers
 
@@ -186,6 +190,12 @@ Using the COS bucket provisioned for each VPC network, a flow log collector is c
 Each VPC dyamically has a Virtual Private Endpoint addess for the `cos` instance created in each zone of that VPC's `vpe` subnet tier.
 
 ![vpe](./images/vpe.png)
+
+---
+
+### Default VPC Security Group
+
+The default VPC security group allows all outbound traffic and inbound traffic from within the security group.
 
 ---
 

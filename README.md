@@ -110,13 +110,25 @@ Each pattern will create an identical deployment on the VPC
 - Red Hat OpenShift Kubernetes (ROKS) Pattern will deploy identical clusters across the VSI subnet tier in each VPC
 - The Mixed pattern will provision both of the above
 
+---
+
+### Detailed Default Pattern Configuration
+
+To read more detailed documentation about the default configuration, read the pattern defaults [here](.docs/pattern-defaults.md).
+
+---
+
 ### Virtual Server Pattern
 
 ![vsi](./.docs/images/vsi.png)
 
+---
+
 ### Red Hat OpenShift Pattern
 
 ![vsi](./.docs/images/roks.png)
+
+---
 
 ### Mixed Pattern
 
