@@ -224,6 +224,7 @@ locals {
         image_name                      = var.vsi_image_name
         vsi_per_subnet                  = 1
         machine_type                    = var.vsi_instance_profile
+        resource_group                  = "${var.prefix}-${var.vpcs[0]}-rg"
         boot_volume_encryption_key_name = "${var.prefix}-vsi-volume-key"
         security_group = {
           name     = var.vpcs[0]
