@@ -163,7 +163,7 @@ locals {
       use_hs_crypto  = var.hs_crypto_instance_name == null ? false : true
       keys = [
         # Create encryption keys for landing zone, activity tracker, and vsi boot volume
-        for service in ["slz", "atracker", "vsi-volume"] :
+        for service in ["slz", "atracker", "vsi-volume", "roks"] :
         {
           name     = "${var.prefix}-${service}-key"
           root_key = true
@@ -214,6 +214,10 @@ locals {
           for zone in range(1, var.zones + 1) :
           "vsi-zone-${zone}"
         ]
+        kms_config = {
+          crk_name = "${var.prefix}-roks-key"
+          private_endpoint = true
+        }
         workers_per_subnet = var.workers_per_zone
         machine_type       = var.flavor
         kube_type          = "openshift"
