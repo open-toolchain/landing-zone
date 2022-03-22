@@ -290,6 +290,7 @@ locals {
         kube_type          = "openshift"
         resource_group     = "Default"
         cos_name           = "cos"
+        entitlement        = var.entitlement
         # By default, create dedicated pool for logging
         worker_pools = [
           {

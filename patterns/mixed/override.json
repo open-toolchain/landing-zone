@@ -2,7 +2,7 @@
   "atracker": {
       "collector_bucket_name": "atracker-bucket",
       "receive_global_events": true,
-      "resource_group": "slz-test-service-rg"
+      "resource_group": "slz-service-rg"
   },
   "clusters": [
       {
@@ -62,7 +62,7 @@
               {
                   "endpoint_type": "public",
                   "force_delete": true,
-                  "kms_key": "slz-test-atracker-key",
+                  "kms_key": "slz-atracker-key",
                   "name": "atracker-bucket",
                   "storage_class": "standard"
               }
@@ -75,7 +75,7 @@
           ],
           "name": "atracker-cos",
           "plan": "standard",
-          "resource_group": "slz-test-service-rg",
+          "resource_group": "slz-service-rg",
           "use_data": false
       },
       {
@@ -83,14 +83,14 @@
               {
                   "endpoint_type": "public",
                   "force_delete": true,
-                  "kms_key": "slz-test-slz-key",
+                  "kms_key": "slz-slz-key",
                   "name": "management-bucket",
                   "storage_class": "standard"
               },
               {
                   "endpoint_type": "public",
                   "force_delete": true,
-                  "kms_key": "slz-test-slz-key",
+                  "kms_key": "slz-slz-key",
                   "name": "workload-bucket",
                   "storage_class": "standard"
               }
@@ -98,7 +98,7 @@
           "keys": [],
           "name": "cos",
           "plan": "standard",
-          "resource_group": "slz-test-service-rg",
+          "resource_group": "slz-service-rg",
           "use_data": false
       }
   ],
@@ -106,23 +106,23 @@
   "key_management": {
       "keys": [
           {
-              "key_ring": "slz-test-slz-ring",
-              "name": "slz-test-slz-key",
+              "key_ring": "slz-slz-ring",
+              "name": "slz-slz-key",
               "root_key": true
           },
           {
-              "key_ring": "slz-test-slz-ring",
-              "name": "slz-test-atracker-key",
+              "key_ring": "slz-slz-ring",
+              "name": "slz-atracker-key",
               "root_key": true
           },
           {
-              "key_ring": "slz-test-slz-ring",
-              "name": "slz-test-vsi-volume-key",
+              "key_ring": "slz-slz-ring",
+              "name": "slz-vsi-volume-key",
               "root_key": true
           }
       ],
-      "name": "slz-test-slz-kms",
-      "resource_group": "slz-test-service-rg",
+      "name": "slz-slz-kms",
+      "resource_group": "slz-service-rg",
       "use_hs_crypto": false
   },
   "resource_groups": [
@@ -132,22 +132,22 @@
       },
       {
           "create": true,
-          "name": "slz-test-service-rg"
+          "name": "slz-service-rg"
       },
       {
           "create": true,
-          "name": "slz-test-management-rg"
+          "name": "slz-management-rg"
       },
       {
           "create": true,
-          "name": "slz-test-workload-rg"
+          "name": "slz-workload-rg"
       }
   ],
   "security_groups": [],
   "service_endpoints": "private",
   "ssh_keys": [
       {
-          "name": "slz-test-ssh-key",
+          "name": "slz-ssh-key",
           "public_key": "<user ssh key value>"
       }
   ],
@@ -155,7 +155,7 @@
       "management",
       "workload"
   ],
-  "transit_gateway_resource_group": "slz-test-service-rg",
+  "transit_gateway_resource_group": "slz-service-rg",
   "virtual_private_endpoints": [
       {
           "service_name": "cos",
@@ -216,7 +216,7 @@
               }
           ],
           "prefix": "management",
-          "resource_group": "slz-test-management-rg",
+          "resource_group": "slz-management-rg",
           "subnets": {
               "zone-1": [
                   {
@@ -308,7 +308,7 @@
               }
           ],
           "prefix": "workload",
-          "resource_group": "slz-test-workload-rg",
+          "resource_group": "slz-workload-rg",
           "subnets": {
               "zone-1": [
                   {
@@ -364,14 +364,14 @@
       {
           "connections": [],
           "name": "management-gateway",
-          "resource_group": "slz-test-management-rg",
+          "resource_group": "slz-management-rg",
           "subnet_name": "vpn-zone-1",
           "vpc_name": "management"
       }
   ],
   "vsi": [
       {
-          "boot_volume_encryption_key_name": "slz-test-vsi-volume-key",
+          "boot_volume_encryption_key_name": "slz-vsi-volume-key",
           "image_name": "ibm-ubuntu-16-04-5-minimal-amd64-1",
           "machine_type": "cx2-2x4",
           "name": "management-server",
@@ -424,7 +424,7 @@
               "vpc_name": "management"
           },
           "ssh_keys": [
-              "slz-test-ssh-key"
+              "slz-ssh-key"
           ],
           "subnet_names": [
               "vsi-zone-1",
@@ -435,7 +435,7 @@
           "vsi_per_subnet": 1
       },
       {
-          "boot_volume_encryption_key_name": "slz-test-vsi-volume-key",
+          "boot_volume_encryption_key_name": "slz-vsi-volume-key",
           "image_name": "ibm-ubuntu-16-04-5-minimal-amd64-1",
           "machine_type": "cx2-2x4",
           "name": "workload-server",
@@ -488,7 +488,7 @@
               "vpc_name": "workload"
           },
           "ssh_keys": [
-              "slz-test-ssh-key"
+              "slz-ssh-key"
           ],
           "subnet_names": [
               "vsi-zone-1",
