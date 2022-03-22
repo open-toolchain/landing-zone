@@ -66,7 +66,7 @@ resource "ibm_kms_key" "key" {
   standard_key    = each.value.root_key == null ? null : !each.value.root_key
   payload         = each.value.payload
   key_ring_id     = each.value.key_ring == null ? null : ibm_kms_key_rings.rings[each.value.key_ring].key_ring_id
-  force_delete    = each.value.force_delete
+  force_delete    = each.value.force_delete != false ? true : each.value.force_delete
   endpoint_type   = each.value.endpoint
   iv_value        = each.value.iv_value
   encrypted_nonce = each.value.encrypted_nonce
