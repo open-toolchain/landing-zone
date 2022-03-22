@@ -217,19 +217,17 @@ locals {
     # VSI Configuration
     ##############################################################################
     vsi = [
-      # Create an identical VSI deployment in each VPC
-      for network in var.vpcs :
       {
-        name                            = "${network}-server"
-        vpc_name                        = network
+        name                            = "${var.vpcs[0]}-server"
+        vpc_name                        = var.vpcs[0]
         subnet_names                    = ["vsi-zone-1", "vsi-zone-2", "vsi-zone-3"]
         image_name                      = var.vsi_image_name
         vsi_per_subnet                  = 1
         machine_type                    = var.vsi_instance_profile
         boot_volume_encryption_key_name = "${var.prefix}-vsi-volume-key"
         security_group = {
-          name     = network
-          vpc_name = network
+          name     = var.vpcs[0]
+          vpc_name = var.vpcs[0]
           rules = flatten([
             # Create single array from dynamically generated and static arrays
             [
@@ -275,11 +273,9 @@ locals {
     # Cluster Config
     ##############################################################################
     clusters = [
-      # Dynamically create identical cluster in each VPC
-      for network in var.vpcs :
       {
-        name     = "${network}-cluster"
-        vpc_name = network
+        name     = "${var.vpcs[1]}-cluster"
+        vpc_name = var.vpcs[1]
         subnet_names = [
           # For the number of zones in zones variable, get that many subnet names
           for zone in range(1, var.zones) :
@@ -295,7 +291,7 @@ locals {
         worker_pools = [
           {
             name     = "logging-worker-pool"
-            vpc_name = network
+            vpc_name = var.vpcs[1]
             subnet_names = [
               for zone in range(1, var.zones) :
               "vsi-zone-${zone}"
