@@ -1,0 +1,46 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "messages": {
+    "$i18n": "locales.yml"
+  },
+  "title": {
+    "$ref": "#/messages/wizard.kmsService.title"
+  },
+  "description": "",
+  "longDescription": {
+    "$ref": "#/messages/wizard.kmsService.longDescription"
+  },
+  "type": "object",
+  "properties": {
+    "kmsService": {
+      "type": "string",
+      "enum": [
+        {
+          "name": {
+            "$ref": "#/messages/wizard.kmsService.keyprotect.title"
+          },
+          "value": "keyprotect"
+        },{
+          "name": {
+            "$ref": "#/messages/wizard.kmsService.hpcs.title"
+          },
+          "value": "hpcs"
+        },{
+          "name": {
+            "$ref": "#/messages/wizard.kmsService.preprovisioned-hpcs.title"
+          },
+          "value": "preprovisioned-hpcs"
+        }
+      ]
+    }
+  },
+  "form": [ 
+  {
+    "type": "tilegroup",
+    "key": "kmsService",
+    "display": {
+      "showLabel": false,
+      "orientation": "vertical"
+    }
+  }]
+}

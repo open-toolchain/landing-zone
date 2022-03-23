@@ -14,12 +14,15 @@
     - [Flow Logs](#flow-logs)
     - [Virtual Private Endpoints](#virtual-private-endpoints)
 5. [Deployments]
+    - [Virtual Server Deployments](#virtual-sever-deployments)
 
 ---
 
 ## Pattern Variables
 
 Each Landing Zone pattern takes in a small number of variables, enabling you to quickly and easily get started with IBM Cloud. Each pattern requires only the `ibmcloud_api_key`, `prefix`, and `region` variables to get started (the `ssh_public_key` must also be provided by the user when creating a pattern that uses Virtual Servers). 
+
+---
 
 ### Variables Available in Each Pattern
 
@@ -30,11 +33,13 @@ TF_VERSION               | string       | The version of the Terraform engine th
 prefix                   | string       | A unique identifier for resources. Must begin with a letter. This prefix will be prepended to any resources provisioned by this template.                                       |           | 
 region                   | string       | Region where VPC will be created. To find your VPC region, use `ibmcloud is regions` command to find available regions.                                                         |           | 
 tags                     | list(string) | List of tags to apply to resources created by this module.                                                                                                                      |           | []
-vpcs                     | list(string) | List of VPCs to create                                                                                                                                                          |           | ["management", "workload"]
+vpcs                     | list(string) |List of VPCs to create. The first VPC in this list will always be considered the `management` VPC, and will be where the VPN Gateway is connected.                               |           | ["management", "workload"]
 enable_transit_gateway   | bool         | Create transit gateway                                                                                                                                                          |           | true
 hs_crypto_instance_name  | string       | Optionally, you can bring you own Hyper Protect Crypto Service instance for key management. If you would like to use that instance, add the name here. Otherwise, leave as null |           | null
 hs_crypto_resource_group | string       | If you're using Hyper Protect Crypto services in a resource group other than `Default`, provide the name here.                                                                  |           | null
 override                 | bool         | Override default values with custom JSON template. This uses the file `override.json` to allow users to create a fully customized environment.                                  |           | false
+
+---
 
 ### Variables for Patterns Including Virtual Servers
 
@@ -134,13 +139,28 @@ By default, two VPCs ae created `management` and `workload`. All the components 
 
 ### Network Access Control Lists
 
-An [Access Control List](url-goes-here) is created for each VPC to allow inbound communiction within the network, inbound communication from IBM services, and to allow all outbound traffic.
+An [Access Control List](https://cloud.ibm.com/docs/vpc?topic=vpc-using-acls) is created for each VPC to allow inbound communiction within the network, inbound communication from IBM services, and to allow all outbound traffic.
 
 Rule                        | Action | Direction | Source        | Destination 
 ----------------------------|--------|-----------|---------------|----------------
 `allow-ibm-inbound`         | Allow  | Inbound   | 161.26.0.0/16 | 10.0.0.0/8
 `allow-all-network-inbound` | Allow  | Inbound   | 10.0.0.0/8    | 10.0.0.0/8
 `allow-all-outbound`        | Allow  | Outbound  | 0.0.0.0/0     | 0.0.0.0/0
+
+#### Cluster Rules
+
+In order to make sure that clusters can be created on VPCs, by default the following rules are added to ACLs where clusters are provisioned. For more information about controlling OpenShift cluster traffic with ACLs, see the documentation [here](https://cloud.ibm.com/docs/openshift?topic=openshift-vpc-acls).
+
+Rule                                               | Action | TCP / UDP | Direction | Source        | Source Port   | Destination   | Destination Port
+---------------------------------------------------|--------|-----------|-----------|---------------|---------------|---------------|-------------------
+Create Worker Nodes                                | Allow  | Any       | inbound   | 161.26.0.0/16 | any           | 0.0.0.0/0     | any
+Communicate with Service Instances                 | Allow  | Any       | inbound   | 166.8.0.0/14  | any           | 0.0.0.0/0     | any
+Allow Incling Application Traffic                  | Allow  | TCP       | inbound   | 0.0.0.0/0     | 30000 - 32767 | 0.0.0.0/0     | any
+Expose Applications Using Load Balancer or Ingress | Allow  | TCP       | inbound   | 0.0.0.0/0     | any           | 0.0.0.0/0     | 443
+Create Worker Nodes                                | Allow  | Any       | outbound  | 0.0.0.0/0     | any           | 161.26.0.0/16 | any
+Communicate with Service Instances                 | Allow  | Any       | outbound  | 0.0.0.0/0     | any           | 166.8.0.0/14  | any
+Allow Incling Application Traffic                  | Allow  | TCP       | outbound  | 0.0.0.0/0     | any           | 0.0.0.0/0     | 30000 - 32767
+Expose Applications Using Load Balancer or Ingress | Allow  | TCP       | outbound  | 0.0.0.0/0     | 443           | 0.0.0.0/0     | any
 
 ---
 
@@ -189,7 +209,39 @@ Each VPC dyamically has a Virtual Private Endpoint addess for the `cos` instance
 
 ---
 
+### Default VPC Security Group
+
+The default VPC security group allows all outbound traffic and inbound traffic from within the security group.
+
+---
+
 ## Virtual Sever Deployments
+
+For the `vsi` pattern, identical virtual server deployments are created on each zone of the `vsi` tier of each VPC. For the `mixed` pattern, virtual servers are created only on the Management VPC. The number of these Virtual servers can be changed using the `vsi_per_subnet` variable.
+
+### Boot Volume Encryption
+
+Boot volumes for each virtual server are encrypted by the `slz-key`
+
+### Virtual Server Image
+
+To find available virtual servers in your region, use the IBM Cloud CLI Command:
+
+```shell
+ibmcloud is images
+```
+
+### Virtual Server Profile
+
+To find available hardware configurations in your region, use the IBM Cloud CLI Command:
+
+```shell
+ibmcloud is instance-profiles
+```
+
+### Additional Components
+
+Virtual Server components like additional block storage and Load Balancers can be configured using `override.json` and those variable definitions can be found in the [landing-zone module](../landing-zone/variables.tf#L457)
 
 ---
 

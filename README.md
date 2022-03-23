@@ -115,13 +115,25 @@ Each pattern will create an identical deployment on the VPC
 - Red Hat OpenShift Kubernetes (ROKS) Pattern will deploy identical clusters across the VSI subnet tier in each VPC
 - The Mixed pattern will provision both of the above
 
+---
+
+### Detailed Default Pattern Configuration
+
+To read more detailed documentation about the default configuration, read the pattern defaults [here](.docs/pattern-defaults.md).
+
+---
+
 ### Virtual Server Pattern
 
 ![vsi](./.docs/images/vsi.png)
 
+---
+
 ### Red Hat OpenShift Pattern
 
 ![vsi](./.docs/images/roks.png)
+
+---
 
 ### Mixed Pattern
 
@@ -135,13 +147,13 @@ docs go here
 
 ---
 
-
-
 ## Customizing Your Environment
+
+---
 
 ### Adding Additional VPCs
 
-
+---
 
 ### Overriding Variables
 
@@ -158,3 +170,22 @@ To run the scripts locally, follow these steps:
 4. Run `terraform plan` to preview the changes that Terraform plans to make to your infrastructure.
 5. Run `terraform apply` to execute the plan to create or modify your infrastructure.
 6. Once you no longer need the infrastructure, you can run `terraform destroy` to delete the resources.
+
+----
+
+## Creating an Issue
+
+As we develop the SLZ template, issues are bound to come up. When an issue comes up the following are required. Issues that do not have complete information will be **closed immediately**.
+
+### Enhancement Feature 
+
+- A detailed title that is either the source of a bug, or a user story for the feature that needs to be added.
+  - example `As a user, I want to be able to provision encryption keys using either HPCS or Key Protect`
+- Any additional information about the use case is helpful, so please be sure to include it.
+
+### Bug Fixes
+
+- A detailed title that is either the source of a bug
+  - example `When provisioning ROKS, network ALBs cannot be provisioned.`
+- If you are creating an issue related to a bug, a list of non-sensitive variables in code block format being used to create the architecture must be added to the issue description. This will enable us to recreate the issue locally and diagnose any problems that occur
+- Additionally, if there are any logging errors, please include those **as text or as part of a code block**.

@@ -1,0 +1,77 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: application-cicd-task
+spec:
+  steps:
+    - name: application-cicd
+      image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.3
+      imagePullPolicy: Always
+      command: ["/bin/bash", "-c"]
+      env:
+        - name: IBMCLOUD_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: secure-properties
+              key: apikey
+        - name: APP_CICD_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: secure-properties
+              key: app-cicd-token
+        - name: APP_CICD_WEBHOOKURL
+          valueFrom:
+            configMapKeyRef:
+              name: environment-properties
+              key: app-cicd-webhookurl
+        - name: APP_CICD_HEADER_KEY
+          valueFrom:
+            configMapKeyRef:
+              name: environment-properties
+              key: app-cicd-header-key
+        - name: SCHEMATICS_WKSP
+          valueFrom:
+            configMapKeyRef:
+              name: environment-properties
+              key: schematics-wksp
+      args:
+        - |
+          #!/bin/bash -e
+
+          if [[ "${PIPELINE_DEBUG}" == "true" ]]; then
+            pwd
+            env
+            trap env EXIT
+            set -x
+          fi
+
+          if [[ -z "${APP_CICD_WEBHOOKURL}" ]]; then
+            echo "CICD pipeline not setup."
+            exit 0;
+          fi
+
+          ibmcloud config --check-version=false
+          ibmcloud login --apikey ${IBMCLOUD_API_KEY} --no-region
+          echo "Retrieving workspace id"
+          ibmcloud terraform workspace list
+          OUTPUT=$(ibmcloud terraform workspace list --output json | jq ".workspaces[] | select(.name==\"$SCHEMATICS_WKSP\")")
+          echo $OUTPUT
+          if [[ $? -ne 0 || "XX_" == "XX_${OUTPUT}" ]]; then 
+            echo "Unable to find workspace name ${SCHEMATICS_WKSP}"
+            exit 1
+          fi 
+
+          WORKSPACE_ID=$(echo "${OUTPUT}" | jq -r .id)
+          echo "Workspace $WORKSPACE_ID"
+
+          ibmcloud schematics output --id ${WORKSPACE_ID} --output JSON | jq ".[0]" > schematics_output.json
+          cat schematics_output.json
+
+          curl -X POST \
+            ${APP_CICD_WEBHOOKURL} \
+            -H "Content-Type: application/json" \
+            -H "${APP_CICD_HEADER_KEY}: ${APP_CICD_TOKEN}" \
+            -d @schematics_output.json
+
+          

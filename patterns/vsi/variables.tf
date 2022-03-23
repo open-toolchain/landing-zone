@@ -47,8 +47,14 @@ variable "tags" {
 # VPC Variables
 ##############################################################################
 
+variable network_cidr {
+  description = "Network CIDR for the VPC. This is used to manage network ACL rules for cluster provisioning."
+  type        = string
+  default     = "10.0.0.0/8"
+}
+
 variable "vpcs" {
-  description = "List of VPCs to create"
+  description = "List of VPCs to create. The first VPC in this list will always be considered the `management` VPC, and will be where the VPN Gateway is connected."
   type        = list(string)
   default     = ["management", "workload"]
 }

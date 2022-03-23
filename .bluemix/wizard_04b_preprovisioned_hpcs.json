@@ -1,0 +1,56 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "messages": {
+        "$i18n": "locales.yml"
+    },
+    "title": {
+      "$ref": "#/messages/wizard.preprovisioned_hpcs.title"
+    },
+    "longDescription": {
+      "$ref": "#/messages/wizard.preprovisioned_hpcs.longDescription"
+    },
+    "type": "object",
+    "properties": {
+      "resource_group": {
+        "type":"string",
+        "description": {
+          "$ref": "#/messages/wizard.preprovisioned_hpcs.resource_group.description"
+        },
+        "placeholder": {
+          "$ref": "#/messages/wizard.preprovisioned_hpcs.resource_group.placeholder"
+        },
+        "validator":{
+          "v-type":"resource-group"
+        }
+      },
+      "instance_name": {
+        "description": {
+          "$ref": "#/messages/wizard.preprovisioned_hpcs.instance_name.description"
+        },
+        "placeholder": {
+          "$ref": "#/messages/wizard.preprovisioned_hpcs.instance_name.placeholder"
+        }
+      }
+    },
+    "required": ["resource_group","instance_name"],
+    "form": [
+      {
+        "type": "validator",
+        "url": "/devops/validator/validator-v1.html"
+      },
+      {
+        "title": {
+          "$ref": "#/messages/wizard.preprovisioned_hpcs.resource_group.title"
+        },
+        "key": "resource_group",
+        "type": "text"
+      },
+      {
+        "title": {
+          "$ref": "#/messages/wizard.preprovisioned_hpcs.instance_name.title"
+        },
+        "key": "instance_name",
+        "type": "text"
+      }
+    ]
+  }

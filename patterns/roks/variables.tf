@@ -42,8 +42,14 @@ variable "tags" {
 # VPC Variables
 ##############################################################################
 
+variable network_cidr {
+  description = "Network CIDR for the VPC. This is used to manage network ACL rules for cluster provisioning."
+  type        = string
+  default     = "10.0.0.0/8"
+}
+
 variable "vpcs" {
-  description = "List of VPCs to create"
+  description = "List of VPCs to create. The first VPC in this list will always be considered the `management` VPC, and will be where the VPN Gateway is connected."
   type        = list(string)
   default     = ["management", "workload"]
 }
@@ -98,9 +104,9 @@ variable "flavor" {
 }
 
 variable "workers_per_zone" {
-  description = "Number of workers in each zone of the cluster. OpenShift requires at least 2 workers per sone for high availability."
+  description = "Number of workers in each zone of the cluster. OpenShift requires at least 2 workers."
   type        = number
-  default     = 2
+  default     = 1
 }
 
 variable "wait_till" {
@@ -116,6 +122,12 @@ variable "wait_till" {
       "IngressReady"
     ], var.wait_till)
   }
+}
+
+variable "entitlement" {
+  description = "If you do not have an entitlement, leave as null. Entitlement reduces additional OCP Licence cost in OpenShift clusters. Use Cloud Pak with OCP Licence entitlement to create the OpenShift cluster. Note It is set only when the first time creation of the cluster, further modifications are not impacted Set this argument to cloud_pak only if you use the cluster with a Cloud Pak that has an OpenShift entitlement."
+  type        = string
+  default     = "cloud_pak"
 }
 
 ##############################################################################

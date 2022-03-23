@@ -9,7 +9,7 @@ locals {
       name        = "roks-create-worker-nodes-inbound"
       action      = "allow"
       source      = "161.26.0.0/16"
-      destination = "0.0.0.0/0"
+      destination = var.network_cidr != null ? var.network_cidr : "0.0.0.0/0"
       direction   = "inbound"
       tcp         = null
       udp         = null
@@ -19,7 +19,7 @@ locals {
       name        = "roks-create-worker-nodes-outbound"
       action      = "allow"
       destination = "161.26.0.0/16"
-      source      = "0.0.0.0/0"
+      source      = var.network_cidr != null ? var.network_cidr : "0.0.0.0/0"
       direction   = "outbound"
       tcp         = null
       udp         = null
@@ -29,7 +29,7 @@ locals {
       name        = "roks-nodes-to-service-inbound"
       action      = "allow"
       source      = "166.8.0.0/14"
-      destination = "0.0.0.0/0"
+      destination = var.network_cidr != null ? var.network_cidr : "0.0.0.0/0"
       direction   = "inbound"
       tcp         = null
       udp         = null
@@ -39,7 +39,7 @@ locals {
       name        = "roks-nodes-to-service-outbound"
       action      = "allow"
       destination = "166.8.0.0/14"
-      source      = "0.0.0.0/0"
+      source      = var.network_cidr != null ? var.network_cidr : "0.0.0.0/0"
       direction   = "outbound"
       tcp         = null
       udp         = null
@@ -50,11 +50,9 @@ locals {
       name        = "allow-app-incoming-traffic-requests"
       action      = "allow"
       source      = "0.0.0.0/0"
-      destination = "0.0.0.0/0"
+      destination = var.network_cidr != null ? var.network_cidr : "0.0.0.0/0"
       direction   = "inbound"
       tcp = {
-        port_min        = 1
-        port_max        = 65535
         source_port_min = 30000
         source_port_max = 32767
       }
@@ -64,12 +62,10 @@ locals {
     {
       name        = "allow-app-outgoing-traffic-requests"
       action      = "allow"
-      source      = "0.0.0.0/0"
+      source      = var.network_cidr != null ? var.network_cidr : "0.0.0.0/0"
       destination = "0.0.0.0/0"
       direction   = "outbound"
       tcp = {
-        source_port_min = 1
-        source_port_max = 65535
         port_min        = 30000
         port_max        = 32767
       }
@@ -83,8 +79,6 @@ locals {
       destination = "0.0.0.0/0"
       direction   = "inbound"
       tcp = {
-        source_port_min = 1
-        source_port_max = 65535
         port_min        = 443
         port_max        = 443
       }
@@ -98,8 +92,6 @@ locals {
       destination = "0.0.0.0/0"
       direction   = "outbound"
       tcp = {
-        port_min        = 1
-        port_max        = 65535
         source_port_min = 443
         source_port_max = 443
       }
@@ -144,20 +136,20 @@ resource "ibm_is_network_acl" "network_acl" {
       dynamic "tcp" {
         for_each = rules.value.tcp == null ? [] : [rules.value]
         content {
-          port_min        = rules.value.tcp.port_min
-          port_max        = rules.value.tcp.port_max
-          source_port_min = rules.value.tcp.source_port_min
-          source_port_max = rules.value.tcp.source_port_min
+          port_min        = lookup(rules.value.tcp, "port_min", null)
+          port_max        = lookup(rules.value.tcp, "port_max", null)
+          source_port_min = lookup(rules.value.tcp, "source_port_min", null)
+          source_port_max = lookup(rules.value.tcp, "source_port_min", null)
         }
       }
 
       dynamic "udp" {
         for_each = rules.value.udp == null ? [] : [rules.value]
         content {
-          port_min        = rules.value.udp.port_min
-          port_max        = rules.value.udp.port_max
-          source_port_min = rules.value.udp.source_port_min
-          source_port_max = rules.value.udp.source_port_min
+          port_min        = lookup(rules.value.udp, "port_min", null)
+          port_max        = lookup(rules.value.udp, "port_max", null)
+          source_port_min = lookup(rules.value.udp, "source_port_min", null)
+          source_port_max = lookup(rules.value.udp, "source_port_min", null)
         }
       }
 

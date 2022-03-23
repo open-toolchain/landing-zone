@@ -171,12 +171,12 @@ locals {
     # Key Management variables
     ##############################################################################
     key_management = {
-      name           = "${var.prefix}-slz-kms"
-      resource_group = "${var.prefix}-service-rg"
+      name           = var.hs_crypto_instance_name == null ? "${var.prefix}-slz-kms" : var.hs_crypto_instance_name
+      resource_group = var.hs_crypto_resource_group == null ? "${var.prefix}-service-rg" : var.hs_crypto_resource_group
       use_hs_crypto  = var.hs_crypto_instance_name == null ? false : true
       keys = [
         # Create encryption keys for landing zone, activity tracker, and vsi boot volume
-        for service in ["slz", "atracker", "vsi-volume"] :
+        for service in ["slz", "atracker", "vsi-volume", "roks"] :
         {
           name     = "${var.prefix}-${service}-key"
           root_key = true
@@ -217,19 +217,18 @@ locals {
     # VSI Configuration
     ##############################################################################
     vsi = [
-      # Create an identical VSI deployment in each VPC
-      for network in var.vpcs :
       {
-        name                            = "${network}-server"
-        vpc_name                        = network
+        name                            = "${var.vpcs[0]}-server"
+        vpc_name                        = var.vpcs[0]
         subnet_names                    = ["vsi-zone-1", "vsi-zone-2", "vsi-zone-3"]
         image_name                      = var.vsi_image_name
         vsi_per_subnet                  = 1
         machine_type                    = var.vsi_instance_profile
+        resource_group                  = "${var.prefix}-${var.vpcs[0]}-rg"
         boot_volume_encryption_key_name = "${var.prefix}-vsi-volume-key"
         security_group = {
-          name     = network
-          vpc_name = network
+          name     = var.vpcs[0]
+          vpc_name = var.vpcs[0]
           rules = flatten([
             # Create single array from dynamically generated and static arrays
             [
@@ -275,30 +274,34 @@ locals {
     # Cluster Config
     ##############################################################################
     clusters = [
-      # Dynamically create identical cluster in each VPC
-      for network in var.vpcs :
       {
-        name     = "${network}-cluster"
-        vpc_name = network
+        name     = "${var.vpcs[1]}-cluster"
+        vpc_name = var.vpcs[1]
         subnet_names = [
           # For the number of zones in zones variable, get that many subnet names
-          for zone in range(1, var.zones) :
+          for zone in range(1, var.zones + 1) :
           "vsi-zone-${zone}"
         ]
+        kms_config = {
+          crk_name = "${var.prefix}-roks-key"
+          private_endpoint = true
+        }
         workers_per_subnet = var.workers_per_zone
         machine_type       = var.flavor
         kube_type          = "openshift"
-        resource_group     = "Default"
+        resource_group     = "${var.prefix}-${var.vpcs[1]}-rg"
         cos_name           = "cos"
+        entitlement        = var.entitlement
         # By default, create dedicated pool for logging
         worker_pools = [
           {
             name     = "logging-worker-pool"
-            vpc_name = network
+            vpc_name = var.vpcs[1]
             subnet_names = [
-              for zone in range(1, var.zones) :
+              for zone in range(1, var.zones + 1) :
               "vsi-zone-${zone}"
             ]
+            entitlement        = var.entitlement
             workers_per_subnet = var.workers_per_zone
             flavor             = var.flavor
         }]
@@ -333,6 +336,7 @@ locals {
     transit_gateway_resource_group = lookup(local.override, "transit_gateway_resource_group", local.config.transit_gateway_resource_group)
     transit_gateway_connections    = lookup(local.override, "transit_gateway_connections", local.config.transit_gateway_connections)
     ssh_keys                       = lookup(local.override, "ssh_keys", local.config.ssh_keys)
+    network_cidr                   = lookup(local.override, "network_cidr", var.network_cidr)
     vsi                            = lookup(local.override, "vsi", local.config.vsi)
     security_groups                = lookup(local.override, "security_groups", lookup(local.config, "security_groups", []))
     virtual_private_endpoints      = lookup(local.override, "virtual_private_endpoints", local.config.virtual_private_endpoints)

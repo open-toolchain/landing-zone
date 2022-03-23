@@ -37,9 +37,9 @@ locals {
     vpcs = [
       for network in var.vpcs :
       {
-        prefix                = network
-        resource_group        = "${var.prefix}-${network}-rg"
-        flow_logs_bucket_name = "${network}-bucket"
+        prefix                       = network
+        resource_group               = "${var.prefix}-${network}-rg"
+        flow_logs_bucket_name        = "${network}-bucket"
         default_security_group_rules = []
         network_acls = [
           {
@@ -158,12 +158,12 @@ locals {
     # Key Management variables
     ##############################################################################
     key_management = {
-      name           = "${var.prefix}-slz-kms"
-      resource_group = "${var.prefix}-service-rg"
+      name           = var.hs_crypto_instance_name == null ? "${var.prefix}-slz-kms" : var.hs_crypto_instance_name
+      resource_group = var.hs_crypto_resource_group == null ? "${var.prefix}-service-rg" : var.hs_crypto_resource_group
       use_hs_crypto  = var.hs_crypto_instance_name == null ? false : true
       keys = [
         # Create encryption keys for landing zone, activity tracker, and vsi boot volume
-        for service in ["slz", "atracker", "vsi-volume"] :
+        for service in ["slz", "atracker", "vsi-volume", "roks"] :
         {
           name     = "${var.prefix}-${service}-key"
           root_key = true
@@ -211,23 +211,29 @@ locals {
         vpc_name = network
         subnet_names = [
           # For the number of zones in zones variable, get that many subnet names
-          for zone in range(1, var.zones) :
+          for zone in range(1, var.zones + 1) :
           "vsi-zone-${zone}"
         ]
+        kms_config = {
+          crk_name = "${var.prefix}-roks-key"
+          private_endpoint = true
+        }
         workers_per_subnet = var.workers_per_zone
         machine_type       = var.flavor
         kube_type          = "openshift"
-        resource_group     = "Default"
+        resource_group     = "${var.prefix}-${network}-rg"
         cos_name           = "cos"
+        entitlement        = var.entitlement
         # By default, create dedicated pool for logging
         worker_pools = [
           {
             name     = "logging-worker-pool"
             vpc_name = network
             subnet_names = [
-              for zone in range(1, var.zones) :
+              for zone in range(1, var.zones + 1) :
               "vsi-zone-${zone}"
             ]
+            entitlement        = var.entitlement
             workers_per_subnet = var.workers_per_zone
             flavor             = var.flavor
         }]
@@ -259,6 +265,7 @@ locals {
     vpcs                           = lookup(local.override, "vpcs", local.config.vpcs)
     vpn_gateways                   = lookup(local.override, "vpn_gateways", local.config.vpn_gateways)
     enable_transit_gateway         = lookup(local.override, "enable_transit_gateway", local.config.enable_transit_gateway)
+    network_cidr                   = lookup(local.override, "network_cidr", var.network_cidr)
     transit_gateway_resource_group = lookup(local.override, "transit_gateway_resource_group", local.config.transit_gateway_resource_group)
     transit_gateway_connections    = lookup(local.override, "transit_gateway_connections", local.config.transit_gateway_connections)
     ssh_keys                       = lookup(local.override, "ssh_keys", [])

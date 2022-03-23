@@ -170,8 +170,8 @@ locals {
     # Key Management variables
     ##############################################################################
     key_management = {
-      name           = "${var.prefix}-slz-kms"
-      resource_group = "${var.prefix}-service-rg"
+      name           = var.hs_crypto_instance_name == null ? "${var.prefix}-slz-kms" : var.hs_crypto_instance_name
+      resource_group = var.hs_crypto_resource_group == null ? "${var.prefix}-service-rg" : var.hs_crypto_resource_group
       use_hs_crypto  = var.hs_crypto_instance_name == null ? false : true
       keys = [
         # Create encryption keys for landing zone, activity tracker, and vsi boot volume
@@ -221,6 +221,7 @@ locals {
       {
         name                            = "${network}-server"
         vpc_name                        = network
+        resource_group                  =  "${var.prefix}-${network}-rg"
         subnet_names                    = ["vsi-zone-1", "vsi-zone-2", "vsi-zone-3"]
         image_name                      = var.vsi_image_name
         vsi_per_subnet                  = 1
@@ -297,6 +298,7 @@ locals {
     transit_gateway_resource_group = lookup(local.override, "transit_gateway_resource_group", local.config.transit_gateway_resource_group)
     transit_gateway_connections    = lookup(local.override, "transit_gateway_connections", local.config.transit_gateway_connections)
     ssh_keys                       = lookup(local.override, "ssh_keys", local.config.ssh_keys)
+    network_cidr                   = lookup(local.override, "network_cidr", var.network_cidr)
     vsi                            = lookup(local.override, "vsi", local.config.vsi)
     security_groups                = lookup(local.override, "security_groups", lookup(local.config, "security_groups", []))
     virtual_private_endpoints      = lookup(local.override, "virtual_private_endpoints", local.config.virtual_private_endpoints)

@@ -1,0 +1,205 @@
+---
+version: '1'
+messages:
+  $i18n: locales.yml
+welcome:
+  description: 
+      $ref: "#/messages/wizard.welcome.description"
+    
+steps:
+  - name: deployment_pattern
+    title:
+      $ref: "#/messages/wizard.step.deployment_pattern.title"
+    form: deployment_pattern
+
+  - name: infrastructureRepo
+    title:
+      $ref: "#/messages/wizard.step.infrastructureRepo.title"
+    form: wizard_infrastructureRepo
+    advanced_form: infrastructureRepo
+    conditions:
+      $ref: conditions.yml#/infrastructureRepo_conditions
+
+  - name: security
+    title: Security and Compliance
+    form: wizard_security
+
+  - name: schematics
+    indent_level: 1
+    title:
+      $ref: "#/messages/wizard.step.schematics.title"
+    form: wizard_schematics
+
+  # - name: kmsService
+  #   indent_level: 1
+  #   title:
+  #     $ref: "#/messages/wizard.step.kmsService.title"
+  #   form: wizard_kms_service
+
+  # - name: hpcs_config
+  #   title:
+  #     $ref: "#/messages/wizard.step.hpcs_config.title"
+  #   indent_level: 2
+  #   form: wizard_hpcs_config
+  #   visible:
+  #     condition:
+  #       any:
+  #         - form: wizard_kms_service
+  #           parameter: kmsService
+  #           value: hpcs 
+
+  # - name: preprovisioned_hpcs
+  #   title:
+  #     $ref: "#/messages/wizard.step.hpcs_config.title"
+  #   indent_level: 2
+  #   form: wizard_preprovisioned_hpcs
+  #   visible:
+  #     condition:
+  #       any:
+  #         - form: wizard_kms_service
+  #           parameter: kmsService
+  #           value: preprovisioned-hpcs 
+
+  - name: fortress
+    form: security_compliance
+    indent_level: 1
+    title:
+      $ref: "#/messages/wizard.step.fortress.title"
+
+  - name: optionaltools
+    title:
+      $ref: "#/messages/wizard.step.optionaltools.title"
+    form: wizard_optional_tools
+
+  - name: app-cicd
+    title:
+      $ref: "#/messages/wizard.optional.tools.app-cicd.title"
+    indent_level: 1
+    form: wizard_app_cicd
+    conditions:
+      $ref: conditions.yml#/app-cicd_conditions
+    visible:
+      condition:
+        any:
+          - form: wizard_optional_tools
+            parameter: app-cicd
+            value: true 
+  # - name: slack
+  #   title:
+  #     $ref: "#/messages/wizard.optional.tools.slack.title"
+  #   indent_level: 1
+  #   form: wizard_slack
+  #   conditions:
+  #     $ref: conditions.yml#/slack_conditions  
+  #   visible:
+  #     condition:
+  #       any:
+  #         - form: wizard_optional_tools
+  #           parameter: slack
+  #           value: true 
+            
+  # - name: optionalworkarounds
+  #   title:
+  #     $ref: "#/messages/wizard.step.optionalworkarounds.title"
+  #   form: wizard_optional_workarounds
+
+  - name: summary
+    title:
+      $ref: "#/messages/wizard.step.summary.title"
+    form: wizard_summary
+
+form:
+  deployment_pattern:
+    schema:
+      $ref: wizard_01_pattern.json
+    parameters:
+      deployment-pattern:  >
+        $env.deploymentPattern ? '{{deploymentPattern}}' : 'vsi'  
+
+  wizard_infrastructureRepo:
+    schema:
+      $ref: wizard_02_infrastructureRepo.json
+
+  wizard_security:
+    schema:
+      $ref: wizard_security.json
+
+  wizard_schematics:
+    parameters:
+      ibmcloud-api-key: >
+        $env.ibmcloudApiKey ? '{{ibmcloudApiKey}}' : ''
+    schema:
+      $ref: wizard_03_schematics.json
+
+  # wizard_kms_service:
+  #   schema:
+  #     $ref: wizard_04_kms.json
+  #   parameters:
+  #     kmsService:  >
+  #       $env.kmsService ? '{{kmsService}}' : 'keyprotect'
+
+  # wizard_hpcs_config:
+  #   schema:
+  #     $ref: wizard_04a_hpcs_config.json
+  #   parameters:
+  #     admin1_sigkey:  >
+  #       $env.admin1_sigkey ? '{{admin1_sigkey}}' : ''
+  #     admin1_pass:  >
+  #       $env.admin1_pass ? '{{admin1_pass}}' : ''
+  #     admin2_sigkey:  >
+  #       $env.admin2_sigkey ? '{{admin2_sigkey}}' : ''
+  #     admin2_pass:  >
+  #       $env.admin2_pass ? '{{admin2_pass}}' : ''
+  #     admin3_sigkey:  >
+  #       $env.admin3_sigkey ? '{{admin3_sigkey}}' : ''
+  #     admin3_pass:  >
+  #       $env.admin3_pass ? '{{admin3_pass}}' : ''
+
+  # wizard_preprovisioned_hpcs:
+  #   schema:
+  #     $ref: wizard_04b_preprovisioned_hpcs.json
+  #   parameters:
+  #     resource_group:  >
+  #       $env.resource_group ? '{{resource_group}}' : ''
+  #     instance_name:  >
+  #       $env.instance_name ? '{{instance_name}}' : ''
+
+  wizard_optional_tools:
+    parameters:
+      app-cicd: true
+      #slack: true
+    schema:
+      $ref: wizard_05_optional_tools.json
+
+  wizard_app_cicd:
+    schema:
+      $ref: wizard_05a_app_cicd.json
+    parameters:
+      app_cicd_webhookurl: >
+        $env.app_cicd_webhookurl ? '{{app_cicd_webhookurl}}' : ''
+      app_cicd_header_key: >
+        $env.app_cicd_header_key ? '{{app_cicd_header_key}}' : ''
+      app_cicd_token: >
+        $env.app_cicd_token ? '{{app_cicd_token}}' : ''
+
+  # wizard_slack:
+  #   schema:
+  #     $ref: wizard_04b_slack.json
+  #   parameters:
+  #     slack_webhookurl: >
+  #       $env.slack_webhookurl ? '{{slack_webhookurl}}' : ''
+  #     slack_channel_name: >
+  #       $env.slack_channel_name ? '{{slack_channel_name}}' : ''
+  #     slack_team_url: >
+  #       $env.slack_team_url ? '{{slack_team_url}}' : ''
+
+  # wizard_optional_workarounds:
+  #   parameters:
+  #     logging: false
+  #     monitoring: false
+  #   schema:
+  #     $ref: wizard_05_optional_workarounds.json
+
+  wizard_summary:
+    schema:
+      $ref: wizard_07_summary.json

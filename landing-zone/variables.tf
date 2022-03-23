@@ -64,6 +64,12 @@ variable "resource_groups" {
 # VPC Variables
 ##############################################################################
 
+variable network_cidr {
+  description = "Network CIDR for the VPC. This is used to manage network ACL rules for cluster provisioning."
+  type        = string
+  default     = "10.0.0.0/8"
+}
+
 variable "vpcs" {
   description = "A map describing VPCs to be created in this repo."
   type = list(
@@ -429,12 +435,7 @@ variable "ssh_keys" {
       resource_group = optional(string)
     })
   )
-  default = [
-    {
-      name           = "jv-dev-ssh-key"
-      resource_group = "default"
-    }
-  ]
+  default = []
 
   validation {
     error_message = "Each SSH key must have a unique name."
@@ -575,7 +576,7 @@ variable "vsi" {
         profile        = "general-purpose"
         encryption_key = "slz-key"
     }]
-  
+
     security_group = {
       name     = "management"
       vpc_name = "management"
@@ -1135,7 +1136,7 @@ variable "clusters" {
       name               = string           # Name of Cluster
       vpc_name           = string           # Name of VPC
       subnet_names       = list(string)     # List of vpc subnets for cluster
-      workers_per_subnet = number           # Worker nodes per subnet. Min 2 per subnet for openshift
+      workers_per_subnet = number           # Worker nodes per subnet.
       machine_type       = string           # Worker node flavor
       kube_type          = string           # iks or openshift
       entitlement        = optional(string) # entitlement option for openshift
@@ -1146,7 +1147,6 @@ variable "clusters" {
       kms_config = optional(
         object({
           crk_name         = string
-          instance_name    = string
           private_endpoint = optional(bool)
         })
       )
@@ -1193,8 +1193,8 @@ variable "clusters" {
 
   # min. workers_per_subnet=2 (default pool) for openshift validation
   validation {
-    condition     = length([for n in flatten(var.clusters[*]) : false if(n.kube_type == "openshift" && n.workers_per_subnet < 2)]) == 0
-    error_message = "For openshift cluster workers_per_subnet needs to be 2 or more."
+    condition     = length([for n in flatten(var.clusters[*]) : false if(n.kube_type == "openshift" && (length(n.subnet_names) * n.workers_per_subnet < 2))]) == 0
+    error_message = "For openshift cluster workers needs to be 2 or more."
   }
 
   # worker_pool name validation

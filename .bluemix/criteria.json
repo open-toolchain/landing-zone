@@ -1,0 +1,23 @@
+[
+  {
+    "name":"Policy to check Unit Tests and code coverage",
+    "description": "Policy to check Unit Tests and code coverage",
+    "rules":[
+      {
+        "name": "Unit Test Rule",
+        "description": "Unit Test Rule",
+        "stage":"unittest",
+        "percentPass":100,
+        "regressionCheck":true,
+        "criticalTests":[
+        ]
+      },
+      {
+        "name": "Code Coverage Rule",
+        "description": "Code Coverage Rule",
+        "stage":"code",
+        "codeCoverage":50
+      }
+    ]
+  }
+]
