@@ -10,8 +10,13 @@
     5. [(Optional) Setting Up Hyper Protect Crypto Services](#optional-setting-up-hyper-protect-crypto-services)
 2. [Patterns](#patterns)
 3. [Getting Started](#getting-started)
-3. [Default Landing Zone Configuration](#default-landing-zone-configuration)
-3. [Customizing Your Environment](#customizing-your-environment)
+4. [Default Landing Zone Configuration](#default-landing-zone-configuration)
+    - [Pattern Variables](#pattern-variables)
+    - [Resource Groups](#resoure-groups)
+    - [Cloud Services](#cloud-services)
+    - [VPC Infrastructure](#vpc-infrastructure)
+5. [Customizing Your Environment](#customizing-your-environment)
+6. [Running the Scripts Locally](#running-the-scripts-locally)
 ---
 
 ## Prerequisites
@@ -151,6 +156,20 @@ docs go here
 ---
 
 ### Overriding Variables
+
+---
+
+## Running the scripts locally
+
+To run the scripts locally, follow these steps:
+
+1. Install Terraform CLI and IBM Cloud Provider plug-in with [these steps](https://cloud.ibm.com/docs/ibm-cloud-provider-for-terraform?topic=ibm-cloud-provider-for-terraform-getting-started). Install [Python](https://www.python.org/downloads/).
+2. Select the pattern that you want to provision. Run `cp example.tfvars terraform.tfvars`.
+3. Provide your `tfvars` file with required variables, such as IBM Cloud API key, prefix, etc.
+3. Run `terraform init` to initialize the working directory and configuration.
+4. Run `terraform plan` to preview the changes that Terraform plans to make to your infrastructure.
+5. Run `terraform apply` to execute the plan to create or modify your infrastructure.
+6. Once you no longer need the infrastructure, you can run `terraform destroy` to delete the resources.
 
 ----
 
