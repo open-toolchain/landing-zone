@@ -55,7 +55,7 @@ locals {
         network_acls = [
           {
             name              = "${network}-acl"
-            add_cluster_rules = false
+            add_cluster_rules = true
             rules = [
               {
                 name        = "allow-ibm-inbound"
