@@ -76,7 +76,7 @@ locals {
       name        = "allow-lb-incoming-traffic-requests"
       action      = "allow"
       source      = "0.0.0.0/0"
-      destination = var.network_cidr != null ? var.network_cidr : "0.0.0.0/0"
+      destination = "0.0.0.0/0"
       direction   = "inbound"
       tcp = {
         port_min        = 443
@@ -88,7 +88,7 @@ locals {
     {
       name        = "allow-lb-outgoing-traffic-requests"
       action      = "allow"
-      source      = var.network_cidr != null ? var.network_cidr : "0.0.0.0/0"
+      source      = "0.0.0.0/0"
       destination = "0.0.0.0/0"
       direction   = "outbound"
       tcp = {
