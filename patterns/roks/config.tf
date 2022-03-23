@@ -221,7 +221,7 @@ locals {
         workers_per_subnet = var.workers_per_zone
         machine_type       = var.flavor
         kube_type          = "openshift"
-        resource_group     = "${var.prefix}-${var.network}-rg"
+        resource_group     = "${var.prefix}-${network}-rg"
         cos_name           = "cos"
         entitlement        = var.entitlement
         # By default, create dedicated pool for logging
