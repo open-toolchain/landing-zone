@@ -1,4 +1,3 @@
-ibmcloud_api_key         = "< add user data here >"
 TF_VERSION               = "1.0"
 prefix                   = "< add user data here >"
 region                   = "< add user data here >"
@@ -11,4 +10,7 @@ ssh_public_key           = "< add user data here >"
 vsi_image_name           = "ibm-ubuntu-16-04-5-minimal-amd64-1"
 vsi_instance_profile     = "cx2-2x4"
 vsi_per_subnet           = 1
+zones                    = 3
+flavor                   = "bx2.16x64"
+wait_till                = "IngressReady"
 override                 = false

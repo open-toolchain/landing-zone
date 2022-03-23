@@ -153,14 +153,14 @@ In order to make sure that clusters can be created on VPCs, by default the follo
 
 Rule                                               | Action | TCP / UDP | Direction | Source        | Source Port   | Destination   | Destination Port
 ---------------------------------------------------|--------|-----------|-----------|---------------|---------------|---------------|-------------------
-Create Worker Nodes                                | Allow  | Any       | inbound   | 161.26.0.0/16 | any           | 0.0.0.0/0     | any
-Communicate with Service Instances                 | Allow  | Any       | inbound   | 166.8.0.0/14  | any           | 0.0.0.0/0     | any
-Allow Incling Application Traffic                  | Allow  | TCP       | inbound   | 0.0.0.0/0     | 30000 - 32767 | 0.0.0.0/0     | any
-Expose Applications Using Load Balancer or Ingress | Allow  | TCP       | inbound   | 0.0.0.0/0     | any           | 0.0.0.0/0     | 443
-Create Worker Nodes                                | Allow  | Any       | outbound  | 0.0.0.0/0     | any           | 161.26.0.0/16 | any
-Communicate with Service Instances                 | Allow  | Any       | outbound  | 0.0.0.0/0     | any           | 166.8.0.0/14  | any
-Allow Incling Application Traffic                  | Allow  | TCP       | outbound  | 0.0.0.0/0     | any           | 0.0.0.0/0     | 30000 - 32767
-Expose Applications Using Load Balancer or Ingress | Allow  | TCP       | outbound  | 0.0.0.0/0     | 443           | 0.0.0.0/0     | any
+Create Worker Nodes                                | Allow  | Any       | inbound   | 161.26.0.0/16 | any           | 10.0.0.0/8    | any
+Communicate with Service Instances                 | Allow  | Any       | inbound   | 166.8.0.0/14  | any           | 10.0.0.0/8    | any
+Allow Incling Application Traffic                  | Allow  | TCP       | inbound   | 10.0.0.0/8    | 30000 - 32767 | 10.0.0.0/8    | any
+Expose Applications Using Load Balancer or Ingress | Allow  | TCP       | inbound   | 10.0.0.0/8    | any           | 10.0.0.0/8    | 443
+Create Worker Nodes                                | Allow  | Any       | outbound  | 10.0.0.0/8    | any           | 161.26.0.0/16 | any
+Communicate with Service Instances                 | Allow  | Any       | outbound  | 10.0.0.0/8    | any           | 166.8.0.0/14  | any
+Allow Incling Application Traffic                  | Allow  | TCP       | outbound  | 10.0.0.0/8    | any           | 10.0.0.0/8    | 30000 - 32767
+Expose Applications Using Load Balancer or Ingress | Allow  | TCP       | outbound  | 10.0.0.0/8    | 443           | 10.0.0.0/8    | any
 
 ---
 
