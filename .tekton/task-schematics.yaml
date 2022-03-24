@@ -104,6 +104,8 @@ spec:
              GIT_TOKEN=$(cat $GIT_CREDENTIALS_FILE | jq -r .GIT_TOKEN)
 
              ibmcloud terraform workspace new --github-token "${GIT_TOKEN}" --file schematics.json
+
+             touch new-schematics-wksp
           else 
              echo "Schematics workspace ${SCHEMATICS_WKSP} already exists"
           fi 
@@ -217,6 +219,11 @@ spec:
       args:
         - |
           #!/bin/bash
+
+          if [[ -f /artifacts/new-schematics-wksp ]]; then
+            echo "New workspace created, no need for refresh";
+            exit 0;
+          fi
 
           REGION="--no-region"
          
