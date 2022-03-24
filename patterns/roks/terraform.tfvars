@@ -10,3 +10,4 @@ zones                    = 3
 flavor                   = "bx2.16x64"
 wait_till                = "IngressReady"
 override                 = false
+entitlement              = null    #Set to "cloud_pak" if you have a cloud pak license
