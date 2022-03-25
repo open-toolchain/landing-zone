@@ -143,19 +143,33 @@ To read more detailed documentation about the default configuration, read the pa
 
 ## Getting Started 
 
-docs go here
 
 ---
 
 ## Customizing Your Environment
 
+
+
 ---
 
 ### Adding Additional VPCs
 
+Additional VPC's can be added using the `terraform.tfvars` file by adding the name of the new VPC as a `string`.
+
+```
+vpcs  = ["management", "workload", "<ADDITIONAL VPC>"]
+```
+
 ---
 
 ### Overriding Variables
+
+1. To ovveride default configuration, changes can be me made to the `override.json` file located within each pattern. 
+2. If any changes are made to the `override.json` file apply these changes to `terraform.tfvars` file by changing to `true`
+
+```
+ovveride = false 
+```
 
 ---
 
