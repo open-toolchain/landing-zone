@@ -7,6 +7,7 @@
 locals {
   authorization_policies = merge(
     {
+      # Create authorization to allow key management to access VPC block storage for each vpc resource group
       for resource_group in distinct(var.vpcs.*.resource_group) :
       "${resource_group}-block-storage" => {
         source_service_name         = "server-protect"
@@ -18,6 +19,7 @@ locals {
       }
     },
     {
+      # Create authorization for each COS instance
       for cos in var.cos :
       "cos-${cos.name}-to-kms" => {
         source_service_name         = "cloud-object-storage"
