@@ -7,26 +7,28 @@
 locals {
   authorization_policies = merge(
     {
+      # Create authorization to allow key management to access VPC block storage for each vpc resource group
       for resource_group in distinct(var.vpcs.*.resource_group) :
-        "${resource_group}-block-storage" => {
-          source_service_name         = "server-protect"
-          source_resource_group_id    = local.resource_groups[resource_group]
-          description                 = "Allow block storage volumes to be encrypted by KMS instance"
-          roles                       = ["Reader"]
-          target_service_name         = lookup(var.key_management, "use_hs_crypto", false) == true ? "hs-crypto" : "kms"
-          target_resource_instance_id = module.key_management.key_management_guid
-        }
+      "${resource_group}-block-storage" => {
+        source_service_name         = "server-protect"
+        source_resource_group_id    = local.resource_groups[resource_group]
+        description                 = "Allow block storage volumes to be encrypted by KMS instance"
+        roles                       = ["Reader"]
+        target_service_name         = lookup(var.key_management, "use_hs_crypto", false) == true ? "hs-crypto" : "kms"
+        target_resource_instance_id = module.key_management.key_management_guid
+      }
     },
     {
+      # Create authorization for each COS instance
       for cos in var.cos :
-        "cos-${cos.name}-to-kms" => {
-          source_service_name         = "cloud-object-storage"
-          source_resource_instance_id = local.cos_instance_ids[cos.name]
-          description                 = "Allow COS instance to read from KMS instance"
-          roles                       = ["Reader"]
-          target_service_name         = lookup(var.key_management, "use_hs_crypto", false) == true ? "hs-crypto" : "kms"
-          target_resource_instance_id = module.key_management.key_management_guid
-        }
+      "cos-${cos.name}-to-kms" => {
+        source_service_name         = "cloud-object-storage"
+        source_resource_instance_id = local.cos_instance_ids[cos.name]
+        description                 = "Allow COS instance to read from KMS instance"
+        roles                       = ["Reader"]
+        target_service_name         = lookup(var.key_management, "use_hs_crypto", false) == true ? "hs-crypto" : "kms"
+        target_resource_instance_id = module.key_management.key_management_guid
+      }
     },
     {
       # Create an authorization for each COS instance

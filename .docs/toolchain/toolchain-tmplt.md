@@ -20,7 +20,7 @@ On this page, you will select from a pre-defined pattern which include:
 - [ROKS on VPC](../patterns/roks-pattern.md) 
 - [Mixed architecture of VSI and ROKS on VPC](../patterns/mixed-pattern.md) 
 
-Select which pattern you wish to use.
+Select which pattern you wish to use. For a detailed list of components created, see [Default Landing Zone Configuration](../pattern-defaults.md).
 
 ## Infrastructure Repository Page
 

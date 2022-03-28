@@ -1,4 +1,4 @@
-# Default Landing Zone Configuration
+# Default Secure Landing Zone Configuration
 
 ## Table of Contents
 
@@ -15,6 +15,7 @@
     - [Virtual Private Endpoints](#virtual-private-endpoints)
 5. [Deployments]
     - [Virtual Server Deployments](#virtual-sever-deployments)
+    - [Red Hat OpenShift Cluster Deployments](#openshift-cluster-deployments)
 
 ---
 
@@ -247,4 +248,22 @@ Virtual Server components like additional block storage and Load Balancers can b
 
 ## OpenShift Cluster Deployments
 
+For the `roks` pattern, identical Red Hat OpenShift Cluster deployments are created on each zone of the `vsi` tier of each VPC. For the `mixed` pattern, Clusters are created only on the Workload VPC. Cluster can be deployed across 1, 2, or 3 zones using the `cluster_zones` variable.
+
+Clusters deployed use the most recent default cluster version.
+
 ---
+
+### Workers Per Zone
+
+The number of workers in each zone of the cluster can be changed by using the `workers_per_subnet` variable. At least to workers must be available for clusters to successfully provision.
+
+---
+
+### Cluster Flavor
+
+To find available hardware configurations in your region, use the IBM Cloud CLI Command:
+
+```shell
+ibmcloud ks flavors
+```
