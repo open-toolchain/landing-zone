@@ -51,5 +51,8 @@ properties:
   - type: secure
     name: app-cicd-token
     value: ${APP_CICD_TOKEN}
+  - type: text
+    name: cra-skip-failure
+    value: "false"
   
 
