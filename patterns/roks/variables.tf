@@ -86,14 +86,14 @@ variable "hs_crypto_resource_group" {
 # Cluster Variables
 ##############################################################################
 
-variable "zones" {
+variable "cluster_zones" {
   description = "Number of zones to provision clusters for each VPC. At least one zone is required. Can be 1, 2, or 3 zones."
   type        = number
   default     = 3
 
   validation {
     error_message = "Cluster can be provisioned only across 1, 2, or 3 zones."
-    condition     = var.zones > 0 && var.zones < 4
+    condition     = var.cluster_zones > 0 && var.cluster_zones < 4
   }
 }
 

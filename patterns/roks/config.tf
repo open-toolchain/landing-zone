@@ -211,7 +211,7 @@ locals {
         vpc_name = network
         subnet_names = [
           # For the number of zones in zones variable, get that many subnet names
-          for zone in range(1, var.zones + 1) :
+          for zone in range(1, var.cluster_zones + 1) :
           "vsi-zone-${zone}"
         ]
         kms_config = {
@@ -230,7 +230,7 @@ locals {
           #   name     = "logging-worker-pool"
           #   vpc_name = network
           #   subnet_names = [
-          #     for zone in range(1, var.zones + 1) :
+          #     for zone in range(1, var.cluster_zones + 1) :
           #     "vsi-zone-${zone}"
           #   ]
           #   entitlement        = var.entitlement

@@ -1,12 +1,12 @@
 TF_VERSION               = "1.0"
-prefix                   = "jv-dev"
-region                   = "au-syd"
+prefix                   = "< add user data here >"
+region                   = "< add user data here >"
 tags                     = []
 vpcs                     = ["management", "frog"]
 enable_transit_gateway   = true
 hs_crypto_instance_name  = null
 hs_crypto_resource_group = null
-zones                    = 1
+cluster_zones            = 1
 flavor                   = "bx2.16x64"
 workers_per_zone         = 2
 wait_till                = "IngressReady"
