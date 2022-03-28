@@ -215,7 +215,7 @@ locals {
           "vsi-zone-${zone}"
         ]
         kms_config = {
-          crk_name = "${var.prefix}-roks-key"
+          crk_name         = "${var.prefix}-roks-key"
           private_endpoint = true
         }
         workers_per_subnet = var.workers_per_zone
@@ -226,17 +226,18 @@ locals {
         entitlement        = var.entitlement
         # By default, create dedicated pool for logging
         worker_pools = [
-          {
-            name     = "logging-worker-pool"
-            vpc_name = network
-            subnet_names = [
-              for zone in range(1, var.zones + 1) :
-              "vsi-zone-${zone}"
-            ]
-            entitlement        = var.entitlement
-            workers_per_subnet = var.workers_per_zone
-            flavor             = var.flavor
-        }]
+          # {
+          #   name     = "logging-worker-pool"
+          #   vpc_name = network
+          #   subnet_names = [
+          #     for zone in range(1, var.zones + 1) :
+          #     "vsi-zone-${zone}"
+          #   ]
+          #   entitlement        = var.entitlement
+          #   workers_per_subnet = var.workers_per_zone
+          #   flavor             = var.flavor
+          # }
+        ]
       }
     ]
     ##############################################################################

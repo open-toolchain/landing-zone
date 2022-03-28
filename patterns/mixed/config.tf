@@ -283,7 +283,7 @@ locals {
           "vsi-zone-${zone}"
         ]
         kms_config = {
-          crk_name = "${var.prefix}-roks-key"
+          crk_name         = "${var.prefix}-roks-key"
           private_endpoint = true
         }
         workers_per_subnet = var.workers_per_zone

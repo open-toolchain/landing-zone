@@ -71,7 +71,7 @@ locals {
 
 resource "ibm_container_vpc_cluster" "cluster" {
   for_each          = local.clusters_map
-  name              = each.value.name
+  name              = "${var.prefix}-${each.value.name}"
   vpc_id            = each.value.vpc_id
   resource_group_id = local.resource_groups[each.value.resource_group]
   flavor            = each.value.machine_type
@@ -104,7 +104,8 @@ resource "ibm_container_vpc_cluster" "cluster" {
   disable_public_service_endpoint = true
 
   timeouts {
-    create = "2h"
+    create = "3h"
+    delete = "2h"
   }
 
 }

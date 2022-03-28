@@ -53,6 +53,10 @@ resource "ibm_is_vpn_gateway" "gateway" {
   mode           = each.value.mode
   resource_group = each.value.resource_group == null ? null : local.resource_groups[each.value.resource_group]
   tags           = var.tags
+
+  timeouts {
+    delete = "1h"
+  }
 }
 
 resource "ibm_is_vpn_gateway_connection" "gateway_connection" {

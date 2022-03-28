@@ -30,7 +30,7 @@ variable "tags" {
 # Optional VPC Variables
 ##############################################################################
 
-variable network_cidr {
+variable "network_cidr" {
   description = "Network CIDR for the VPC. This is used to manage network ACL rules for cluster provisioning."
   type        = string
   default     = "10.0.0.0/8"

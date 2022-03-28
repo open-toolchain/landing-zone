@@ -66,8 +66,8 @@ locals {
       destination = var.network_cidr != null ? var.network_cidr : "0.0.0.0/0"
       direction   = "outbound"
       tcp = {
-        port_min        = 30000
-        port_max        = 32767
+        port_min = 30000
+        port_max = 32767
       }
       udp  = null
       icmp = null
@@ -79,8 +79,8 @@ locals {
       destination = var.network_cidr != null ? var.network_cidr : "0.0.0.0/0"
       direction   = "inbound"
       tcp = {
-        port_min        = 443
-        port_max        = 443
+        port_min = 443
+        port_max = 443
       }
       udp  = null
       icmp = null
