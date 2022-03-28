@@ -35,7 +35,7 @@ By using the variable deifnitions found in our [landing zone module](../../landi
 
 This module outputs `config`, a JSON encoded definition of your environment based on the defaults for Landing Zone and any variables changed using `override.json`. By using this output, it's easy to configure multiple additional workloads, VPCs, or subnets in existing VPCs to the default environment.
 
-### Overriding Only Some Veriables
+### Overriding Only Some Variables
 
 `override.json` does not need to contain all elements. As an example override.json could be:
 ```json
