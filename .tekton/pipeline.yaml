@@ -27,6 +27,9 @@ spec:
     - name: terraform-cmd
       description: (optional) Pattern will only apply when set to apply
       default: "apply"
+    - name: cra-skip-failure
+      description: (optional) flag to skip cra failure 
+      default: "false"
     - name: pipeline-debug
       default: "false"
       description: Enable debug output within pipeline
@@ -77,6 +80,8 @@ spec:
           value: $(params.pattern)
         - name: pipeline-debug
           value: $(params.pipeline-debug)
+        - name: cra-skip-failure
+          value: $(params.cra-skip-failure)
 
     - name: infrasructure-provision-task
       runAfter:
