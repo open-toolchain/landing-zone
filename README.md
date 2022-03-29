@@ -143,13 +143,6 @@ To read more detailed documentation about the default configuration, read the pa
 
 ## Getting Started 
 
-
----
-
-## Customizing Your Environment
-
-
-
 ---
 
 ### Adding Additional VPCs
@@ -164,11 +157,25 @@ vpcs  = ["management", "workload", "<ADDITIONAL VPC>"]
 
 ### Overriding Variables
 
-1. To ovveride default configuration, changes can be me made to the `override.json` file located within each pattern. 
-2. If any changes are made to the `override.json` file apply these changes to `terraform.tfvars` file by changing to `true`
+## Using override.json
 
-```
-ovveride = false 
+To create a fully customized environment based on the starting template, users can use [override.json](./override.json) by setting the template `override` variable to `true`.
+
+### Variable Definitions
+
+By using the variable deifnitions found in our [landing zone module](../../landing-zone/) any number and custom configuration of VPC components, VSI workoads, and clusters can be created. Currently `override.json` is set to contain the default environment configuration.
+
+### Customizing Your Environment
+
+This module outputs `config`, a JSON encoded definition of your environment based on the defaults for Landing Zone and any variables changed using `override.json`. By using this output, it's easy to configure multiple additional workloads, VPCs, or subnets in existing VPCs to the default environment.
+
+### Overriding Only Some Variables
+
+`override.json` does not need to contain all elements. As an example override.json could be:
+```json
+{
+    "enable_transit_gateway": false
+}
 ```
 
 ---
