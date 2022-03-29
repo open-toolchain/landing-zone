@@ -495,7 +495,7 @@ Cloud Object Storage components can be found in cos.tf.
 | Name                        | Description                                                                                                                               |
 | --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------- |
 | ibmcloud_api_key            | The IBM Cloud platform API key needed to deploy IAM enabled resources.                                                                    |
-| prefix                      | A unique identifier for resources. Must begin with a letter. This prefix will be prepended to any resources provisioned by this template. |
+| prefix                      | A unique identifier for resources. Must begin with a letter and end with a letter or number. This prefix will be prepended to any resources provisioned by this template. Prefixes must be 16 or fewer characters. |
 | region                      | Region where VPC will be created. To find your VPC region, use `ibmcloud is regions` command to find available regions.                   |
 | resource_group              | Name of resource group where all infrastructure will be provisioned.                                                                      |
 | tags                        | List of tags to apply to resources created by this module.                                                                                |
