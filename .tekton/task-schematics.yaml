@@ -409,6 +409,11 @@ spec:
             sleep 5
           done
           ibmcloud terraform logs --id $WORKSPACE_ID --act-id $ACTIVITY_ID
+
+          #retrieve the json output for override.json
+          echo "Results for override.json:"
+          ibmcloud schematics output --id $WORKSPACE_ID --json | jq .[0].output_values[0].config.value > /tmp/override.json
+          jq -r < /tmp/override.json
       volumeMounts:
         - mountPath: /config
           name: cd-config-volume
