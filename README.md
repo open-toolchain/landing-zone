@@ -157,7 +157,7 @@ vpcs  = ["management", "workload", "<ADDITIONAL VPC>"]
 
 ### Overriding Variables
 
-## Using override.json
+### Using override.json
 
 To create a fully customized environment based on the starting template, users can use [override.json](./override.json) by setting the template `override` variable to `true`.
 
