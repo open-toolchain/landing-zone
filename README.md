@@ -153,7 +153,7 @@ Additional VPC's can be added using the `terraform.tfvars` file by adding the na
 vpcs  = ["management", "workload", "<ADDITIONAL VPC>"]
 ```
 
-Provisioned [VPC components](./landing-zone/landing-zone/vpc)
+Provisioned [VPC components](./landing-zone/vpc)
 
 ---
 
