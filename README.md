@@ -143,7 +143,8 @@ To read more detailed documentation about the default configuration, read the pa
 
 ## Getting Started 
 
-Decide provisioning locally or with toolchain. 
+**Whether provisioning with toolchain or running locally:**
+
 **Both require editing `terraform.tfvars` with required variables noted by `"< add user data here >"`**
 
 ---
