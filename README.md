@@ -143,6 +143,36 @@ To read more detailed documentation about the default configuration, read the pa
 
 ## Getting Started 
 
+Decide provisioning locally or with toolchain. 
+**Both require editing `terraform.tfvars` with required variables noted by `"< add user data here >"`**
+
+---
+
+## Provisioning with the toolchain
+
+You can provision an IBM Cloud Toolchain utilizing the template to create a CI/CD pipeline of executing Secure Landing zone.  Click the button below to start the process. 
+
+Once completed process: 
+1. Click Repository tile
+2. Click Patterns directory
+3. Choose the appropriate pattern, edit `terraform.tfvars` file and commit. 
+4. Please read the [Working with IBM Cloud Toolchains](./.docs/toolchain/toolchain.md) for configuration and how to run the Toolchain 
+
+[![Deploy to IBM Cloud](https://cloud.ibm.com/devops/setup/deploy/button_x2.png)](https://cloud.ibm.com/devops/setup/deploy?repository=https://github.ibm.com/slz-v2-poc/landing-zone.git&env_id=ibm:yp:us-south&pipeline_type=tekton)
+
+
+## Running the scripts locally
+
+To run the scripts locally, follow these steps:
+
+1. Install Terraform CLI and IBM Cloud Provider plug-in with [these steps](https://cloud.ibm.com/docs/ibm-cloud-provider-for-terraform?topic=ibm-cloud-provider-for-terraform-getting-started). Install [Python](https://www.python.org/downloads/).
+2. Select the pattern that you want to provision. Run `cp example.tfvars terraform.tfvars`.
+3. Provide your `tfvars` file with required variables, such as IBM Cloud API key, prefix, etc.
+3. Run `terraform init` to initialize the working directory and configuration.
+4. Run `terraform plan` to preview the changes that Terraform plans to make to your infrastructure.
+5. Run `terraform apply` to execute the plan to create or modify your infrastructure.
+6. Once you no longer need the infrastructure, you can run `terraform destroy` to delete the resources.
+
 ---
 
 ### Adding Additional VPCs
@@ -179,28 +209,6 @@ This module outputs `config`, a JSON encoded definition of your environment base
     "enable_transit_gateway": false
 }
 ```
-
----
-
-## Provisioning with the toolchain
-
-You can provision an IBM Cloud Toolchain utilizing the template to create a CI/CD pipeline of executing Secure Landing zone.  Click the button below to start the process.
-
-[![Deploy to IBM Cloud](https://cloud.ibm.com/devops/setup/deploy/button_x2.png)](https://cloud.ibm.com/devops/setup/deploy?repository=https://github.ibm.com/slz-v2-poc/landing-zone.git&env_id=ibm:yp:us-south&pipeline_type=tekton)
-
-Please read the [Working with IBM Cloud Toolchains](./.docs/toolchain/toolchain.md) for configuration and how to run the Toolchain 
-
-## Running the scripts locally
-
-To run the scripts locally, follow these steps:
-
-1. Install Terraform CLI and IBM Cloud Provider plug-in with [these steps](https://cloud.ibm.com/docs/ibm-cloud-provider-for-terraform?topic=ibm-cloud-provider-for-terraform-getting-started). Install [Python](https://www.python.org/downloads/).
-2. Select the pattern that you want to provision. Run `cp example.tfvars terraform.tfvars`.
-3. Provide your `tfvars` file with required variables, such as IBM Cloud API key, prefix, etc.
-3. Run `terraform init` to initialize the working directory and configuration.
-4. Run `terraform plan` to preview the changes that Terraform plans to make to your infrastructure.
-5. Run `terraform apply` to execute the plan to create or modify your infrastructure.
-6. Once you no longer need the infrastructure, you can run `terraform destroy` to delete the resources.
 
 ----
 
