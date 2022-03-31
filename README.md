@@ -139,27 +139,35 @@ To read more detailed documentation about the default configuration, read the pa
 
 ![vsi](./.docs/images/mixed.png)
 
+--- 
+
+## Provisioning with the toolchain
+
+You can provision an IBM Cloud Toolchain utilizing the template to create a CI/CD pipeline of executing Secure Landing zone.  Please see [Working with the Toolchain template](./.docs/toolchain/toolchain-tmplt.md) and then click the button below to start the process.
+
+[![Deploy to IBM Cloud](https://cloud.ibm.com/devops/setup/deploy/button_x2.png)](https://cloud.ibm.com/devops/setup/deploy?repository=https://github.ibm.com/slz-v2-poc/landing-zone.git&env_id=ibm:yp:us-south&pipeline_type=tekton)
+
+Please read the [Working with IBM Cloud Toolchains](./.docs/toolchain/toolchain.md) for configuration and how to run the Toolchain 
+
 ---
 
 ## Getting Started 
 
-**Whether provisioning with toolchain or running locally:**
-
-**Both require editing `terraform.tfvars` with required variables noted by `"< add user data here >"`**
+docs go here
 
 ---
 
-## Provisioning with the toolchain
+## Customizing Your Environment
 
-You can provision an IBM Cloud Toolchain utilizing the template to create a CI/CD pipeline of executing Secure Landing zone.  Click the button below to start the process. 
+---
 
-Once completed process: 
-1. Click Repository tile
-2. Click Patterns directory
-3. Choose the appropriate pattern, edit `terraform.tfvars` file and commit. 
-4. Please read the [Working with IBM Cloud Toolchains](./.docs/toolchain/toolchain.md) for configuration and how to run the Toolchain 
+### Adding Additional VPCs
 
-[![Deploy to IBM Cloud](https://cloud.ibm.com/devops/setup/deploy/button_x2.png)](https://cloud.ibm.com/devops/setup/deploy?repository=https://github.ibm.com/slz-v2-poc/landing-zone.git&env_id=ibm:yp:us-south&pipeline_type=tekton)
+---
+
+### Overriding Variables
+
+---
 
 ## Running the scripts locally
 
@@ -173,43 +181,6 @@ To run the scripts locally, follow these steps:
 6. Run `terraform plan` to preview the changes that Terraform plans to make to your infrastructure.
 7. Run `terraform apply` to execute the plan to create or modify your infrastructure.
 8. Once you no longer need the infrastructure, you can run `terraform destroy` to delete the resources.
-
----
-
-### Adding Additional VPCs
-
-Additional VPC's can be added using the `terraform.tfvars` file by adding the name of the new VPC as a `string`.
-
-```
-vpcs  = ["management", "workload", "<ADDITIONAL VPC>"]
-```
-
-Provisioned [VPC components](./landing-zone/vpc)
-
----
-
-### Overriding Variables
-
-### Using override.json
-
-To create a fully customized environment based on the starting template, users can use [override.json](./override.json) by setting the template `override` variable to `true`.
-
-### Variable Definitions
-
-By using the variable deifnitions found in our [landing zone module](../../landing-zone/) any number and custom configuration of VPC components, VSI workoads, and clusters can be created. Currently `override.json` is set to contain the default environment configuration.
-
-### Customizing Your Environment
-
-This module outputs `config`, a JSON encoded definition of your environment based on the defaults for Landing Zone and any variables changed using `override.json`. By using this output, it's easy to configure multiple additional workloads, VPCs, or subnets in existing VPCs to the default environment.
-
-### Overriding Only Some Variables
-
-`override.json` does not need to contain all elements. As an example override.json could be:
-```json
-{
-    "enable_transit_gateway": false
-}
-```
 
 ----
 
