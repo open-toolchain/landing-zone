@@ -19,7 +19,9 @@ spec:
     - name: pattern
       description: Infrastructure pattern to provision
       default: ""
-
+    - name: cra-skip-failure
+      description: (optional) flag to skip cra failure 
+      default: "false"
   results:
     - name: apply-output
       description: output of "code risk analyzer"
@@ -52,6 +54,8 @@ spec:
           secretKeyRef:
             name: $(params.continuous-delivery-context-secret)
             key: $(params.ibmcloud-apikey-secret-key)
+      - name: CRA_SKIP_FAILURE
+        value: $(params.cra-skip-failure)
   steps:
     - name: code-scan
       image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.3
@@ -97,6 +101,17 @@ spec:
           echo "Issuing cra scan";
           export TOOLCHAIN_ID="${TOOLCHAIN_ID}"; 
           ibmcloud cra terraform-validate --tf-plan ./tfplan.json --policy-file /artifacts/code_risk_analyzer/goals.json --report ./report --verbose --strict
+          rc=$?
+          
+          echo "flag set to ${CRA_SKIP_FAILURE}"
+          if [[ $rc -ne 0 ]]; then
+            if [[ "${CRA_SKIP_FAILURE}" == "true" ]]; then
+               echo "Skipping cra scan failure of return code ${rc}"
+               exit 0;
+            fi
+            
+            exit $rc
+          fi 
       volumeMounts:
         - mountPath: /config
           name: cd-config-volume

@@ -1,4 +1,4 @@
-# Default Landing Zone Configuration
+# Default Secure Landing Zone Configuration
 
 ## Table of Contents
 
@@ -15,6 +15,7 @@
     - [Virtual Private Endpoints](#virtual-private-endpoints)
 5. [Deployments]
     - [Virtual Server Deployments](#virtual-sever-deployments)
+    - [Red Hat OpenShift Cluster Deployments](#openshift-cluster-deployments)
 
 ---
 
@@ -30,10 +31,10 @@ Name                     | Type         | Description                           
 ------------------------ | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ----------------------------------
 ibmcloud_api_key         | string       | The IBM Cloud platform API key needed to deploy IAM enabled resources.                                                                                                          | true      | 
 TF_VERSION               | string       | The version of the Terraform engine that's used in the Schematics workspace.                                                                                                    |           | 1.0
-prefix                   | string       | A unique identifier for resources. Must begin with a letter. This prefix will be prepended to any resources provisioned by this template.                                       |           | 
+prefix                   | string       | A unique identifier for resources. Must begin with a letter and end with a letter or number. This prefix will be prepended to any resources provisioned by this template. Prefixes must be 16 or fewer characters.                                       |           | 
 region                   | string       | Region where VPC will be created. To find your VPC region, use `ibmcloud is regions` command to find available regions.                                                         |           | 
 tags                     | list(string) | List of tags to apply to resources created by this module.                                                                                                                      |           | []
-vpcs                     | list(string) |List of VPCs to create. The first VPC in this list will always be considered the `management` VPC, and will be where the VPN Gateway is connected.                               |           | ["management", "workload"]
+vpcs                     | list(string) |List of VPCs to create. The first VPC in this list will always be considered the `management` VPC, and will be where the VPN Gateway is connected. VPCs names can only be a maximum of 16 characters and can only contain letters, numbers, and - characters. VPC names must begin with a letter.. The first VPC in this list will always be considered the `management` VPC, and will be where the VPN Gateway is connected.                               |           | ["management", "workload"]
 enable_transit_gateway   | bool         | Create transit gateway                                                                                                                                                          |           | true
 hs_crypto_instance_name  | string       | Optionally, you can bring you own Hyper Protect Crypto Service instance for key management. If you would like to use that instance, add the name here. Otherwise, leave as null |           | null
 hs_crypto_resource_group | string       | If you're using Hyper Protect Crypto services in a resource group other than `Default`, provide the name here.                                                                  |           | null
@@ -247,4 +248,22 @@ Virtual Server components like additional block storage and Load Balancers can b
 
 ## OpenShift Cluster Deployments
 
+For the `roks` pattern, identical Red Hat OpenShift Cluster deployments are created on each zone of the `vsi` tier of each VPC. For the `mixed` pattern, Clusters are created only on the Workload VPC. Cluster can be deployed across 1, 2, or 3 zones using the `cluster_zones` variable.
+
+Clusters deployed use the most recent default cluster version.
+
 ---
+
+### Workers Per Zone
+
+The number of workers in each zone of the cluster can be changed by using the `workers_per_subnet` variable. At least to workers must be available for clusters to successfully provision.
+
+---
+
+### Cluster Flavor
+
+To find available hardware configurations in your region, use the IBM Cloud CLI Command:
+
+```shell
+ibmcloud ks flavors
+```

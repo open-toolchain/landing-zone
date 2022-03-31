@@ -34,6 +34,8 @@ spec:
       value: $(params.terraform-cmd)
     - name: schematics-wksp
       value: $(params.schematics-wksp)
+    - name: cra-skip-failure
+      value: $(params.cra-skip-failure)
     
 
   resourcetemplates:
@@ -78,6 +80,8 @@ spec:
             value: $(params.terraform-cmd)
           - name: schematics-wksp
             value: $(params.schematics-wksp)
+          - name: cra-skip-failure
+            value: $(params.cra-skip-failure)
         workspaces:
           - name: pipeline-ws
             persistentVolumeClaim:

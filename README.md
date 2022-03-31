@@ -139,7 +139,7 @@ To read more detailed documentation about the default configuration, read the pa
 
 ![vsi](./.docs/images/mixed.png)
 
---- 
+---
 
 ## Getting Started 
 
@@ -161,18 +161,18 @@ Once completed process:
 
 [![Deploy to IBM Cloud](https://cloud.ibm.com/devops/setup/deploy/button_x2.png)](https://cloud.ibm.com/devops/setup/deploy?repository=https://github.ibm.com/slz-v2-poc/landing-zone.git&env_id=ibm:yp:us-south&pipeline_type=tekton)
 
-
 ## Running the scripts locally
 
 To run the scripts locally, follow these steps:
 
 1. Install Terraform CLI and IBM Cloud Provider plug-in with [these steps](https://cloud.ibm.com/docs/ibm-cloud-provider-for-terraform?topic=ibm-cloud-provider-for-terraform-getting-started). Install [Python](https://www.python.org/downloads/).
-2. Select the pattern that you want to provision. Run `cp example.tfvars terraform.tfvars`.
-3. Provide your `tfvars` file with required variables, such as IBM Cloud API key, prefix, etc.
-3. Run `terraform init` to initialize the working directory and configuration.
-4. Run `terraform plan` to preview the changes that Terraform plans to make to your infrastructure.
-5. Run `terraform apply` to execute the plan to create or modify your infrastructure.
-6. Once you no longer need the infrastructure, you can run `terraform destroy` to delete the resources.
+2. Select the pattern that you want to provision (vsi/mixed/roks) within the patterns directory.
+3. Provide your `tfvars` file with required variables, such as prefix, region, etc.
+4. Provide your IBM Cloud API key through an environment variable (ex: export TF_VAR_ibmcloud_api_key="<YOUR IBM Cloud API Key>)
+5. Run `terraform init` to initialize the working directory and configuration.
+6. Run `terraform plan` to preview the changes that Terraform plans to make to your infrastructure.
+7. Run `terraform apply` to execute the plan to create or modify your infrastructure.
+8. Once you no longer need the infrastructure, you can run `terraform destroy` to delete the resources.
 
 ---
 

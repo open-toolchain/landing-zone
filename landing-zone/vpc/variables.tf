@@ -30,7 +30,7 @@ variable "tags" {
 # Optional VPC Variables
 ##############################################################################
 
-variable network_cidr {
+variable "network_cidr" {
   description = "Network CIDR for the VPC. This is used to manage network ACL rules for cluster provisioning."
   type        = string
   default     = "10.0.0.0/8"
@@ -341,28 +341,9 @@ variable "security_group_rules" {
     })
   )
 
-  default = [{
-    name      = "allow-inbound-ping"
-    direction = "inbound"
-    remote    = "0.0.0.0/0"
-    icmp = {
-      type = 8
-    }
-    },
-    {
-      name      = "allow-inbound-ssh"
-      direction = "inbound"
-      remote    = "0.0.0.0/0"
-      tcp = {
-        port_min = 22
-        port_max = 22
-      }
-    }
-  ]
-
   validation {
     error_message = "Security group rules can only have one of `icmp`, `udp`, or `tcp`."
-    condition = length(distinct(
+    condition = (var.security_group_rules == null || length(var.security_group_rules) == 0) ? true : length(distinct(
       # Get flat list of results
       flatten([
         # Check through rules
@@ -380,7 +361,7 @@ variable "security_group_rules" {
 
   validation {
     error_message = "Security group rule direction can only be `inbound` or `outbound`."
-    condition = length(distinct(
+    condition = (var.security_group_rules == null || length(var.security_group_rules) == 0) ? true : length(distinct(
       flatten([
         # Check through rules
         for rule in var.security_group_rules :
@@ -392,7 +373,7 @@ variable "security_group_rules" {
 
   validation {
     error_message = "Security group rule names must match the regex pattern ^([a-z]|[a-z][-a-z0-9]*[a-z0-9])$."
-    condition = length(distinct(
+    condition = (var.security_group_rules == null || length(var.security_group_rules) == 0) ? true : length(distinct(
       flatten([
         # Check through rules
         for rule in var.security_group_rules :
