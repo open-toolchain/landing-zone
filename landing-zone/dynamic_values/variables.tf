@@ -47,10 +47,21 @@ variable "clusters" {}
 # COS Variables
 ##############################################################################
 
-variable "cos" {}
-variable "cos_data_source" {}
-variable "cos_resource" {}
-variable "cos_resource_keys" {}
+variable "cos" {
+  description = "Direct reference to cos variable"
+}
+
+variable "cos_data_source" {
+  description = "COS Data Resources"
+}
+
+variable "cos_resource" {
+  description = "Created COS instance resources"
+}
+
+variable "cos_resource_keys" {
+  description = "Create COS resource keys"
+}
 
 ##############################################################################
 
@@ -68,9 +79,17 @@ variable "security_groups" {
 # Service Authorization Variables
 ##############################################################################
 
-variable "resource_groups" {}
-variable "key_management" {}
-variable "key_management_guid" {}
+variable "resource_groups" {
+  description = "Reference to compiled resource group locals"
+}
+
+variable "key_management" {
+  description = "Reference to key management variable"
+}
+
+variable "key_management_guid" {
+  description = "Key Management GUID"
+}
 
 ##############################################################################
 
@@ -78,7 +97,9 @@ variable "key_management_guid" {}
 # VPE Variables
 ##############################################################################
 
-variable "virtual_private_endpoints" {}
+variable "virtual_private_endpoints" {
+  description = "Direct reference to Virtual Private Endpoints variable"
+}
 
 ##############################################################################
 

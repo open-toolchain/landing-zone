@@ -6,7 +6,7 @@ require("dotenv").config(); // Env to get sensitive variables
 /**
  * Utils for running tests against terraform plan
  * @param {string} scriptFilePath Relative file path for the script relative to script where constructor is initialized
- * @param {string} filePath Replate file path for directory to be checked from where constructor is initialized
+ * @param {string} filePath Relative file path for directory to be checked from where constructor is initialized
  */
 const utils = function (scriptFilePath, filePath) {
   /**
@@ -42,7 +42,7 @@ const utils = function (scriptFilePath, filePath) {
     // Return dynamic unit tests
     return describe(`${resourceName}`, () => {
       let resourceData = false; // initialize as false to check
-      // For each resiyrce if the address matches, set resource data to the resource
+      // For each resource if the address matches, set resource data to the resource
       moduleData.resources.forEach((resource) => {
         if (resource.address == `${moduleData.address}.${address}`) {
           resourceData = resource;

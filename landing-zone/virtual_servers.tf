@@ -3,38 +3,15 @@
 ##############################################################################
 
 locals {
-  # Convert list to map
-  vsi_map = {
-    for vsi_group in var.vsi :
-    ("${var.prefix}-${vsi_group.name}") => merge(vsi_group, {
-      # Add VPC ID
-      vpc_id = module.vpc[vsi_group.vpc_name].vpc_id
-      subnets = [
-        # Add subnets to list if they are contained in the subnet list, prepends prefixes
-        for subnet in module.vpc[vsi_group.vpc_name].subnet_zone_list :
-        subnet if contains([
-          # Create modified list of names
-          for name in vsi_group.subnet_names :
-          "${var.prefix}-${vsi_group.vpc_name}-${name}"
-        ], subnet.name)
-      ]
-    })
-  }
+  vsi_map  = module.dynamic_values.vsi_map
+  ssh_keys = module.dynamic_values.ssh_keys
 }
 
 module "ssh_keys" {
-  source = "./ssh_key"
-  prefix = var.prefix
-  ssh_keys = [
-    for ssh_key in var.ssh_keys :
-    merge(
-      {
-        resource_group_id : ssh_key.resource_group == null ? null : local.resource_groups[ssh_key.resource_group]
-      },
-      ssh_key
-    )
-  ]
-  tags = var.tags == null ? null : var.tags
+  source   = "./ssh_key"
+  prefix   = var.prefix
+  ssh_keys = local.ssh_keys
+  tags     = var.tags == null ? null : var.tags
 }
 
 module "vsi" {

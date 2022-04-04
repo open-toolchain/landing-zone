@@ -16,6 +16,8 @@ module "dynamic_values" {
   cos_data_source           = data.ibm_resource_instance.cos
   cos_resource              = ibm_resource_instance.cos
   cos_resource_keys         = ibm_resource_key.key
+  ssh_keys                  = var.ssh_keys
+  vsi                       = var.vsi
   virtual_private_endpoints = var.virtual_private_endpoints
   vpn_gateways              = var.vpn_gateways
   security_groups           = var.security_groups
@@ -45,6 +47,8 @@ module "unit_tests" {
   virtual_private_endpoints = local.unit_test_config.virtual_private_endpoints
   vpn_gateways              = local.unit_test_config.vpn_gateways
   security_groups           = local.unit_test_config.security_groups
+  vsi                       = local.unit_test_config.vsi
+  ssh_keys                  = local.unit_test_config.ssh_keys
 }
 
 ##############################################################################
@@ -186,6 +190,17 @@ locals {
         ]
       }
     ]
+    vsi = [
+      {
+        name         = "vsi"
+        subnet_names = ["subnet-2", "subnet-4"]
+        vpc_name     = "test"
+      }
+    ]
+    ssh_keys = [{
+      name           = "test-key"
+      resource_group = "test-rg"
+    }]
   }
 
   ##############################################################################
@@ -193,6 +208,12 @@ locals {
   # > To ensure values are passed into the `dynamic_values` modules only once
   #   these variables are added
   ##############################################################################
+
+  # Mock vsi subnet map map
+  mock_vsi_map_subnet_map = {
+    for subnet in local.actual_clusters_map["${var.prefix}-test-vsi"].subnets :
+    (subnet.name) => subnet
+  }
 
 
   # Mock subnet map
