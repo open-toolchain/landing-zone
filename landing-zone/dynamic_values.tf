@@ -211,7 +211,7 @@ locals {
 
   # Mock vsi subnet map map
   mock_vsi_map_subnet_map = {
-    for subnet in local.actual_clusters_map["${var.prefix}-test-vsi"].subnets :
+    for subnet in module.unit_tests.vsi_map["${var.prefix}-vsi"].subnets :
     (subnet.name) => subnet
   }
 

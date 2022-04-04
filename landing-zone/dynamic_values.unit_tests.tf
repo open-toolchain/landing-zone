@@ -90,9 +90,9 @@ locals {
 ##############################################################################
 
 locals {
-  assert_vsi_group_exits_in_map        = lookup(module.unit_tests.vsi_map, "ut-test-vsi")
-  assert_vsi_group_vpc_correct_id      = regex("1234", module.unit_tests.vsi_map["ut-test-vsi"].vpc_id)
-  assert_vsi_map_correct_subnet_number = regex("2", tostring(length(module.unit_tests.vsi_map["${var.prefix}-test-vsi"].subnets)))
+  assert_vsi_group_exits_in_map        = lookup(module.unit_tests.vsi_map, "ut-vsi")
+  assert_vsi_group_vpc_correct_id      = regex("1234", module.unit_tests.vsi_map["ut-vsi"].vpc_id)
+  assert_vsi_map_correct_subnet_number = regex("2", tostring(length(module.unit_tests.vsi_map["${var.prefix}-vsi"].subnets)))
   assert_vsi_map_has_subnet_2          = lookup(local.mock_vsi_map_subnet_map, "ut-test-subnet-2")
   assert_vsi_map_has_subnet_4          = lookup(local.mock_vsi_map_subnet_map, "ut-test-subnet-4")
   assert_ssh_key_has_resource_group_id = regex("2345", module.unit_tests.ssh_keys[0].resource_group_id)
