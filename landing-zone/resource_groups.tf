@@ -1,8 +1,5 @@
 ##############################################################################
 # Create new resource groups and reference existing groups
-# > Using `toset` allows for the resource groups to be assigned as 
-#   `data.ibm_resource_group.resource_groups[<RESOURCE_GROUP_NAME>] for easy
-#   reference
 ##############################################################################
 
 data "ibm_resource_group" "resource_groups" {
@@ -26,6 +23,7 @@ resource "ibm_resource_group" "resource_groups" {
 
 ##############################################################################
 # Create a local map with resource group names as keys and ids as values
+# Functionally the same as cos function to do the same
 ##############################################################################
 
 locals {

@@ -1,20 +1,24 @@
 ##############################################################################
-# ibm_is_security_group
+# Security Group Locals
 ##############################################################################
 
 locals {
-  # Convert list to map
-  security_group_map = {
-    for group in var.security_groups :
-    (group.name) => group
-  }
+  security_group_map       = module.dynamic_values.security_group_map
+  security_group_rules_map = module.dynamic_values.security_group_rules_map
 }
+
+##############################################################################
+
+
+##############################################################################
+# Security Group
+##############################################################################
 
 resource "ibm_is_security_group" "security_group" {
   for_each       = local.security_group_map
   name           = each.value.name
   resource_group = each.value.resource_group == null ? null : local.resource_groups[each.value.resource_group]
-  vpc            = module.vpc[each.value.vpc_name].vpc_id
+  vpc            = each.value.vpc_id
   tags           = var.tags
 }
 
@@ -25,27 +29,8 @@ resource "ibm_is_security_group" "security_group" {
 # Security Group Rules
 ##############################################################################
 
-locals {
-  # Create list of all sg rules to create adding the name
-  security_group_rule_list = flatten([
-    for group in var.security_groups :
-    [
-      for rule in group.rules :
-      merge({
-        sg_name = group.name
-      }, rule)
-    ]
-  ])
-
-  # Convert list to map
-  security_group_rules = {
-    for rule in local.security_group_rule_list :
-    ("${rule.sg_name}-${rule.name}") => rule
-  }
-}
-
 resource "ibm_is_security_group_rule" "security_group_rules" {
-  for_each  = local.security_group_rules
+  for_each  = local.security_group_rules_map
   group     = ibm_is_security_group.security_group[each.value.sg_name].id
   direction = each.value.direction
   remote    = each.value.source
@@ -71,14 +56,16 @@ resource "ibm_is_security_group_rule" "security_group_rules" {
           each.value,
           "icmp"
         ),
-        "type"
+        "type",
+        null
       )
       code = lookup(
         lookup(
           each.value,
           "icmp"
         ),
-        "code"
+        "code",
+        null
       )
     }
   }
@@ -102,13 +89,13 @@ resource "ibm_is_security_group_rule" "security_group_rules" {
 
     # Conditionally adds content if sg has tcp
     content {
-
       port_min = lookup(
         lookup(
           each.value,
           "tcp"
         ),
-        "port_min"
+        "port_min",
+        null
       )
 
       port_max = lookup(
@@ -116,7 +103,8 @@ resource "ibm_is_security_group_rule" "security_group_rules" {
           each.value,
           "tcp"
         ),
-        "port_max"
+        "port_max",
+        null
       )
     }
   }
@@ -145,14 +133,16 @@ resource "ibm_is_security_group_rule" "security_group_rules" {
           each.value,
           "udp"
         ),
-        "port_min"
+        "port_min",
+        null
       )
       port_max = lookup(
         lookup(
           each.value,
           "udp"
         ),
-        "port_max"
+        "port_max",
+        null
       )
     }
   }

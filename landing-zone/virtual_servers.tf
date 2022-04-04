@@ -34,6 +34,7 @@ module "ssh_keys" {
       ssh_key
     )
   ]
+  tags = var.tags == null ? null : var.tags
 }
 
 module "vsi" {
