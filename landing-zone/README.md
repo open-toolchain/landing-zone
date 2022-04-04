@@ -524,7 +524,6 @@ Create feature branches to add additional components. To integrate code changes 
 
 If additional variables or added or existing variables are changed, update the [Module Variables](##module-variables) table. To automate this process, use the nodejs package [tfmdcli](https://www.npmjs.com/package/tfmdcli)
 
-To contribute, be sure to have the [GCAT TF Linter](https://github.ibm.com/GCAT/tf-linter) installed and then configure the corresponding pre-commit hook. 
 
 ```
 $ ln pre-commit.sh .git/hooks/pre-commit 
@@ -548,7 +547,7 @@ The modular nature of this template allwos it to be used to provisioned architec
 
 ```terraform
 module "vsi_pattern" {
-  source                         = "github.ibm.com/slz-v2-poc/vpc-and-vsi-pattern2.git"
+  source                         = "./landing-zone"
   prefix                         = var.prefix
   region                         = var.region
   tags                           = var.tags
@@ -573,7 +572,7 @@ module "vsi_pattern" {
 
 ```terraform
 module "cluster_vsi_pattern" {
-  source                         = "github.ibm.com/slz-v2-poc/vpc-and-vsi-pattern2.git"
+  source                         = "./landing-zone"
   prefix                         = var.prefix
   region                         = var.region
   tags                           = var.tags
@@ -600,7 +599,7 @@ module "cluster_vsi_pattern" {
 
 ```terraform
 module "cluster_pattern" {
-  source                         = "github.ibm.com/slz-v2-poc/vpc-and-vsi-pattern2.git"
+  source                         = "./landing-zone"
   prefix                         = var.prefix
   region                         = var.region
   tags                           = var.tags
