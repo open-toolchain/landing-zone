@@ -23,10 +23,10 @@ locals {
     for vsi_group in var.vsi :
     ("${var.prefix}-${vsi_group.name}") => merge(vsi_group, {
       # Add VPC ID
-      vpc_id = var.vpcs_modules[vsi_group.vpc_name].vpc_id
+      vpc_id = var.vpc_modules[vsi_group.vpc_name].vpc_id
       subnets = [
         # Add subnets to list if they are contained in the subnet list, prepends prefixes
-        for subnet in var.vpcs_modules[vsi_group.vpc_name].subnet_zone_list :
+        for subnet in var.vpc_modules[vsi_group.vpc_name].subnet_zone_list :
         subnet if contains([
           # Create modified list of names
           for name in vsi_group.subnet_names :
