@@ -8,7 +8,7 @@ locals {
     # Create authorization to allow key management to access VPC block storage for each vpc resource group
     for resource_group in distinct([
       for network in var.vpcs :
-      network.resource_group if lookup(var.vpcs[index(var.vpcs, network)], "resource_group", null) != null
+      network.resource_group if lookup(network, "resource_group", null) != null
     ]) :
     "${resource_group}-block-storage" => {
       source_service_name         = "server-protect"
