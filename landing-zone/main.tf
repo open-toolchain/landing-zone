@@ -41,7 +41,7 @@ resource "ibm_is_flow_log" "flow_logs" {
   target         = each.value.vpc_id
   active         = true
   storage_bucket = each.value.bucket
-  resource_group = local.resource_groups[each.value.instance_reource_group]
+  resource_group = each.value.resource_group == null ? null : local.resource_groups[each.value.resource_group]
 
   depends_on = [ibm_cos_bucket.buckets, ibm_iam_authorization_policy.policy]
 }

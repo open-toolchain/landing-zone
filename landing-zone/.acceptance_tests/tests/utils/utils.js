@@ -1,5 +1,3 @@
-const jsutil = require("util"); // Utils to run child process
-const exec = jsutil.promisify(require("child_process").exec); // Exec from child process
 const { assert, util } = require("chai"); // Chai for automated testing
 require("dotenv").config(); // Env to get sensitive variables
 
@@ -11,9 +9,10 @@ require("dotenv").config(); // Env to get sensitive variables
 const utils = function (scriptFilePath, filePath) {
   /**
    * Get Plan JSON from the file path where this utils object is initialized.
+   * @param exec Child process exec function, passed to ensure unit tests
    * @returns The planned values from a terraform plan
    */
-  this.getPlanJson = async function () {
+  this.getPlanJson = async function (exec) {
     try {
       // Exec bash and await value
       const bash = await exec(

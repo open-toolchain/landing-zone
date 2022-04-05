@@ -80,7 +80,7 @@ module "unit_tests" {
     ]
     zone-2 = [
       {
-        name           = "subnet-2"
+        name           = "subnet-3"
         cidr           = "2.3.4.5/8"
         acl_name       = "acl"
         public_gateway = true

@@ -64,13 +64,15 @@ locals {
 ##############################################################################
 
 locals {
-  assert_subnets_list_0_has_correct_prefix_name    = regex("ut-subnet-1", module.unit_tests.subnet_list[0].prefix_name)
-  assert_subnets_list_0_has_correct_zone           = regex("1", module.unit_tests.subnet_list[0].zone)
-  assert_subnets_list_0_has_correct_zone_name      = regex("us-south-1", module.unit_tests.subnet_list[0].zone_name)
-  assert_subnets_list_0_has_correct_count          = regex("1", module.unit_tests.subnet_list[0].count)
-  assert_subnets_list_0_has_correct_public_gateway = regex("pgw1", module.unit_tests.subnet_list[0].public_gateway)
-  assert_subnets_list_1_has_correct_public_gateway = regex("null", lookup(module.unit_tests.subnet_list[1], "public_gateway", null) == null ? "null" : "error")
-  assert_subnets_list_1_has_correct_count          = regex("2", module.unit_tests.subnet_list[1].count)
+  assert_subnets_list_0_has_correct_prefix_name                 = regex("ut-subnet-1", module.unit_tests.subnet_list[0].prefix_name)
+  assert_subnets_list_0_has_correct_zone                        = regex("1", module.unit_tests.subnet_list[0].zone)
+  assert_subnets_list_0_has_correct_zone_name                   = regex("us-south-1", module.unit_tests.subnet_list[0].zone_name)
+  assert_subnets_list_0_has_correct_count                       = regex("1", module.unit_tests.subnet_list[0].count)
+  assert_subnets_list_0_has_correct_public_gateway              = regex("pgw1", module.unit_tests.subnet_list[0].public_gateway)
+  assert_subnets_list_1_has_correct_public_gateway              = regex("null", lookup(module.unit_tests.subnet_list[1], "public_gateway", null) == null ? "null" : "error")
+  assert_subnets_list_1_has_correct_count                       = regex("2", module.unit_tests.subnet_list[1].count)
+  assert_even_if_gateway_true_no_pgw_provision_zone_return_null = regex("null", lookup(module.unit_tests.subnet_list[2], "public_gateway", null) == null ? "null" : "error")
+  assert_subnet_exists_in_map                                   = lookup(module.unit_tests.subnet_map, "ut-subnet-1")
 }
 
 ##############################################################################

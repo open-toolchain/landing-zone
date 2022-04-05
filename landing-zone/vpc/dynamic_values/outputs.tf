@@ -74,4 +74,9 @@ output "subnet_list" {
   value       = local.subnet_list
 }
 
+output "subnet_map" {
+  description = "Subnets as map"
+  value       = local.subnet_map
+}
+
 ##############################################################################

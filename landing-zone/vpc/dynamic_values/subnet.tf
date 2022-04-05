@@ -27,6 +27,12 @@ locals {
       }
     ]
   ])
+
+  # Convert list to map
+  subnet_map = {
+    for subnet in local.subnet_list :
+    "${var.prefix}-${subnet.name}" => subnet
+  }
 }
 
 ##############################################################################

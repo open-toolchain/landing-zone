@@ -3,13 +3,7 @@
 ##############################################################################
 
 locals {
-
-  subnet_list = module.dynamic_values.subnet_list
-  # Create an object from the array for human readable reference
-  subnet_object = {
-    for subnet in local.subnet_list :
-    "${var.prefix}-${subnet.name}" => subnet
-  }
+  subnet_object = module.dynamic_values.subnet_map
 }
 
 ##############################################################################
