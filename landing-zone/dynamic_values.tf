@@ -33,7 +33,7 @@ module "dynamic_values" {
 module "unit_tests" {
   source                    = "./dynamic_values"
   region                    = var.region
-  prefix                    = var.prefix
+  prefix                    = "ut"
   vpcs                      = local.unit_test_config.vpcs
   clusters                  = local.unit_test_config.clusters
   vpc_modules               = local.unit_test_config.vpc_modules
@@ -211,20 +211,20 @@ locals {
 
   # Mock vsi subnet map map
   mock_vsi_map_subnet_map = {
-    for subnet in module.unit_tests.vsi_map["${var.prefix}-vsi"].subnets :
+    for subnet in module.unit_tests.vsi_map["ut-vsi"].subnets :
     (subnet.name) => subnet
   }
 
 
   # Mock subnet map
   mock_cluster_map_subnet_map = {
-    for subnet in local.actual_clusters_map["${var.prefix}-test-cluster"].subnets :
+    for subnet in local.actual_clusters_map["ut-test-cluster"].subnets :
     (subnet.name) => subnet
   }
 
   # Mock worker pool subnet map
   mock_worker_pool_map_subnet_map = {
-    for subnet in local.actual_worker_pools_map["${var.prefix}-test-cluster-logging-worker-pool"].subnets :
+    for subnet in local.actual_worker_pools_map["ut-test-cluster-logging-worker-pool"].subnets :
     (subnet.name) => subnet
   }
 
@@ -255,7 +255,7 @@ locals {
   # Mock cos instance map
   mock_cos_instances = {
     test-cos = {
-      name = "${var.prefix}-test-cos"
+      name = "ut-test-cos"
       id   = ":::::::1234"
     }
   }
