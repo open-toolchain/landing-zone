@@ -255,7 +255,7 @@ locals {
   # Mock cos instance map
   mock_cos_instances = {
     test-cos = {
-      name = "${var.prefix}-test-cos"
+      name = "ut-test-cos"
       id   = ":::::::1234"
     }
   }
