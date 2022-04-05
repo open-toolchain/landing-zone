@@ -11,7 +11,7 @@ locals {
     (vpc_network.prefix) => {
       vpc_id         = var.vpc_modules[vpc_network.prefix].vpc_id
       bucket         = "${var.prefix}-${vpc_network.flow_logs_bucket_name}"
-      resource_group = vpc_network.resource_group
+      resource_group = lookup(vpc_network, "resource_group", null)
     } if lookup(vpc_network, "flow_logs_bucket_name", null) != null
   }
 }
