@@ -67,6 +67,7 @@ locals {
   assert_cos_found_cos_to_key_management           = lookup(module.unit_tests.service_authorization_cos_to_key_management, "cos-data-cos-to-key-management")
   assert_correct_target_id_cos_to_key_management   = regex("12KEY", module.unit_tests.service_authorization_cos_to_key_management["cos-data-cos-to-key-management"].target_resource_instance_id)
   assert_correct_target_name_cos_to_key_management = regex("kms", module.unit_tests.service_authorization_cos_to_key_management["cos-data-cos-to-key-management"].target_service_name)
+  assert_correct_guid_cos_to_key_management        = regex("1234", module.unit_tests.service_authorization_cos_to_key_management["cos-data-cos-to-key-management"].source_resource_instance_id)
   assert_cos_found_flow_logs_to_cos                = lookup(module.unit_tests.service_authorization_flow_logs_to_cos, "flow-logs-test-cos-cos")
   assert_cos_id_flow_logs_to_cos                   = regex("1234", module.unit_tests.service_authorization_flow_logs_to_cos["flow-logs-test-cos-cos"].target_resource_instance_id)
 }
