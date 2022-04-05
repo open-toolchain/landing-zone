@@ -78,7 +78,7 @@ services:
           $text: infrastructure-pipeline.yml
         env:
           PIPELINE_REPO: infrastructureRepo
-          PIPELINE_REPO_BRANCH: 'master'
+          PIPELINE_REPO_BRANCH: 'main'
           PATTERN: "{{form.deployment_pattern.parameters.deployment-pattern}}"
           API_KEY: "{{form.wizard_schematics.parameters.ibmcloud-api-key}}"
           APP_CICD_WEBHOOKURL: "{{form.wizard_app_cicd.parameters.app_cicd_webhookurl}}"
@@ -109,7 +109,7 @@ services:
           $text: resources-destroy-pipeline.yml
         env:
           PIPELINE_REPO: infrastructureRepo
-          PIPELINE_REPO_BRANCH: 'master'
+          PIPELINE_REPO_BRANCH: 'main'
           API_KEY: "{{form.wizard_schematics.parameters.ibmcloud-api-key}}"
           SCHEMATICS_WORKSPACE_NAME: '{{services.infrastructureRepo.parameters.repo_name}}'
   
