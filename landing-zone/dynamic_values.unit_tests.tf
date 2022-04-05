@@ -48,6 +48,7 @@ locals {
   assert_flow_logs_map_contains_instance   = lookup(module.unit_tests.flow_logs_map, "test")
   assert_flow_logs_instance_correct_vpc_id = regex("1234", module.unit_tests.flow_logs_map["test"].vpc_id)
   assert_flow_logs_instance_correct_rg     = regex("test-rg", module.unit_tests.flow_logs_map["test"].resource_group)
+  assert_flow_logs_bucket_has_prefix       = regex("ut-bucket", module.unit_tests.flow_logs_map["test"].bucket)
   assert_no_flow_logs_if_no_bucket         = regex("1", tostring(length(keys(module.unit_tests.flow_logs_map))))
   assert_vpc_map_contains_vpc              = lookup(module.unit_tests.vpc_map, "test")
 }

@@ -4,7 +4,8 @@
   "description": "i run unit tests",
   "main": "index.js",
   "scripts": {
-    "test": "npx mocha tfplan.test.js -timeout 100000"
+    "test": "npx mocha tfplan.test.js -timeout 100000",
+    "unit-test" : "npx mocha unit-tests"
   },
   "author": "",
   "license": "ISC",

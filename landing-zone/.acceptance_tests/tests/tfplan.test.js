@@ -1,12 +1,14 @@
+const jsutil = require("util"); // Utils to run child process
+const exec = jsutil.promisify(require("child_process").exec); // Exec from child process
 const { assert, util } = require("chai");
 const tags = ["landing-zone", "unit-test"];
 const tfUnitTestUtils = require("./utils/utils.js");
 const tfutils = new tfUnitTestUtils("./plan_test.sh", "../defaults");
 let plannedValues; // Initialized planned values
 
-describe("Landing Zone Plan", () => {
-  before( () => {
-    await tfutils.getPlanJson().then((tfplan) => {
+describe("Landing Zone Plan",  () => {
+  before( async() => {
+    await tfutils.getPlanJson(exec).then((tfplan) => {
       plannedValues = tfplan;
     });
   });

@@ -3,6 +3,9 @@
 ##############################################################################
 
 locals {
+<<<<<<< HEAD
+  subnet_object = module.dynamic_values.subnet_map
+=======
   # Convert subnets into a single list
   subnet_list = flatten([
     # For each key in the object create an array
@@ -29,6 +32,7 @@ locals {
     for subnet in local.subnet_list :
     "${var.prefix}-${subnet.name}" => subnet
   }
+>>>>>>> 4c1f6582bd072e85337d02e0d1b6ea14c286783b
 }
 
 ##############################################################################
