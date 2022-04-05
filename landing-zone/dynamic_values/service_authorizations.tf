@@ -21,10 +21,10 @@ locals {
   }
   service_authorization_cos_to_key_management = {
     # Create authorization for each COS instance
-    for cos in var.cos :
-    "cos-${cos.name}-to-key-management" => {
+    for instance in var.cos :
+    "cos-${instance.name}-to-key-management" => {
       source_service_name         = "cloud-object-storage"
-      source_resource_instance_id = local.cos_instance_ids[cos.name]
+      source_resource_instance_id = split(":", local.cos_instance_ids[instance.name])[7]
       description                 = "Allow COS instance to read from KMS instance"
       roles                       = ["Reader"]
       target_service_name         = local.target_key_management_service
