@@ -67,7 +67,7 @@ locals {
         prefix                = "test"
         name                  = "test-vpc"
         resource_group        = "test-rg"
-        flow_logs_bucket_name = "bucket"
+        flow_logs_bucket_name = "create-bucket"
       },
       {
         prefix = "no-flow-logs"
@@ -118,8 +118,9 @@ locals {
     }
     cos = [
       {
-        name     = "data-cos"
-        use_data = true
+        name           = "data-cos"
+        use_data       = true
+        resource_group = "parent-rg"
         buckets = [
           {
             name = "data-bucket"
@@ -132,8 +133,9 @@ locals {
         ]
       },
       {
-        name     = "test-cos"
-        use_data = false
+        name           = "test-cos"
+        use_data       = false
+        resource_group = "parent-rg"
         buckets = [
           {
             name = "create-bucket"

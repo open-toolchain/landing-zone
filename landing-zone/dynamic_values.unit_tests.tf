@@ -32,6 +32,7 @@ locals {
   assert_cos_data_instance_id_correct          = regex(":::::::5678", module.unit_tests.cos_instance_ids["data-cos"])
   assert_instance_name_added_to_bucket_in_list = regex("data-cos", module.unit_tests.cos_bucket_list[0].instance)
   assert_bucket_key_exists_in_map              = lookup(module.unit_tests.cos_bucket_map, "create-bucket")
+  assert_bucket_has_parent_instance_rg         = regex("parent-rg", module.unit_tests.cos_bucket_map["create-bucket"].instance_reource_group)
   assert_instance_name_added_to_key_in_list    = regex("data-cos", module.unit_tests.cos_keys_list[0].instance)
   assert_key_exists_in_map                     = lookup(module.unit_tests.cos_key_map, "data-bucket-key")
   assert_bucket_exists_in_instance_map         = lookup(module.unit_tests.bucket_to_instance_map, "data-bucket")
@@ -47,7 +48,7 @@ locals {
 locals {
   assert_flow_logs_map_contains_instance   = lookup(module.unit_tests.flow_logs_map, "test")
   assert_flow_logs_instance_correct_vpc_id = regex("1234", module.unit_tests.flow_logs_map["test"].vpc_id)
-  assert_flow_logs_instance_correct_rg     = regex("test-rg", module.unit_tests.flow_logs_map["test"].resource_group)
+  assert_flow_logs_instance_correct_rg     = regex("parent-rg", module.unit_tests.flow_logs_map["test"].instance_reource_group)
   assert_no_flow_logs_if_no_bucket         = regex("1", tostring(length(keys(module.unit_tests.flow_logs_map))))
   assert_vpc_map_contains_vpc              = lookup(module.unit_tests.vpc_map, "test")
 }

@@ -30,8 +30,9 @@ locals {
     [
       for bucket in instance.buckets :
       merge({
-        instance = instance.name
-        use_data = instance.use_data
+        instance               = instance.name
+        use_data               = instance.use_data
+        instance_reource_group = lookup(instance, "resource_group", null)
       }, bucket)
     ]
   ])
