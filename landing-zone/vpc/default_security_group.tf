@@ -3,7 +3,11 @@
 ##############################################################################
 
 locals {
-  security_group_rule_object = module.dynamic_values.security_group_rules
+  # Convert to object
+  security_group_rule_object = {
+    for rule in var.security_group_rules :
+    rule.name => rule
+  }
 }
 
 resource "ibm_is_security_group_rule" "default_vpc_rule" {
