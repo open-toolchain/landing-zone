@@ -5,18 +5,18 @@
 locals {
   actual_clusters_map                          = module.unit_tests.clusters_map
   actual_worker_pools_map                      = module.unit_tests.worker_pools_map
-  assert_cluster_map_correct_name              = lookup(local.actual_clusters_map, "${var.prefix}-test-cluster")
-  assert_cluster_map_correct_vpc_id            = regex("1234", local.actual_clusters_map["${var.prefix}-test-cluster"].vpc_id)
-  assert_cluster_map_correct_cos_crn           = regex("5678", local.actual_clusters_map["${var.prefix}-test-cluster"].cos_instance_crn)
-  assert_cluster_map_correct_subnet_number     = regex("2", tostring(length(local.actual_clusters_map["${var.prefix}-test-cluster"].subnets)))
+  assert_cluster_map_correct_name              = lookup(local.actual_clusters_map, "ut-test-cluster")
+  assert_cluster_map_correct_vpc_id            = regex("1234", local.actual_clusters_map["ut-test-cluster"].vpc_id)
+  assert_cluster_map_correct_cos_crn           = regex("5678", local.actual_clusters_map["ut-test-cluster"].cos_instance_crn)
+  assert_cluster_map_correct_subnet_number     = regex("2", tostring(length(local.actual_clusters_map["ut-test-cluster"].subnets)))
   assert_cluster_map_has_subnet_1              = lookup(local.mock_cluster_map_subnet_map, "ut-test-subnet-1")
   assert_cluster_map_has_subnet_3              = lookup(local.mock_cluster_map_subnet_map, "ut-test-subnet-3")
-  assert_worker_pool_correct_name              = lookup(local.actual_worker_pools_map, "${var.prefix}-test-cluster-logging-worker-pool")
-  assert_worker_pool_correct_vpc_id            = regex("1234", local.actual_worker_pools_map["${var.prefix}-test-cluster-logging-worker-pool"].vpc_id)
-  assert_worker_pool_has_correct_subnet_number = regex("2", tostring(length(local.actual_worker_pools_map["${var.prefix}-test-cluster-logging-worker-pool"].subnets)))
+  assert_worker_pool_correct_name              = lookup(local.actual_worker_pools_map, "ut-test-cluster-logging-worker-pool")
+  assert_worker_pool_correct_vpc_id            = regex("1234", local.actual_worker_pools_map["ut-test-cluster-logging-worker-pool"].vpc_id)
+  assert_worker_pool_has_correct_subnet_number = regex("2", tostring(length(local.actual_worker_pools_map["ut-test-cluster-logging-worker-pool"].subnets)))
   assert_worker_pool_has_has_subnet_1          = lookup(local.mock_worker_pool_map_subnet_map, "ut-test-subnet-1")
   assert_worker_pool_has_has_subnet_3          = lookup(local.mock_worker_pool_map_subnet_map, "ut-test-subnet-3")
-  assert_worker_pool_has_os_parent_entitlement = regex("cloud_pak", local.actual_worker_pools_map["${var.prefix}-test-cluster-logging-worker-pool"].entitlement)
+  assert_worker_pool_has_os_parent_entitlement = regex("cloud_pak", local.actual_worker_pools_map["ut-test-cluster-logging-worker-pool"].entitlement)
 }
 
 ##############################################################################
@@ -93,7 +93,7 @@ locals {
 locals {
   assert_vsi_group_exits_in_map        = lookup(module.unit_tests.vsi_map, "ut-vsi")
   assert_vsi_group_vpc_correct_id      = regex("1234", module.unit_tests.vsi_map["ut-vsi"].vpc_id)
-  assert_vsi_map_correct_subnet_number = regex("2", tostring(length(module.unit_tests.vsi_map["${var.prefix}-vsi"].subnets)))
+  assert_vsi_map_correct_subnet_number = regex("2", tostring(length(module.unit_tests.vsi_map["ut-vsi"].subnets)))
   assert_vsi_map_has_subnet_2          = lookup(local.mock_vsi_map_subnet_map, "ut-test-subnet-2")
   assert_vsi_map_has_subnet_4          = lookup(local.mock_vsi_map_subnet_map, "ut-test-subnet-4")
   assert_ssh_key_has_resource_group_id = regex("2345", module.unit_tests.ssh_keys[0].resource_group_id)
