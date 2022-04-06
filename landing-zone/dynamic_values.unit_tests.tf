@@ -60,11 +60,10 @@ locals {
 ##############################################################################
 
 locals {
-  assert_rg_found_vpc_to_key_management            = lookup(module.unit_tests.service_authorization_vpc_to_key_management, "test-rg-block-storage")
-  assert_correct_rg_id_vpc_to_key_management       = regex("2345", module.unit_tests.service_authorization_vpc_to_key_management["test-rg-block-storage"].source_resource_group_id)
+  assert_rg_found_vpc_to_key_management            = lookup(module.unit_tests.service_authorization_vpc_to_key_management, "block-storage")
   assert_vpc_with_null_rg_does_not_create_auth     = regex("1", tostring(length(keys(module.unit_tests.service_authorization_vpc_to_key_management))))
-  assert_correct_target_id_vpc_to_key_management   = regex("12KEY", module.unit_tests.service_authorization_vpc_to_key_management["test-rg-block-storage"].target_resource_instance_id)
-  assert_correct_target_name_vpc_to_key_management = regex("kms", module.unit_tests.service_authorization_vpc_to_key_management["test-rg-block-storage"].target_service_name)
+  assert_correct_target_id_vpc_to_key_management   = regex("12KEY", module.unit_tests.service_authorization_vpc_to_key_management["block-storage"].target_resource_instance_id)
+  assert_correct_target_name_vpc_to_key_management = regex("kms", module.unit_tests.service_authorization_vpc_to_key_management["block-storage"].target_service_name)
   assert_cos_found_cos_to_key_management           = lookup(module.unit_tests.service_authorization_cos_to_key_management, "cos-data-cos-to-key-management")
   assert_correct_target_id_cos_to_key_management   = regex("12KEY", module.unit_tests.service_authorization_cos_to_key_management["cos-data-cos-to-key-management"].target_resource_instance_id)
   assert_correct_target_name_cos_to_key_management = regex("kms", module.unit_tests.service_authorization_cos_to_key_management["cos-data-cos-to-key-management"].target_service_name)
