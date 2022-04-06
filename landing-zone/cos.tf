@@ -4,50 +4,34 @@
 
 locals {
   cos_location = "global"
-  # COS instance map where names equal crn
-  cos_instance_ids = merge({
-    for instance in data.ibm_resource_instance.cos :
-    (instance.name) => instance.id
-    }, {
-    for instance in ibm_resource_instance.cos :
-    replace(instance.name, "${var.prefix}-", "") => instance.id
-  })
-  # Map bucket names to instance ID and bind api keys
-  bucket_to_instance_map = {
-    # For each bucket
-    for bucket in local.bucket_list :
-    (bucket.name) => {
-      id   = local.cos_instance_ids[bucket.instance]
-      name = bucket.instance
-      # Get the first key of the COS instance and lookup credentials
-      bind_key = lookup([
-        for instance in var.cos :
-        instance if instance.name == bucket.instance
-        ][0], "keys", null) == null ? null : length(lookup([ # If keys is null return null
-          for instance in var.cos :
-          instance if instance.name == bucket.instance # If length of keys array is 0 return null
-        ][0], "keys", null)) == 0 ? null : ibm_resource_key.key[
-        lookup([
-          for instance in var.cos :
-          instance if instance.name == bucket.instance
-        ][0], "keys", null)[0].name
-      ].credentials.apikey # Otherwise get credentials from first key
-    }
+  # List of COS instance IDs
+  cos_instance_ids = module.dynamic_values.cos_instance_ids
+  # Map of COS instances from data
+  cos_data_map = {
+    for instance in var.cos :
+    (instance.name) => instance if instance.use_data == true
   }
+  # Map of created cos instances
+  cos_map = {
+    for instance in var.cos :
+    (instance.name) => instance if instance.use_data != true
+  }
+  # Map of COS buckets
+  buckets_map = module.dynamic_values.cos_bucket_map
+  # Map of COS keys
+  cos_key_map = module.dynamic_values.cos_key_map
+  # Map connecting buckets to instances and spi bind keys
+  bucket_to_instance_map = module.dynamic_values.bucket_to_instance_map
 }
 
 ##############################################################################
 
 ##############################################################################
-# Cloud Object Storage
+# Cloud Object Storage Instances
 ##############################################################################
 
 data "ibm_resource_instance" "cos" {
-  for_each = {
-    for instance in var.cos :
-    (instance.name) => instance if instance.use_data == true
-  }
-
+  for_each          = local.cos_data_map
   name              = each.value.name
   location          = local.cos_location
   resource_group_id = local.resource_groups[each.value.resource_group]
@@ -55,11 +39,7 @@ data "ibm_resource_instance" "cos" {
 }
 
 resource "ibm_resource_instance" "cos" {
-  for_each = {
-    for instance in var.cos :
-    (instance.name) => instance if instance.use_data != true
-  }
-
+  for_each          = local.cos_map
   name              = "${var.prefix}-${each.value.name}"
   resource_group_id = local.resource_groups[each.value.resource_group]
   service           = "cloud-object-storage"
@@ -68,29 +48,15 @@ resource "ibm_resource_instance" "cos" {
   tags              = (var.tags != null ? var.tags : null)
 }
 
-locals {
-  # COS Keys List
-  cos_keys_list = flatten(
-    [
-      for instance in var.cos : [
-        for cos_key in instance.keys :
-        merge({
-          instance = instance.name
-          use_data = instance.use_data
-        }, cos_key)
-      ] if instance.keys != null
-    ]
-  )
-  # Convert COS Resource Key List to Map
-  cos_key_map = {
-    for key in local.cos_keys_list :
-    (key.name) => key
-  }
-}
+##############################################################################
+
+
+##############################################################################
+# COS Instance Keys
+##############################################################################
 
 resource "ibm_resource_key" "key" {
-  for_each = local.cos_key_map
-
+  for_each             = local.cos_key_map
   name                 = "${var.prefix}-${each.value.name}"
   role                 = each.value.role
   resource_instance_id = local.cos_instance_ids[each.value.instance]
@@ -102,24 +68,6 @@ resource "ibm_resource_key" "key" {
 ##############################################################################
 # Cloud Object Storage Buckets 
 ##############################################################################
-
-locals {
-  # Create Bucket List
-  bucket_list = flatten([
-    for instance in var.cos :
-    [
-      for bucket in instance.buckets :
-      merge({
-        instance = instance.name
-      }, bucket)
-    ]
-  ])
-  # Convert COS Bucket List to Map
-  buckets_map = {
-    for bucket in local.bucket_list :
-    (bucket.name) => bucket
-  }
-}
 
 resource "ibm_cos_bucket" "buckets" {
   for_each = local.buckets_map

@@ -16,7 +16,7 @@ variable "prefix" {
 variable "tags" {
   description = "A list of tags to be added to resources"
   type        = list(string)
-  default     = ["fs-cloud-refarch"]
+  default     = []
 }
 
 variable "ssh_keys" {

@@ -3,17 +3,13 @@
 ##############################################################################
 
 locals {
-  # Convert VPC List to Map
-  vpc_map = {
-    for vpc_network in var.vpcs :
-    (vpc_network.prefix) => vpc_network
-  }
+  vpc_map       = module.dynamic_values.vpc_map
+  flow_logs_map = module.dynamic_values.flow_logs_map
 }
 
 module "vpc" {
-  source   = "./vpc"
-  for_each = local.vpc_map
-
+  source                      = "./vpc"
+  for_each                    = local.vpc_map
   resource_group_id           = each.value.resource_group == null ? null : local.resource_groups[each.value.resource_group]
   region                      = var.region
   prefix                      = "${var.prefix}-${each.value.prefix}"
@@ -40,21 +36,12 @@ module "vpc" {
 ##############################################################################
 
 resource "ibm_is_flow_log" "flow_logs" {
-  for_each = {
-    # For each network
-    for vpc_network in var.vpcs :
-    # Create a map containing the bucket name, id, and resource group if flow logs bucket name provided
-    (vpc_network.prefix) => {
-      vpc_id         = module.vpc[vpc_network.prefix].vpc_id
-      bucket         = ibm_cos_bucket.buckets[vpc_network.flow_logs_bucket_name].bucket_name
-      resource_group = vpc_network.resource_group == null ? null : local.resource_groups[vpc_network.resource_group]
-    } if vpc_network.flow_logs_bucket_name != null
-  }
+  for_each       = local.flow_logs_map
   name           = "${each.key}-logs"
   target         = each.value.vpc_id
   active         = true
   storage_bucket = each.value.bucket
-  resource_group = each.value.resource_group
+  resource_group = each.value.resource_group == null ? null : local.resource_groups[each.value.resource_group]
 
   depends_on = [ibm_cos_bucket.buckets, ibm_iam_authorization_policy.policy]
 }
