@@ -130,10 +130,7 @@
             "public_key": "<user-determined-value>"
         }
     ],
-    "transit_gateway_connections": [
-        "management",
-        "workload"
-    ],
+    "transit_gateway_connections": [],
     "transit_gateway_resource_group": "slz-ut-service-rg",
     "virtual_private_endpoints": [
         {
