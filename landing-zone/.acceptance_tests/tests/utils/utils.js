@@ -13,14 +13,12 @@ const utils = function (scriptFilePath, filePath) {
    * @returns The planned values from a terraform plan
    */
   this.getPlanJson = async function (exec) {
+    // Exec bash and await value
+    const bash = await exec(
+      `sh ${scriptFilePath} ${process.env.API_KEY} ${filePath}`
+    );
     try {
-      // Exec bash and await value
-      const bash = await exec(
-        `sh ${scriptFilePath} ${process.env.API_KEY} ${filePath}`
-      );
-      // Parse stdout to JSON
       let tfplan = JSON.parse(bash.stdout).planned_values;
-      // Return data
       return tfplan;
     } catch (err) {
       throw new Error(err);
