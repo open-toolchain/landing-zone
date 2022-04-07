@@ -4,6 +4,7 @@ region                   = "< add user data here >"
 tags                     = []
 vpcs                     = ["management", "frog"]
 enable_transit_gateway   = true
+add_atracker_route       = true
 hs_crypto_instance_name  = null
 hs_crypto_resource_group = null
 cluster_zones            = 1

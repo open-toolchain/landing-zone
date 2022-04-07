@@ -56,7 +56,7 @@ variable "vpcs" {
   validation {
     error_message = "VPCs names can only be a maximum of 16 characters and can only contain letters, numbers, and - characters. Names must also begin with a letter and end with a letter or number."
     condition = length([
-      for name in var.vpcs:
+      for name in var.vpcs :
       name if length(name) > 16 || !can(regex("^([A-z]|[a-z][-a-z0-9]*[a-z0-9])$", name))
     ]) == 0
   }
@@ -64,6 +64,12 @@ variable "vpcs" {
 
 variable "enable_transit_gateway" {
   description = "Create transit gateway"
+  type        = bool
+  default     = true
+}
+
+variable "add_atracker_route" {
+  description = "Atracker can only have one route per zone. Use this variable to disable or enable the creation of atracker route"
   type        = bool
   default     = true
 }

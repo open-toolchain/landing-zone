@@ -2,7 +2,8 @@
   "atracker": {
       "collector_bucket_name": "atracker-bucket",
       "receive_global_events": true,
-      "resource_group": "slz-service-rg"
+      "resource_group": "slz-service-rg",
+      "add_route": true
   },
   "clusters": [],
   "cos": [
