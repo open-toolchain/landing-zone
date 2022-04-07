@@ -756,6 +756,7 @@ variable "atracker" {
     resource_group        = string
     receive_global_events = bool
     collector_bucket_name = string
+    add_route             = bool
   })
 }
 
