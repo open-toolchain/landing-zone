@@ -197,6 +197,7 @@ locals {
       resource_group        = "${var.prefix}-service-rg"
       receive_global_events = true
       collector_bucket_name = "atracker-bucket"
+      add_route             = var.add_atracker_route
     }
     ##############################################################################
 
