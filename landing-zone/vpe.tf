@@ -3,67 +3,8 @@
 ##############################################################################
 
 locals {
-  services = {
-    for endpoint in var.virtual_private_endpoints :
-    # create string for service name and type
-    "${endpoint.service_name}-${endpoint.service_type}" => {
-      # Only COS supported now
-      crn = "crn:v1:bluemix:public:cloud-object-storage:global:::endpoint:s3.direct.${var.region}.cloud-object-storage.appdomain.cloud"
-      id  = local.cos_instance_ids[endpoint.service_name]
-    }
-  }
-
-  # Create a list of gateways
-  vpe_gateway_list = flatten([
-    # fore each service
-    for service in var.virtual_private_endpoints :
-    [
-      # for each VPC create an object for the endpoints to be created
-      for vpcs in service.vpcs :
-      {
-        name                = "${vpcs.name}-${service.service_name}"
-        vpc_id              = module.vpc[vpcs.name].vpc_id
-        resource_group      = service.resource_group
-        security_group_name = vpcs.security_group_name
-        crn                 = local.services["${service.service_name}-${service.service_type}"].crn
-      }
-    ]
-  ])
-
-  # Convert gateway list to map
-  vpe_gateway_map = {
-    for gateway in local.vpe_gateway_list :
-    (gateway.name) => gateway
-  }
-
-  # Get a list of subnets to create VPE reserved addressess
-  subnet_reserved_ip_list = flatten([
-    # For each service
-    for service in var.virtual_private_endpoints :
-    [
-      # For each VPC attached to that service
-      for vpcs in service.vpcs :
-      [
-        # For each subnet where a VPE will be created
-        for subnet in vpcs.subnets :
-        # Create reserved IP object
-        {
-          ip_name      = "${vpcs.name}-${service.service_name}-gateway-${subnet}-ip"
-          gateway_name = "${vpcs.name}-${service.service_name}"
-          id = [
-            for vpc_subnet in module.vpc[vpcs.name].subnet_zone_list :
-            vpc_subnet.id if vpc_subnet.name == "${var.prefix}-${vpcs.name}-${subnet}"
-          ][0]
-        }
-      ]
-    ]
-  ])
-
-  # Convert object to list 
-  reserved_ip_map = {
-    for subnet in local.subnet_reserved_ip_list :
-    (subnet.ip_name) => subnet
-  }
+  vpe_gateway_map = module.dynamic_values.vpe_gateway_map
+  reserved_ip_map = module.dynamic_values.vpe_subnet_reserved_ip_map
 }
 
 ##############################################################################
