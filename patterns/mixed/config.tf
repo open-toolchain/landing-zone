@@ -37,7 +37,7 @@ locals {
     ##############################################################################
     ssh_keys = [
       {
-        name       = "${var.prefix}-ssh-key"
+        name       = "ssh-key"
         public_key = var.ssh_public_key
       }
     ]
@@ -210,6 +210,7 @@ locals {
       resource_group        = "${var.prefix}-service-rg"
       receive_global_events = true
       collector_bucket_name = "atracker-bucket"
+      add_route             = var.add_atracker_route
     }
     ##############################################################################
 
@@ -265,7 +266,7 @@ locals {
             ]
           ])
         },
-        ssh_keys = ["${var.prefix}-ssh-key"]
+        ssh_keys = ["ssh-key"]
       }
     ]
     ##############################################################################

@@ -1,9 +1,25 @@
 ##############################################################################
+# Locals
+##############################################################################
+
+locals {
+  use_hs_crypto       = var.key_management.use_hs_crypto == true
+  key_management_type = module.dynamic_values.key_management_type
+  key_management_guid = module.dynamic_values.guid
+  keys                = module.dynamic_values.keys
+  key_rings           = module.dynamic_values.key_rings
+  policies            = module.dynamic_values.policies
+}
+
+##############################################################################
+
+
+##############################################################################
 # Create KMS instance or get from data
 ##############################################################################
 
 resource "ibm_resource_instance" "kms" {
-  count             = var.key_management.use_data != true && var.key_management.use_hs_crypto != true ? 1 : 0
+  count             = local.key_management_type == "resource" ? 1 : 0
   name              = var.key_management.name
   service           = "kms"
   plan              = "tiered-pricing"
@@ -12,32 +28,16 @@ resource "ibm_resource_instance" "kms" {
 }
 
 data "ibm_resource_instance" "kms" {
-  count             = var.key_management.use_data == true && var.key_management.use_hs_crypto != true ? 1 : 0
+  count             = local.key_management_type == "data" ? 1 : 0
   name              = var.key_management.name
   resource_group_id = var.key_management.resource_group_id
 }
 
 data "ibm_resource_instance" "hpcs_instance" {
-  count             = var.key_management.use_hs_crypto == true ? 1 : 0
+  count             = local.key_management_type == "hs-crypto" ? 1 : 0
   name              = var.key_management.name
   resource_group_id = var.key_management.resource_group_id
   service           = "hs-crypto"
-}
-
-locals {
-  key_management_guid = var.key_management.use_hs_crypto == true ? data.ibm_resource_instance.hpcs_instance[0].guid : var.key_management.use_data == null ? ibm_resource_instance.kms[0].guid : data.ibm_resource_instance.kms[0].guid
-  key_management_keys = {
-    for encryption_key in var.keys :
-    (encryption_key.name) => encryption_key
-  }
-  key_rings = distinct([
-    for encryption_key in var.keys :
-    encryption_key.key_ring if encryption_key.key_ring != null
-  ])
-  key_management_key_policies = {
-    for encryption_key in var.keys :
-    (encryption_key.name) => encryption_key if encryption_key.policies != null
-  }
 }
 
 ##############################################################################
@@ -61,7 +61,7 @@ resource "ibm_kms_key_rings" "rings" {
 ##############################################################################
 
 resource "ibm_kms_key" "key" {
-  for_each        = local.key_management_keys
+  for_each        = local.keys
   instance_id     = local.key_management_guid
   key_name        = each.value.name
   standard_key    = each.value.root_key == null ? null : !each.value.root_key
@@ -81,7 +81,7 @@ resource "ibm_kms_key" "key" {
 ##############################################################################
 
 resource "ibm_kms_key_policies" "key_policy" {
-  for_each      = local.key_management_key_policies
+  for_each      = local.policies
   instance_id   = local.key_management_guid
   endpoint_type = each.value.endpoint
   key_id        = ibm_kms_key.key[each.key].key_id

@@ -13,53 +13,9 @@ data "ibm_container_cluster_versions" "cluster_versions" {}
 
 locals {
   # Convert list to map
-  worker_pools_map = flatten([
-    # For each cluster
-    for cluster_group in var.clusters : [
-      # For each worker pool associated with that cluster
-      for worker_pool_group in cluster_group.worker_pools :
-      merge(worker_pool_group, {
-        # Add Cluster Name
-        cluster_name = "${var.prefix}-${cluster_group.name}"
-        # Add entitlement for openshift workers
-        entitlement = cluster_group.kube_type == "iks" ? null : cluster_group.entitlement
-        # resource group
-        resource_group = cluster_group.resource_group
-        # Add VPC ID
-        vpc_id = module.vpc[worker_pool_group.vpc_name].vpc_id
-        subnets = [
-          # Add subnets to list if they are contained in the subnet list, prepends prefixes
-          for subnet in module.vpc[cluster_group.vpc_name].subnet_zone_list :
-          subnet if contains([
-            # Create modified list of names
-            for name in worker_pool_group.subnet_names :
-            "${var.prefix}-${worker_pool_group.vpc_name}-${name}"
-          ], subnet.name)
-        ]
-
-      }) if worker_pool_group != null
-    ] if cluster_group.worker_pools != null
-  ])
-
+  worker_pools_map = module.dynamic_values.worker_pools_map
   # Convert list to map
-  clusters_map = {
-    for cluster_group in var.clusters :
-    ("${var.prefix}-${cluster_group.name}") => merge(cluster_group, {
-      # Add VPC ID
-      vpc_id = module.vpc[cluster_group.vpc_name].vpc_id
-      subnets = [
-        # Add subnets to list if they are contained in the subnet list, prepends prefixes
-        for subnet in module.vpc[cluster_group.vpc_name].subnet_zone_list :
-        subnet if contains([
-          # Create modified list of names
-          for name in cluster_group.subnet_names :
-          "${var.prefix}-${cluster_group.vpc_name}-${name}"
-        ], subnet.name)
-      ]
-    })
-
-  }
-
+  clusters_map = module.dynamic_values.clusters_map
 }
 
 ##############################################################################
@@ -80,7 +36,7 @@ resource "ibm_container_vpc_cluster" "cluster" {
   tags              = var.tags
   wait_till         = var.wait_till
   entitlement       = each.value.entitlement
-  cos_instance_crn  = each.value.kube_type == "openshift" ? local.cos_instance_ids[each.value.cos_name] : null
+  cos_instance_crn  = each.value.cos_instance_crn
   pod_subnet        = each.value.pod_subnet
   service_subnet    = each.value.service_subnet
 
@@ -118,10 +74,7 @@ resource "ibm_container_vpc_cluster" "cluster" {
 ##############################################################################
 
 resource "ibm_container_vpc_worker_pool" "pool" {
-  for_each = {
-    for pool_map in local.worker_pools_map :
-    ("${pool_map.cluster_name}-${pool_map.name}") => pool_map
-  }
+  for_each          = local.worker_pools_map
   vpc_id            = each.value.vpc_id
   resource_group_id = local.resource_groups[each.value.resource_group]
   entitlement       = each.value.entitlement

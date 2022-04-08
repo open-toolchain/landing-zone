@@ -39,17 +39,6 @@ variable "resource_groups" {
       use_prefix = optional(bool)
     })
   )
-  default = [{
-    name = "Default"
-    }, {
-    name = "default"
-    }, {
-    name = "slz-cs-rg"
-    }, {
-    name = "slz-management-rg"
-    }, {
-    name = "slz-workload-rg"
-  }]
 
   validation {
     error_message = "Each group must have a unique name."
@@ -180,193 +169,6 @@ variable "vpcs" {
       })
     })
   )
-  default = [
-    {
-      prefix         = "management"
-      resource_group = "slz-management-rg"
-      use_public_gateways = {
-        zone-1 = false
-        zone-2 = false
-        zone-3 = false
-      }
-      flow_logs_bucket_name = "management-bucket"
-      network_acls = [
-        {
-          name = "management-acl"
-          rules = [
-            {
-              name        = "allow-ibm-inbound"
-              action      = "allow"
-              direction   = "inbound"
-              destination = "10.0.0.0/8"
-              source      = "161.26.0.0/16"
-            },
-            {
-              name        = "allow-all-network-inbound"
-              action      = "allow"
-              direction   = "inbound"
-              destination = "10.0.0.0/8"
-              source      = "10.0.0.0/8"
-            },
-            {
-              name        = "allow-all-outbound"
-              action      = "allow"
-              direction   = "outbound"
-              destination = "0.0.0.0/0"
-              source      = "0.0.0.0/0"
-            }
-          ]
-        }
-      ]
-      subnets = {
-        zone-1 = [
-          {
-            name           = "vsi-zone-1"
-            cidr           = "10.10.10.0/24"
-            public_gateway = true
-            acl_name       = "management-acl"
-          },
-          {
-            name           = "vpn-zone-1"
-            cidr           = "10.10.20.0/24"
-            public_gateway = true
-            acl_name       = "management-acl"
-          },
-          {
-            name           = "vpe-zone-1"
-            cidr           = "10.10.30.0/24"
-            public_gateway = true
-            acl_name       = "management-acl"
-          }
-        ],
-        zone-2 = [
-          {
-            name           = "vsi-zone-2"
-            cidr           = "10.20.10.0/24"
-            public_gateway = true
-            acl_name       = "management-acl"
-          },
-          {
-            name           = "vpe-zone-2"
-            cidr           = "10.20.20.0/24"
-            public_gateway = true
-            acl_name       = "management-acl"
-          }
-        ],
-        zone-3 = [
-          {
-            name           = "vsi-zone-3"
-            cidr           = "10.30.10.0/24"
-            public_gateway = true
-            acl_name       = "management-acl"
-          },
-          {
-            name           = "vpe-zone-3"
-            cidr           = "10.30.20.0/24"
-            public_gateway = true
-            acl_name       = "management-acl"
-          }
-        ]
-      }
-      vpn_gateways = [
-        {
-          name        = "vpn"
-          subnet_name = "vpn-zone-1"
-          connections = []
-        }
-      ]
-    },
-    {
-      prefix                = "workload"
-      resource_group        = "slz-workload-rg"
-      flow_logs_bucket_name = "workload-bucket"
-      use_public_gateways = {
-        zone-1 = false
-        zone-2 = false
-        zone-3 = false
-      }
-      network_acls = [
-        {
-          name              = "workload-acl"
-          add_cluster_rules = true
-          rules = [
-            {
-              name        = "allow-ibm-inbound"
-              action      = "allow"
-              direction   = "inbound"
-              destination = "10.0.0.0/8"
-              source      = "161.26.0.0/16"
-            },
-            {
-              name        = "allow-all-network-inbound"
-              action      = "allow"
-              direction   = "inbound"
-              destination = "10.0.0.0/8"
-              source      = "10.0.0.0/8"
-            },
-            {
-              name        = "allow-all-outbound"
-              action      = "allow"
-              direction   = "outbound"
-              destination = "0.0.0.0/0"
-              source      = "0.0.0.0/0"
-            }
-          ]
-        }
-      ]
-      subnets = {
-        zone-1 = [
-          {
-            name           = "vsi-zone-1"
-            cidr           = "10.40.10.0/24"
-            public_gateway = true
-            acl_name       = "workload-acl"
-          },
-          {
-            name           = "vpn-zone-1"
-            cidr           = "10.40.20.0/24"
-            public_gateway = true
-            acl_name       = "workload-acl"
-          },
-          {
-            name           = "vpe-zone-1"
-            cidr           = "10.40.30.0/24"
-            public_gateway = true
-            acl_name       = "workload-acl"
-          }
-        ],
-        zone-2 = [
-          {
-            name           = "vsi-zone-2"
-            cidr           = "10.50.10.0/24"
-            public_gateway = true
-            acl_name       = "workload-acl"
-          },
-          {
-            name           = "vpe-zone-2"
-            cidr           = "10.50.20.0/24"
-            public_gateway = true
-            acl_name       = "workload-acl"
-          }
-        ],
-        zone-3 = [
-          {
-            name           = "vsi-zone-3"
-            cidr           = "10.60.10.0/24"
-            public_gateway = true
-            acl_name       = "workload-acl"
-          },
-          {
-            name           = "vpe-zone-3"
-            cidr           = "10.60.20.0/24"
-            public_gateway = true
-            acl_name       = "workload-acl"
-          }
-        ]
-      }
-      vpn_gateways = null
-    }
-  ]
 }
 
 variable "vpn_gateways" {
@@ -389,7 +191,6 @@ variable "vpn_gateways" {
       )
     })
   )
-  default = []
 }
 
 ##############################################################################
@@ -408,16 +209,11 @@ variable "enable_transit_gateway" {
 variable "transit_gateway_resource_group" {
   description = "Name of resource group to use for transit gateway. Must be included in `var.resource_group`"
   type        = string
-  default     = "slz-cs-rg"
 }
 
 variable "transit_gateway_connections" {
   description = "Transit gateway vpc connections. Will only be used if transit gateway is enabled."
   type        = list(string)
-  default = [
-    "management",
-    "workload"
-  ]
 }
 
 ##############################################################################
@@ -435,7 +231,6 @@ variable "ssh_keys" {
       resource_group = optional(string)
     })
   )
-  default = []
 
   validation {
     error_message = "Each SSH key must have a unique name."
@@ -563,102 +358,6 @@ variable "vsi" {
       ))
     })
   )
-  default = [{
-    name           = "management-server"
-    vpc_name       = "management"
-    vsi_per_subnet = 1
-    subnet_names   = ["vsi-zone-1", "vsi-zone-2", "vsi-zone-3"]
-    image_name     = "ibm-ubuntu-16-04-5-minimal-amd64-1"
-    machine_type   = "cx2-2x4"
-    block_storage_volumes = [
-      {
-        name           = "kms-test-volume"
-        profile        = "general-purpose"
-        encryption_key = "slz-key"
-    }]
-
-    security_group = {
-      name     = "management"
-      vpc_name = "management"
-      rules = [{
-        name      = "allow-ibm-inbound"
-        source    = "161.26.0.0/16"
-        direction = "inbound"
-        },
-        {
-          name      = "allow-ibm-tcp-80-outbound"
-          source    = "161.26.0.0/16"
-          direction = "outbound"
-          tcp = {
-            port_min = 80
-            port_max = 80
-          }
-          }, {
-          name      = "allow-ibm-tcp-443-outbound"
-          source    = "161.26.0.0/16"
-          direction = "outbound"
-          tcp = {
-            port_min = 443
-            port_max = 443
-          }
-          }, {
-          name      = "allow-ibm-udp-53-outbound"
-          source    = "161.26.0.0/16"
-          direction = "outbound"
-          udp = {
-            port_min = 53
-            port_max = 53
-          }
-        }
-      ]
-    },
-    ssh_keys = ["jv-dev-ssh-key"]
-    }, {
-    name           = "workload-server"
-    vpc_name       = "workload"
-    vsi_per_subnet = 1
-    subnet_names   = ["vsi-zone-1", "vsi-zone-2", "vsi-zone-3"]
-    image_name     = "ibm-ubuntu-16-04-5-minimal-amd64-1"
-    machine_type   = "cx2-2x4"
-    security_group = {
-      name     = "workload"
-      vpc_name = "workload"
-      rules = [
-        {
-          name      = "allow-ibm-inbound"
-          source    = "161.26.0.0/16"
-          direction = "inbound"
-          }, {
-          name      = "allow-ibm-tcp-80-outbound"
-          source    = "161.26.0.0/16"
-          direction = "outbound"
-          tcp = {
-            port_min = 80
-            port_max = 80
-          }
-          }, {
-          name      = "allow-ibm-tcp-443-outbound"
-          source    = "161.26.0.0/16"
-          direction = "outbound"
-          tcp = {
-            port_min = 443
-            port_max = 443
-          }
-          }, {
-          name      = "allow-ibm-udp-53-outbound"
-          source    = "161.26.0.0/16"
-          direction = "outbound"
-          udp = {
-            port_min = 53
-            port_max = 53
-          }
-        }
-      ]
-    }
-    ssh_keys = ["jv-dev-ssh-key"]
-    }
-  ]
-
 }
 
 
@@ -778,17 +477,6 @@ variable "virtual_private_endpoints" {
       )
     })
   )
-  default = [{
-    service_name = "cos"
-    service_type = "cloud-object-storage"
-    vpcs = [{
-      name    = "management"
-      subnets = ["vpe-zone-1", "vpe-zone-2", "vpe-zone-3"]
-      }, {
-      name    = "workload"
-      subnets = ["vpe-zone-1", "vpe-zone-2", "vpe-zone-3"]
-    }]
-  }]
 }
 
 ##############################################################################
@@ -841,41 +529,6 @@ variable "cos" {
       )
     })
   )
-
-  default = [{
-    name           = "cos"
-    use_data       = false
-    resource_group = "Default"
-    plan           = "standard"
-    buckets = [
-      {
-        name          = "workload-bucket"
-        storage_class = "standard"
-        kms_key       = "slz-key"
-        endpoint_type = "public"
-        force_delete  = true
-      },
-      {
-        name          = "atracker-bucket"
-        storage_class = "standard"
-        endpoint_type = "public"
-        force_delete  = true
-      },
-      {
-        name          = "management-bucket"
-        storage_class = "standard"
-        endpoint_type = "public"
-        kms_key       = "slz-key"
-        force_delete  = true
-      }
-    ]
-    keys = [
-      {
-        name = "cos-bind-key"
-        role = "Writer"
-      }
-    ]
-  }]
 
   validation {
     error_message = "Each COS key must have a unique name."
@@ -1088,17 +741,6 @@ variable "key_management" {
       )
     )
   })
-  default = {
-    name           = "slz-kms"
-    resource_group = "Default"
-    keys = [
-      {
-        name     = "slz-key"
-        root_key = true
-        key_ring = "slz-ring"
-      }
-    ]
-  }
 }
 
 ##############################################################################
@@ -1114,12 +756,8 @@ variable "atracker" {
     resource_group        = string
     receive_global_events = bool
     collector_bucket_name = string
+    add_route             = bool
   })
-  default = {
-    resource_group        = "Default"
-    receive_global_events = true
-    collector_bucket_name = "atracker-bucket"
-  }
 }
 
 ##############################################################################
@@ -1160,7 +798,6 @@ variable "clusters" {
           entitlement        = optional(string) # entitlement option for openshift
       })))
   }))
-  default = []
 
   # kube_type validation
   validation {

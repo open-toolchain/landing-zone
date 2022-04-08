@@ -4,6 +4,7 @@ region                   = "< add user data here >"
 tags                     = []
 vpcs                     = ["management", "workload"]
 enable_transit_gateway   = true
+add_atracker_route       = true
 hs_crypto_instance_name  = null
 hs_crypto_resource_group = null
 ssh_public_key           = "< add user data here >"
