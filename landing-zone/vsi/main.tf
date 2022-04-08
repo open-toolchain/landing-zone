@@ -1,11 +1,6 @@
 ##############################################################################
 # Virtual Server Data
 ##############################################################################
-
-data "ibm_is_image" "image" {
-  name = var.image
-}
-
 locals {
 
   # Create list of VSI using subnets and VSI per subnet
@@ -41,7 +36,7 @@ locals {
 resource "ibm_is_instance" "vsi" {
   for_each       = local.vsi_map
   name           = each.key
-  image          = data.ibm_is_image.image.id
+  image          = var.image_id
   profile        = var.machine_type
   resource_group = var.resource_group_id
   vpc            = var.vpc_id

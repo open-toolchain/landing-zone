@@ -1,5 +1,5 @@
 TF_VERSION               = "1.0"
-prefix                   = "test"
+prefix                   = "< add user data here >"
 region                   = "< add user data here >"
 tags                     = []
 vpcs                     = ["management", "workload"]
