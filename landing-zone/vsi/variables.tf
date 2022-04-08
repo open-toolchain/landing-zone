@@ -55,10 +55,9 @@ variable "subnets" {
 # VSI Variables
 ##############################################################################
 
-variable "image" {
-  description = "Image name used for VSI. Run 'ibmcloud is images' to find available images in a region"
+variable "image_id" {
+  description = "Image ID used for VSI. Run 'ibmcloud is images' to find available images in a region"
   type        = string
-  default     = "ibm-centos-7-6-minimal-amd64-2"
 }
 
 variable "ssh_key_ids" {
@@ -69,37 +68,31 @@ variable "ssh_key_ids" {
 variable "machine_type" {
   description = "VSI machine type. Run 'ibmcloud is instance-profiles' to get a list of regional profiles"
   type        = string
-  default     = "bx2-8x32"
 }
 
 variable "vsi_per_subnet" {
   description = "Number of VSI instances for each subnet"
   type        = number
-  default     = 1
 }
 
 variable "user_data" {
   description = "User data to initialize VSI deployment"
   type        = string
-  default     = null
 }
 
 variable "boot_volume_encryption_key" {
   description = "CRN of boot volume encryption key"
   type        = string
-  default     = ""
 }
 
 variable "enable_floating_ip" {
   description = "Create a floating IP for each virtual server created"
   type        = bool
-  default     = false
 }
 
 variable "create_security_group" {
   description = "Create security group for VSI. If this is passed as false, the default will be used"
   type        = bool
-  default     = true
 }
 
 variable "security_group" {

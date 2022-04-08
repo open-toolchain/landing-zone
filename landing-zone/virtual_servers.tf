@@ -14,6 +14,11 @@ module "ssh_keys" {
   tags     = var.tags == null ? null : var.tags
 }
 
+data "ibm_is_image" "image" {
+  for_each = local.vsi_map 
+  name     = each.value.image_name
+}
+
 module "vsi" {
   source                = "./vsi"
   for_each              = local.vsi_map
@@ -22,7 +27,7 @@ module "vsi" {
   prefix                = "${var.prefix}-${each.value.name}"
   vpc_id                = module.vpc[each.value.vpc_name].vpc_id
   subnets               = each.value.subnets
-  image                 = each.value.image_name
+  image_id              = data.ibm_is_image.image["${var.prefix}-${each.value.name}"].id
   boot_volume_encryption_key = each.value.boot_volume_encryption_key_name == null ? "" : [
     for keys in module.key_management.keys :
     keys.id if keys.name == each.value.boot_volume_encryption_key_name
@@ -35,6 +40,7 @@ module "vsi" {
     for ssh_key in each.value.ssh_keys :
     lookup(module.ssh_keys.ssh_key_map, ssh_key).id
   ]
+  user_data = lookup(each.value, "user_data", null)
   machine_type   = each.value.machine_type
   vsi_per_subnet = each.value.vsi_per_subnet
   security_group = each.value.security_group
