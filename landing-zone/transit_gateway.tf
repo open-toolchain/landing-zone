@@ -11,6 +11,7 @@ resource "ibm_tg_gateway" "transit_gateway" {
   resource_group = local.resource_groups[var.transit_gateway_resource_group]
 
   timeouts {
+    create = "30m"
     delete = "30m"
   }
 }
@@ -29,6 +30,7 @@ resource "ibm_tg_connection" "connection" {
   name         = "${var.prefix}-${each.key}-hub-connection"
   network_id   = module.vpc[each.key].vpc_crn
   timeouts {
+    create = "30m"
     delete = "30m"
   }
 }
