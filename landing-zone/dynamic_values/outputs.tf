@@ -171,3 +171,50 @@ output "vpn_connection_map" {
 }
 
 ##############################################################################
+
+
+##############################################################################
+# IAM Outputs
+##############################################################################
+
+output "access_groups_object" {
+  description = "Convert access group list to map"
+  value       = local.access_groups_object
+}
+
+output "access_policy_list" {
+  description = "List of access policies"
+  value       = local.access_policy_list
+}
+
+output "access_policies" {
+  description = "Map of access policies"
+  value       = local.access_policies
+}
+
+output "dynamic_rule_list" {
+  description = "List of dynamic rules"
+  value       = local.dynamic_rule_list
+}
+
+output "dynamic_rules" {
+  description = "Map of dynamic rules"
+  value       = local.dynamic_rules
+}
+
+output "account_management_list" {
+  description = "List of account management policies for group"
+  value       = local.account_management_list
+}
+
+output "account_management_map" {
+  description = "Map of account management policies by group"
+  value       = local.account_management_map
+}
+
+output "access_groups_with_invites" {
+  description = "map of access groups with invite users"
+  value       = local.access_groups_with_invites
+}
+
+##############################################################################

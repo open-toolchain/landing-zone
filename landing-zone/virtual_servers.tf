@@ -15,7 +15,7 @@ module "ssh_keys" {
 }
 
 data "ibm_is_image" "image" {
-  for_each = local.vsi_map 
+  for_each = local.vsi_map
   name     = each.value.image_name
 }
 
@@ -40,7 +40,7 @@ module "vsi" {
     for ssh_key in each.value.ssh_keys :
     lookup(module.ssh_keys.ssh_key_map, ssh_key).id
   ]
-  user_data = lookup(each.value, "user_data", null)
+  user_data      = lookup(each.value, "user_data", null)
   machine_type   = each.value.machine_type
   vsi_per_subnet = each.value.vsi_per_subnet
   security_group = each.value.security_group

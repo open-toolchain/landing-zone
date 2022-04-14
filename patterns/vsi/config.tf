@@ -286,6 +286,37 @@ locals {
       }
     ]
     ##############################################################################
+
+
+    ##############################################################################
+    # IAM Account Settings
+    ##############################################################################
+    iam_account_settings = {
+      enable = false
+    }
+    access_groups = [
+      # for group in ["admin", "operate", "viewer"]:
+      # {
+      #   name = group
+      #   description = "Template access group for ${group}"
+      #   policies = [
+      #     {
+      #       name = "${group}-policy"
+      #       roles = [
+      #         lookup({
+      #           admin = "Administrator"
+      #           operate = "Operator"
+      #           viewer = "Viewer"
+      #         }, group)
+      #       ]
+      #       resources = {
+      #         resource = "is"
+      #       }
+      #     }
+      #   ]
+      # }
+    ]
+    ##############################################################################
   }
 
   ##############################################################################
@@ -309,6 +340,8 @@ locals {
     atracker                       = lookup(local.override, "atracker", local.config.atracker)
     clusters                       = lookup(local.override, "clusters", [])
     wait_till                      = lookup(local.override, "wait_till", "IngressReady")
+    iam_account_settings           = lookup(local.override, "iam_account_settings", local.config.iam_account_settings)
+    access_groups                  = lookup(local.override, "access_groups", local.config.access_groups)
   }
   ##############################################################################
 

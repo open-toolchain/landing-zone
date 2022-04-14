@@ -137,3 +137,20 @@ locals {
 }
 
 ##############################################################################
+
+
+##############################################################################
+# IAM Unit Tests
+##############################################################################
+
+locals {
+  assert_access_group_convert_to_object           = lookup(module.unit_tests.access_groups_object, "ut-test")
+  assert_access_group_policy_has_group_name       = regex("ut-test", module.unit_tests.access_policy_list[0].group)
+  assert_access_group_policy_map_has_policy       = lookup(module.unit_tests.access_policies, "policy")
+  assert_dynamic_rule_has_group_name              = regex("ut-test", module.unit_tests.dynamic_rule_list[0].group)
+  assert_dynamic_rule_map_has_policy              = lookup(module.unit_tests.dynamic_rules, "dynamic-policy")
+  assert_account_management_list_has_group_name   = regex("ut-test", module.unit_tests.account_management_list[0].group)
+  assert_access_groups_with_invite_contains_group = lookup(module.unit_tests.access_groups_with_invites, "ut-test")
+}
+
+##############################################################################

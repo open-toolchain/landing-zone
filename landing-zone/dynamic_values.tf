@@ -21,6 +21,7 @@ module "dynamic_values" {
   virtual_private_endpoints = var.virtual_private_endpoints
   vpn_gateways              = var.vpn_gateways
   security_groups           = var.security_groups
+  access_groups             = var.access_groups
 }
 
 ##############################################################################
@@ -49,6 +50,23 @@ module "unit_tests" {
   security_groups           = local.unit_test_config.security_groups
   vsi                       = local.unit_test_config.vsi
   ssh_keys                  = local.unit_test_config.ssh_keys
+  access_groups = [
+    {
+      name = "test",
+      policies = [
+        {
+          name = "policy"
+        }
+      ]
+      dynamic_policies = [
+        {
+          name = "dynamic-policy"
+        }
+      ]
+      account_management_policies = ["yes"]
+      invite_users                = ["yes"]
+    }
+  ]
 }
 
 ##############################################################################

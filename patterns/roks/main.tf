@@ -37,6 +37,8 @@ module "landing-zone" {
   atracker                       = local.env.atracker
   clusters                       = local.env.clusters
   wait_till                      = local.env.wait_till
+  iam_account_settings           = local.env.iam_account_settings
+  access_groups                  = local.env.access_groups
 }
 
 ##############################################################################
