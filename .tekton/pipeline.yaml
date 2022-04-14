@@ -63,9 +63,25 @@ spec:
         - name: pipeline-debug
           value: $(params.pipeline-debug)
 
-    - name: compliance-scan-task
+    - name: pre-checks-task
       runAfter:
         - repo-clone-task
+      taskRef:
+        name: pre-checks-task
+      workspaces:
+        - name: artifacts
+          workspace: pipeline-ws
+        - name: secrets
+          workspace: pipeline-ws
+      params:
+        - name: pipeline-debug
+          value: $(params.pipeline-debug)
+        - name: pattern
+          value: $(params.pattern)
+
+    - name: compliance-scan-task
+      runAfter:
+        - pre-checks-task
       taskRef:
         name: compliance-scan-task
       workspaces:
