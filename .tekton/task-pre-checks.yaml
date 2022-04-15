@@ -57,6 +57,12 @@ spec:
           #Need to upgrade
           BRANCH="updates-v${REMOTE_VERSION}"
           if [[ "${VERSION}" != "${REMOTE_VERSION}" ]]; then
+             #Since merge conflicts will cause problems for the next tasks, do the merge in a new directory
+             TMP_LOCAL_REPO=/tmp/local_repo
+             mkdir $TMP_LOCAL_REPO
+             cp -rf . $TMP_LOCAL_REPO/
+             cd $TMP_LOCAL_REPO  
+
              git ls-remote --exit-code --heads origin "${BRANCH}"
              if [[ $? -eq 0 ]]; then
                echo "Remote branch already exists, not creating another branch and skipping updating"
@@ -105,8 +111,8 @@ spec:
           echo "Verify that all inputs that need to be user defined are set"
           grep -w "add user data here" ./patterns/$PATTERN/terraform.tfvars
           if [[ $? -eq 0 ]]; then
-            echo "./patterns/$PATTERN/terraform.tfvars file contain variables that need user input.  Please change the variables that are \
-            set to <add user data here> to an appropriate value"
+            printf "./patterns/$PATTERN/terraform.tfvars file contain variables that need user input.  Please change the variables that are\n \
+          set to <add user data here> to an appropriate value"
             exit 1;
           fi
   workspaces:
