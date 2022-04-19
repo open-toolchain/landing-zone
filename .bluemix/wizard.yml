@@ -60,11 +60,11 @@ steps:
   #           parameter: kmsService
   #           value: preprovisioned-hpcs 
 
-  - name: fortress
-    form: security_compliance
-    indent_level: 1
-    title:
-      $ref: "#/messages/wizard.step.fortress.title"
+  # - name: fortress
+  #   form: security_compliance
+  #   indent_level: 1
+  #   title:
+  #     $ref: "#/messages/wizard.step.fortress.title"
 
   - name: optionaltools
     title:

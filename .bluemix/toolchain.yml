@@ -14,7 +14,7 @@ template:
     - infrastructureRepo
     - infrastructure-pipeline
     - resources-destroy-pipeline
-    - fortress
+    # - fortress
   info:
     git url: >
       "[" + $env.repository + "]" +
@@ -113,19 +113,19 @@ services:
           API_KEY: "{{form.wizard_schematics.parameters.ibmcloud-api-key}}"
           SCHEMATICS_WORKSPACE_NAME: '{{services.infrastructureRepo.parameters.repo_name}}'
   
-  fortress:
-    service_id: security_compliance
-    parameters:
-      name: >
-        $env.sccName ? '{{sccName}}' : 'compliance'
-      trigger_scan: >
-        $env.triggerSccScan ? '{{triggerSccScan}}' : 'disabled'
-      profile: >
-        $env.sccProfile ? '{{sccProfile}}' : 'IBM Cloud Best Practices Controls 1.0'
-      scope: >
-        $env.sccScope ? '{{sccScope}}' : ''
-      api-key: >
-        $env.sccAPIKey ? '{{sccAPIKey}}' : ''
-      evidence_repo_name: >
-        $env.evidence_repo_name ? '{{evidence_repo_name}}' : '{{form.infrastructureRepo.parameters.repo_url}}'
+  # fortress:
+  #   service_id: security_compliance
+  #   parameters:
+  #     name: >
+  #       $env.sccName ? '{{sccName}}' : 'compliance'
+  #     trigger_scan: >
+  #       $env.triggerSccScan ? '{{triggerSccScan}}' : 'disabled'
+  #     profile: >
+  #       $env.sccProfile ? '{{sccProfile}}' : 'IBM Cloud Best Practices Controls 1.0'
+  #     scope: >
+  #       $env.sccScope ? '{{sccScope}}' : ''
+  #     api-key: >
+  #       $env.sccAPIKey ? '{{sccAPIKey}}' : ''
+  #     evidence_repo_name: >
+  #       $env.evidence_repo_name ? '{{evidence_repo_name}}' : '{{form.infrastructureRepo.parameters.repo_url}}'
 
