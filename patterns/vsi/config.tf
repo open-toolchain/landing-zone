@@ -25,7 +25,7 @@ locals {
     resource_groups = [
       for group in distinct(concat(local.resource_group_list, var.vpcs)) :
       {
-        name   = group == "Default" || group == "default" ? group : "${var.prefix}-${group}-rg"
+        name   = group == "Default" || group == "default" || group == var.hs_crypto_resource_group ? group : "${var.prefix}-${group}-rg"
         create = (group == "Default" || group == "default" || group == var.hs_crypto_resource_group) ? false : true
       }
     ]
