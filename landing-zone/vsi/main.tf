@@ -50,6 +50,7 @@ resource "ibm_is_instance" "vsi" {
       (var.create_security_group ? [ibm_is_security_group.security_group[var.security_group.name].id] : []),
       var.security_group_ids
     ])
+    allow_ip_spoofing = var.allow_ip_spoofing
   }
 
   dynamic "network_interfaces" {
@@ -57,9 +58,10 @@ resource "ibm_is_instance" "vsi" {
     content {
       subnet = network_interfaces.value.id
       security_groups = flatten([
-        (var.create_security_group ? [ibm_is_security_group.security_group[var.security_group.name].id] : []),
-        var.security_group_ids
+        (var.create_security_group && var.secondary_use_vsi_security_group ? [ibm_is_security_group.security_group[var.security_group.name].id] : []),
+        var.secondary_security_group_ids
       ])
+      allow_ip_spoofing = var.secondary_allow_ip_spoofing
     }
   }
 

@@ -777,6 +777,7 @@ variable "clusters" {
       workers_per_subnet = number           # Worker nodes per subnet.
       machine_type       = string           # Worker node flavor
       kube_type          = string           # iks or openshift
+      kube_version       = optional(string) # Can be a version from `ibmcloud ks versions` or `default`
       entitlement        = optional(string) # entitlement option for openshift
       pod_subnet         = optional(string) # Portable subnet for pods
       service_subnet     = optional(string) # Portable subnet for services
@@ -784,20 +785,24 @@ variable "clusters" {
       cos_name           = optional(string) # Name of COS instance Required only for OpenShift clusters
       kms_config = optional(
         object({
-          crk_name         = string
-          private_endpoint = optional(bool)
+          crk_name         = string         # Name of key
+          private_endpoint = optional(bool) # Private endpoint
         })
       )
-      worker_pools = optional(list(
-        object({
-          name               = string           # Worker pool name
-          vpc_name           = string           # VPC name
-          workers_per_subnet = number           # Worker nodes per subnet
-          flavor             = string           # Worker node flavor
-          subnet_names       = list(string)     # List of vpc subnets for worker pool
-          entitlement        = optional(string) # entitlement option for openshift
-      })))
-  }))
+      worker_pools = optional(
+        list(
+          object({
+            name               = string           # Worker pool name
+            vpc_name           = string           # VPC name
+            workers_per_subnet = number           # Worker nodes per subnet
+            flavor             = string           # Worker node flavor
+            subnet_names       = list(string)     # List of vpc subnets for worker pool
+            entitlement        = optional(string) # entitlement option for openshift
+          })
+        )
+      )
+    })
+  )
 
   # kube_type validation
   validation {

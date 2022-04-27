@@ -290,6 +290,7 @@ locals {
         workers_per_subnet = var.workers_per_zone
         machine_type       = var.flavor
         kube_type          = "openshift"
+        kube_version       = var.kube_version
         resource_group     = "${var.prefix}-${var.vpcs[1]}-rg"
         cos_name           = "cos"
         entitlement        = var.entitlement

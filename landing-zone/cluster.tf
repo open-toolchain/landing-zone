@@ -12,10 +12,12 @@ data "ibm_container_cluster_versions" "cluster_versions" {}
 ##############################################################################
 
 locals {
-  # Convert list to map
-  worker_pools_map = module.dynamic_values.worker_pools_map
-  # Convert list to map
-  clusters_map = module.dynamic_values.clusters_map
+  worker_pools_map = module.dynamic_values.worker_pools_map # Convert list to map
+  clusters_map     = module.dynamic_values.clusters_map     # Convert list to map
+  default_kube_version = {
+    openshift = "${data.ibm_container_cluster_versions.cluster_versions.valid_openshift_versions[length(data.ibm_container_cluster_versions.cluster_versions.valid_openshift_versions) - 1]}_openshift"
+    iks       = data.ibm_container_cluster_versions.cluster_versions.valid_kube_versions[length(data.ibm_container_cluster_versions.cluster_versions.valid_kube_versions) - 1]
+  }
 }
 
 ##############################################################################
@@ -32,13 +34,18 @@ resource "ibm_container_vpc_cluster" "cluster" {
   resource_group_id = local.resource_groups[each.value.resource_group]
   flavor            = each.value.machine_type
   worker_count      = each.value.workers_per_subnet
-  kube_version      = each.value.kube_type == "openshift" ? "${data.ibm_container_cluster_versions.cluster_versions.valid_openshift_versions[length(data.ibm_container_cluster_versions.cluster_versions.valid_openshift_versions) - 1]}_openshift" : data.ibm_container_cluster_versions.cluster_versions.valid_kube_versions[length(data.ibm_container_cluster_versions.cluster_versions.valid_kube_versions) - 1]
-  tags              = var.tags
-  wait_till         = var.wait_till
-  entitlement       = each.value.entitlement
-  cos_instance_crn  = each.value.cos_instance_crn
-  pod_subnet        = each.value.pod_subnet
-  service_subnet    = each.value.service_subnet
+  kube_version = (
+    lookup(each.value, "kube_version", null) == "default" # if version is default
+    || lookup(each.value, "kube_version", null) == null   # or if version is null
+    ? local.default_kube_version[each.value.kube_type]    # use default
+    : each.value.kube_version                             # otherwise use value
+  )
+  tags             = var.tags
+  wait_till        = var.wait_till
+  entitlement      = each.value.entitlement
+  cos_instance_crn = each.value.cos_instance_crn
+  pod_subnet       = each.value.pod_subnet
+  service_subnet   = each.value.service_subnet
 
   dynamic "zones" {
     for_each = each.value.subnets

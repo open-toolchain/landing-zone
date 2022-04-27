@@ -69,7 +69,7 @@ variable "enable_transit_gateway" {
 }
 
 variable "add_atracker_route" {
-  description = "Atracker can only have one route per zone. Use this variable to disable or enable the creation of atracker route"
+  description = "Atracker can only have one route per zone. use this value to disable or enable the creation of atracker route"
   type        = bool
   default     = true
 }
@@ -109,6 +109,12 @@ variable "cluster_zones" {
     error_message = "Cluster can be provisioned only across 1, 2, or 3 zones."
     condition     = var.cluster_zones > 0 && var.cluster_zones < 4
   }
+}
+
+variable "kube_version" {
+  description = "Kubernetes version to use for cluster. To get available versions, use the IBM Cloud CLI command `ibmcloud ks versions`. To use the default version, leave as default. Updates to the default versions may force this to change."
+  type        = string
+  default     = "default"
 }
 
 variable "flavor" {

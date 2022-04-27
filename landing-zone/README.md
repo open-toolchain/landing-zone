@@ -445,29 +445,41 @@ You can create as many `iks` or `openshift` clusters and worker pools on vpc. Cl
 
 For `ROKS` clusters, ensure public gateways are enabled to allow your cluster to correctly provision ingress ALBs.
 
-```
+```terraform
 list(
     object({
       name               = string           # Name of Cluster
       vpc_name           = string           # Name of VPC
       subnet_names       = list(string)     # List of vpc subnets for cluster
-      workers_per_subnet = number           # Worker nodes per subnet. Min 2 per subnet for openshift
+      workers_per_subnet = number           # Worker nodes per subnet.
       machine_type       = string           # Worker node flavor
       kube_type          = string           # iks or openshift
+      kube_version       = optional(string) # Can be a version from `ibmcloud ks versions` or `default`. `null` will use the default version
       entitlement        = optional(string) # entitlement option for openshift
       pod_subnet         = optional(string) # Portable subnet for pods
       service_subnet     = optional(string) # Portable subnet for services
       resource_group     = string           # Resource Group used for cluster
-      worker_pools = optional(list(
+      cos_name           = optional(string) # Name of COS instance Required only for OpenShift clusters
+      kms_config = optional(
         object({
-          name               = string           # Worker pool name
-          vpc_name           = string           # VPC name
-          workers_per_subnet = number           # Worker nodes per subnet
-          flavor             = string           # Worker node flavor
-          subnet_names       = list(string)     # List of vpc subnets for worker pool
-          entitlement        = optional(string) # entitlement option for openshift
-      })))
-  }))
+          crk_name         = string         # Name of key
+          private_endpoint = optional(bool) # Private endpoint
+        })
+      )
+      worker_pools = optional(
+        list(
+          object({
+            name               = string           # Worker pool name
+            vpc_name           = string           # VPC name
+            workers_per_subnet = number           # Worker nodes per subnet
+            flavor             = string           # Worker node flavor
+            subnet_names       = list(string)     # List of vpc subnets for worker pool
+            entitlement        = optional(string) # entitlement option for openshift
+          })
+        )
+      )
+    })
+  )
 ```
 
 ---
