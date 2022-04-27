@@ -40,12 +40,13 @@ resource "ibm_container_vpc_cluster" "cluster" {
     ? local.default_kube_version[each.value.kube_type]    # use default
     : each.value.kube_version                             # otherwise use value
   )
-  tags             = var.tags
-  wait_till        = var.wait_till
-  entitlement      = each.value.entitlement
-  cos_instance_crn = each.value.cos_instance_crn
-  pod_subnet       = each.value.pod_subnet
-  service_subnet   = each.value.service_subnet
+  update_all_workers = lookup(each.value, "update_all_workers", null)
+  tags               = var.tags
+  wait_till          = var.wait_till
+  entitlement        = each.value.entitlement
+  cos_instance_crn   = each.value.cos_instance_crn
+  pod_subnet         = each.value.pod_subnet
+  service_subnet     = each.value.service_subnet
 
   dynamic "zones" {
     for_each = each.value.subnets
@@ -69,6 +70,7 @@ resource "ibm_container_vpc_cluster" "cluster" {
   timeouts {
     create = "3h"
     delete = "2h"
+    update = "3h"
   }
 
 }

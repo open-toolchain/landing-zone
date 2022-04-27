@@ -454,7 +454,8 @@ list(
       workers_per_subnet = number           # Worker nodes per subnet.
       machine_type       = string           # Worker node flavor
       kube_type          = string           # iks or openshift
-      kube_version       = optional(string) # Can be a version from `ibmcloud ks versions` or `default`. `null` will use the default version
+      kube_version       = optional(string) # Can be a version from `ibmcloud ks versions` or `default`. `null` will use the
+      update_all_workers = optional(bool)   # if true, force all workers to update
       entitlement        = optional(string) # entitlement option for openshift
       pod_subnet         = optional(string) # Portable subnet for pods
       service_subnet     = optional(string) # Portable subnet for services

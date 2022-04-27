@@ -19,6 +19,7 @@
             "vsi-zone-2",
             "vsi-zone-3"
         ],
+        "update_all_workers" : false,
         "vpc_name": "management",
         "worker_pools": [
             {
@@ -49,6 +50,7 @@
             "vsi-zone-2",
             "vsi-zone-3"
         ],
+        "update_all_workers" : false,
         "vpc_name": "workload",
         "worker_pools": [
             {

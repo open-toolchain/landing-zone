@@ -783,6 +783,7 @@ variable "clusters" {
       service_subnet     = optional(string) # Portable subnet for services
       resource_group     = string           # Resource Group used for cluster
       cos_name           = optional(string) # Name of COS instance Required only for OpenShift clusters
+      update_all_workers = optional(bool)   # If true force workers to update
       kms_config = optional(
         object({
           crk_name         = string         # Name of key

@@ -11,5 +11,6 @@ cluster_zones            = 1
 flavor                   = "bx2.16x64"
 workers_per_zone         = 2
 wait_till                = "IngressReady"
+update_all_workers       = false
 override                 = false
 entitlement              = null #Set to "cloud_pak" if you have a cloud pak license
