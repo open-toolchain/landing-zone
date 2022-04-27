@@ -3,23 +3,22 @@
 ## Table of Contents
 
 1. [Prerequisites](#prerequisites)
-    1. [Setting Up an IBM Cloud Account](#setting-up-an-ibm-cloud-account)
+    1. [Setup an IBM Cloud Account](#setting-up-an-ibm-cloud-account)
     2. [Setup IBM Cloud Account for Secure Landing Zone](#setup-ibm-cloud-account-for-secure-landing-zone)
     3. [Setup Account Access (Cloud IAM)](#setup-account-access-cloud-iam)
-    4. [Repository Authorization](#repository-authorization)
-    5. [(Optional) Setting Up Hyper Protect Crypto Services](#optional-setting-up-hyper-protect-crypto-services)
+    5. [Setup Repository Authorization](#setup-repository-authorization)
+    4. [(Optional) Setup Hyper Protect Crypto Services](#optional-setting-up-hyper-protect-crypto-services)
 2. [Patterns](#patterns)
 3. [Getting Started](#getting-started)
-4. [Default Landing Zone Configuration](#default-landing-zone-configuration)
-    - [Pattern Variables](#pattern-variables)
-    - [Resource Groups](#resoure-groups)
-    - [Cloud Services](#cloud-services)
-    - [VPC Infrastructure](#vpc-infrastructure)
-5. [Provisioning with the IBM Cloud Toolchain](#provisioning-with-the-ibm-cloud-toolchain)
-6. [Running the Scripts Locally](#running-the-scripts-locally)
-7. [Customizing Your Environment](#customizing-your-environment)
-8. [Versions](#versions)
-9. [Upgrade](#upgrade)
+    1. [Select your Pattern](#select-your-pattern)
+    2. [Select your Provision Method](#select-your-provision-method)
+4. [Customizing Your Environment](#customizing-your-environment)
+    1. [Using terraform.tfvars](#using-terraformtfvars)
+    2. [Using override.json](#using-overridejson)
+5. [Module Recommendations for Additional Features](#module-recommendations-for-additional-features)
+6. [Versions](#versions)
+7. [Upgrading](#upgrading)
+8. [Creating an issue](#creating-an-issue)
 
 ---
 
@@ -27,17 +26,13 @@
 
 To ensure that Secure Landing Zone can be deployed, esure that the following steps have been completed before deployment.
 
----
-
-### Setting Up an IBM Cloud Account
+### Setup an IBM Cloud Account
 
 An IBM Cloud account is required. An Enterprise account is recommended but Pay as you Go account suffices to deploy secure landing zone cloud resources. 
 
 If you do not already have an account, follow instructions [to create the account](https://cloud.ibm.com/docs/account?topic=account-account-getting-started#account-gs-createlite) and [upgrade to Pay-as-you-Go](https://cloud.ibm.com/docs/account?topic=account-account-getting-started#account-gs-upgrade)
 
 - Have access to an [IBM Cloud account](https://cloud.ibm.com/docs/account?topic=account-account-getting-started). An Enterprise account is recommended but a Pay as you Go account should also work with this automation.
-
----
 
 ### Setup IBM Cloud Account for Secure Landing Zone
 
@@ -49,8 +44,6 @@ If you do not already have an account, follow instructions [to create the accoun
 
 4. Enable VRF and Service Endpoints. This requires creating a support case. Follow [instructions](https://cloud.ibm.com/docs/account?topic=account-vrf-service-endpoint#vrf) carefully.
 
----
-
 ### Setup Account Access (Cloud IAM)
 
 1. [Create an IBM Cloud API Key](https://cloud.ibm.com/docs/account?topic=account-userapikey#create_user_key). User owning this key should be part of __admins__ group. **Necessary if manually provisioning**
@@ -59,9 +52,17 @@ If you do not already have an account, follow instructions [to create the accoun
 
 3. [Setup Cloud IAM Access Groups](https://cloud.ibm.com/docs/account?topic=account-account-getting-started#account-gs-accessgroups). User access to cloud resources will be controlled using the Access Policies assigned to Access Groups. IBM Cloud Financial Services profile requires that all IAM users do not get assigned any accesses directly to any cloud resources. When assigning Access policies, Click "All Identity Access Enabled Services" from drop down menu.
 
----
+### Setup Repository Authorization
 
-### (Optional) Setting Up Hyper Protect Crypto Services
+The toolchain requires authorization to access your repository.  If it does not have access, the toolchain will request that you authorize access.  Below shows you how you can create a personal access token for your repository
+
+- [GitHub and GitHub Enterprise](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)
+- [GitLab](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html)
+- [Bitbucket](https://confluence.atlassian.com/bitbucketserver/personal-access-tokens-939515499.html)
+
+You can manage your authorizations via [Manage Git Authorizations](https://cloud.ibm.com/devops/git)
+
+### (Optional) Setup Hyper Protect Crypto Services
 
 For Key Management services, user can optionally use Hyper Protect Crypto Services. This instance will need to be created before creating the Secure Landing Zone.
 
@@ -86,21 +87,11 @@ To initialize the provisioned Hyper Protect Crypto Service instance, we recommen
 
 For proof of technology environments we recommend using the `auto-init` feature. [Auto Init Documentation](https://cloud.ibm.com/docs/hs-crypto?topic=hs-crypto-initialize-hsm-recovery-crypto-unit)  
 
------
-
-### Repository Authorization
-
-The toolchain requires authorization to access your repository.  If it does not have access, the toolchain will request that you authorize access.  Below shows you how you can create a personal access token for your repository
-
-- [GitHub and GitHub Enterprise](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)
-- [GitLab](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html)
-- [Bitbucket](https://confluence.atlassian.com/bitbucketserver/personal-access-tokens-939515499.html)
-
-You can manage your authorizations via [Manage Git Authorizations](https://cloud.ibm.com/devops/git)
-
 ---
 
-## Patterns
+## Getting Started 
+
+### Select your Pattern 
 
 The [landing zone module](./landing-zone/) can be used to create a fully cusomizable VPC environment. The three patterns below are each starting templates that can be used to quickly get started with Landing Zone. These patterns can be found in the [patterns](./patterns/) directory.
 
@@ -119,51 +110,19 @@ Each pattern will create an identical deployment on the VPC
 - Red Hat OpenShift Kubernetes (ROKS) Pattern will deploy identical clusters across the VSI subnet tier in each VPC
 - The Mixed pattern will provision both of the above
 
----
-
-### Detailed Default Pattern Configuration
-
 To read more detailed documentation about the default configuration, read the pattern defaults [here](.docs/pattern-defaults.md).
 
----
+| Virtual Server Pattern | Red Hat Openshift Pattern | Mixed Pattern |
+| ------- | ----------- | ------- |
+| ![vsi](./.docs/images/vsi.png)   | ![roks](./.docs/images/roks.png) | ![mixed](./.docs/images/mixed.png) |
 
-### Virtual Server Pattern
+### Select your Provision Method 
 
-![vsi](./.docs/images/vsi.png)
+You can provision with IBM Cloud Toolchain or you can run the scripts locally. 
 
----
+#### Provisioning with the IBM Cloud Toolchain
 
-### Red Hat OpenShift Pattern
-
-![vsi](./.docs/images/roks.png)
-
----
-
-### Mixed Pattern
-
-![vsi](./.docs/images/mixed.png)
-
---- 
-
-## Getting Started 
-
-There are two ways of getting started with Secure Landing Zone. 
-
-The first route is to utilize the fast path method where you edit a couple of required variables noted by `"< add user data here >"` within the `terraform.tfvars` file of your respective pattern and then provision the environment.  You will always be able to edit and be more granular after you use this method since after the run, it will output a json based file which you can use in `override.json`.
-
-The second route is to explicitly define the resources you wish to provision from the start.  You can use the `override.json` to be able to accomplish this.  For more information, please see the section [Overriding Variables](#customizing-your-environment).
-
-**Both require editing `terraform.tfvars` with required variables noted by `"< add user data here >"`**
-
----
-
-## Provisioning with the IBM Cloud Toolchain
-
-<<<<<<< HEAD
-You can provision an IBM Cloud Toolchain utilizing the template to create a CI/CD pipeline of executing Secure Landing zone.  After reading the instructions on using the [IBM Cloud Toolchain Template](./.docs/toolchain/toolchain-tmplt.md), click the "Deploy to IBM Cloud" button below to start the process.  If you do not see the button, please log into IBM Cloud.
-=======
 You can provision an IBM Cloud Toolchain utilizing the template to create a CI/CD pipeline of executing Secure Landing zone.  
->>>>>>> a1fcc58 (Version control and merge through pipeline (#94))
 
 To get started, create the toolchain:
 1. Log into [IBM Cloud](https://cloud.ibm.com/).
@@ -172,17 +131,15 @@ To get started, create the toolchain:
 4. Click the tile titled *Deploy infrastructure as code for the IBM Cloud for Financial Services* to open up the template.
 5. See [IBM Cloud Toolchain Template for Secure Landing Zone](./.docs/toolchain/toolchain-tmplt.md) for instructions on working with the toolchain template.
 
-<<<<<<< HEAD
-[![Deploy to IBM Cloud](https://cloud.ibm.com/devops/setup/deploy/button_x2.png)](https://cloud.ibm.com/devops/setup/deploy?repository=https://github.com/open-toolchain/landing-zone.git&env_id=ibm:yp:us-south&pipeline_type=tekton)
-=======
 Once the toolchain is created: 
 1. Click the repository tile under the section titled *Repositories*.  This will bring you to the cloned repository.
 2. Access the *patterns* directory.
 3. Choose the appropriate pattern (vsi/roks/mixed) that you chose in the template and edit `terraform.tfvars` file and commit. 
 4. Please read [Working with IBM Cloud Toolchains](./.docs/toolchain/toolchain.md) for configuration and how to run the Toolchain 
->>>>>>> a1fcc58 (Version control and merge through pipeline (#94))
 
-## Running the scripts locally
+--- 
+
+#### Running the scripts locally
 
 To run the scripts locally, follow these steps:
 
@@ -198,9 +155,17 @@ To run the scripts locally, follow these steps:
 
 ---
 
-## Adding Additional VPCs
+## Customizing Your Environment
 
-Additional VPC's can be added using the `terraform.tfvars` file by adding the name of the new VPC as a `string` to the end of the list.
+There are two ways of customizing your environment with Secure Landing Zone. 
+
+**Both require editing `terraform.tfvars` with required variables noted by `"< add user data here >"`**
+
+### Using terraform.tfvars 
+
+The first route is to utilize the fast path method where you edit a couple of required variables noted by `"< add user data here >"` within the `terraform.tfvars` file of your respective pattern and then provision the environment.  You will always be able to edit and be more granular after you use this method since after the run, it will output a json based file which you can use in `override.json`.
+
+For example, additional VPC's can be added using the `terraform.tfvars` file by adding the name of the new VPC as a `string` to the end of the list.
 
 ```
 vpcs  = ["management", "workload", "<ADDITIONAL VPC>"]
@@ -208,19 +173,11 @@ vpcs  = ["management", "workload", "<ADDITIONAL VPC>"]
 
 Provisioned [VPC components](./landing-zone/vpc)
 
----
-
-## Customizing Your Environment
-
 ### Using override.json
 
-To create a fully customized environment based on the starting template, users can use the `override.json` in the respective pattern directory by setting the template `override` variable to `true`.
+The second route is to use the `override.json` to create a fully customized environment based on the starting template. By default, each pattern's `override.json` is set to contain the default environment configuration. Users can use the `override.json` in the respective pattern directory by setting the template `override` variable to `true`.
 
-### Variable Definitions
-
-By using the variable definitions found in our [landing zone module](./landing-zone/) any number and custom configuration of VPC components, VSI workoads, and clusters can be created. Currently `override.json` is set to contain the default environment configuration.
-
-### Overriding Variables
+#### Overriding Variables
 
 After every execution of `terraform apply` either locally or through the pipeline, a JSON encoded definition of your environment based on the defaults for Landing Zone and any variables changed using `override.json` will be outputted so that you can then use it in the `override.json` file.  
 
@@ -236,7 +193,7 @@ After replacing the contents of `override.json` with your configuration, you wil
 
 Locally executed run configurations do not require an apply to for `override.json` to be generated. To view your current configuration use the command `terraform refresh`.
 
-### Overriding Only Some Variables
+#### Overriding Only Some Variables
 
 `override.json` does not need to contain all elements. As an example override.json could be:
 ```json
@@ -245,7 +202,15 @@ Locally executed run configurations do not require an apply to for `override.jso
 }
 ```
 
-----
+---
+
+## Module Recommendations for Additional Features
+
+| Feature | Description | Module | Version |
+| --- | --- | --- | --- |
+| Logging and Monitoring | Configure logging and/or monitoring for an existing Openshift cluster | [slzone/terraform-logmon-module](https://github.com/slzone/terraform-logmon-module) | v1.0.0 |
+
+---
 
 ## Versions
 
@@ -255,9 +220,9 @@ You can see the version of Secure Landing Zone that you are on through the file 
 | ------- | ----------- | ------- |
 | 1.0.0   | 04/06/2022  | Initial release |
 
-----
+---
 
-## Upgrade
+## Upgrading
 
 If you run your provision through the IBM Toolchain, it will verify if there is a new version available and try to perform a merge and push it to a new branch of your code repository.  If there are any merge conflicts, you will need to perform the merge manually.
 
@@ -277,7 +242,7 @@ git push --set-upstream origin <branch name from command git checkout above>
 
 **This will only create a new branch within your source code repository.  You will need to create pull/merge request to push it into your main branch**
 
-----
+---
 
 ## Creating an Issue
 
