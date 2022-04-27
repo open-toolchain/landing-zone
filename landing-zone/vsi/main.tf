@@ -52,6 +52,17 @@ resource "ibm_is_instance" "vsi" {
     ])
   }
 
+  dynamic "network_interfaces" {
+    for_each = var.secondary_subnets == null ? [] : var.secondary_subnets
+    content {
+      subnet = network_interfaces.value.id
+      security_groups = flatten([
+        (var.create_security_group ? [ibm_is_security_group.security_group[var.security_group.name].id] : []),
+        var.security_group_ids
+      ])
+    }
+  }
+
   boot_volume {
     encryption = var.boot_volume_encryption_key == "" ? null : var.boot_volume_encryption_key
   }

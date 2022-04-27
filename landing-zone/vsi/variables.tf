@@ -47,6 +47,18 @@ variable "subnets" {
   )
 }
 
+variable "secondary_subnets" {
+  description = "List of secondary network interfaces to add to each vsi"
+  type = list(
+    object({
+      name = string
+      id   = string
+      zone = string
+      cidr = string
+    })
+  )
+  default = []
+}
 
 ##############################################################################
 
