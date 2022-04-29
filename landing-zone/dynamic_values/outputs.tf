@@ -218,3 +218,62 @@ output "access_groups_with_invites" {
 }
 
 ##############################################################################
+
+##############################################################################
+# Bastion VSI Outputs
+##############################################################################
+
+output "bastion_template_data_map" {
+  description = "Map of Bastion Host template data"
+  value       = local.bastion_template_data_map
+}
+
+output "bastion_vsi_map" {
+  description = "Map of Bastion Host VSI deployments"
+  value       = local.bastion_vsi_map
+}
+
+output "bastion_template_data_list" {
+  description = "Map of Bastion Host template data list"
+  value       = local.bastion_template_data_list
+}
+
+
+##############################################################################
+
+##############################################################################
+# App ID Outputs
+##############################################################################
+
+output "appid_redirect_urls" {
+  description = "List of redirect urls from teleport VSI names"
+  value       = local.appid_redirect_urls
+}
+
+##############################################################################
+
+##############################################################################
+# VSI Outputs
+##############################################################################
+
+output "vsi_map" {
+  description = "Map of VSI deployments"
+  value       = local.vsi_map
+}
+
+output "vsi_images_list" {
+  description = "List of Images from VSI and Bastion VSI deployments"
+  value       = local.vsi_images_list
+}
+
+output "vsi_images_map" {
+  description = "Map of Images from VSI and Bastion VSI deployments"
+  value       = local.vsi_images_map
+}
+
+output "ssh_keys" {
+  description = "List of SSH keys with resource group ID added"
+  value       = local.ssh_keys
+}
+
+##############################################################################

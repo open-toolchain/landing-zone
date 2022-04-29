@@ -47,7 +47,7 @@ tfx.plan("LandingZone", () => {
         },
         name: "at-test-workload-cluster",
         tags: ["acceptance-test", "landing-zone"],
-        timeouts: { create: "3h", delete: "2h", update: null },
+        timeouts: { create: "3h", delete: "2h", update: "3h" },
         wait_till: "IngressReady",
         worker_count: 2,
         zones: [{ name: "us-south-1" }],
@@ -68,7 +68,7 @@ tfx.plan("LandingZone", () => {
         timeouts: {
           create: "3h",
           delete: "2h",
-          update: null,
+          update: "3h",
         },
         wait_till: "IngressReady",
         worker_count: 2,

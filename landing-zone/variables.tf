@@ -360,8 +360,6 @@ variable "vsi" {
   )
 }
 
-
-
 ##############################################################################
 
 
@@ -524,10 +522,12 @@ variable "cos" {
       }))
       keys = optional(
         list(object({
-          name = string
-          role = string
+          name        = string
+          role        = string
+          enable_HMAC = bool
         }))
       )
+
     })
   )
 
@@ -767,7 +767,6 @@ variable "atracker" {
 # Cluster variables
 ##############################################################################
 
-
 variable "clusters" {
   description = "A list describing clusters workloads to create"
   type = list(
@@ -861,6 +860,130 @@ variable "wait_till" {
       "OneWorkerNodeReady",
       "IngressReady"
     ], var.wait_till)
+  }
+}
+
+##############################################################################
+
+##############################################################################
+# App ID Variables
+##############################################################################
+
+variable "appid" {
+  description = "The App ID instance to be used for the teleport vsi deployments"
+  type = object({
+    name           = optional(string)
+    resource_group = optional(string)
+    use_data       = optional(bool)
+    keys           = optional(list(string))
+    use_appid      = bool
+  })
+  default = {
+    use_appid = false
+  }
+
+  validation {
+    error_message = "Name must be included if use_appid is true."
+    condition = (
+      lookup(var.appid, "name", null) == null &&
+      lookup(var.appid, "use_appid") == false
+      ) || (
+      lookup(var.appid, "name", null) != null &&
+      lookup(var.appid, "use_appid") == true
+    )
+  }
+
+  # app id key validation
+  validation {
+    condition     = lookup(var.appid, "keys", null) == null || (
+      length(
+        lookup(var.appid, "keys", null) == null ? [] : lookup(var.appid, "keys")
+      ) == length(
+        distinct(
+          lookup(var.appid, "keys", null) == null ? [] : lookup(var.appid, "keys")
+        )
+      )
+    )
+    error_message = "Duplicate appid key. Please provide unique appid keys."
+  }
+}
+
+##############################################################################
+
+##############################################################################
+# Bastion Host Variables
+##############################################################################
+
+variable "teleport_vsi" {
+  description = "A list of teleport vsi deployments"
+  type = list(
+    object(
+      {
+        name                            = string
+        vpc_name                        = string
+        vsi_per_subnet                  = number
+        resource_group                  = optional(string)
+        subnet_name                     = string
+        ssh_keys                        = list(string)
+        image_name                      = string
+        machine_type                    = string
+        teleport_license                = string
+        https_cert                      = string
+        https_key                       = string
+        domain                          = string
+        cos_bucket_name                 = string
+        cos_key_name                    = string
+        teleport_version                = string
+        message_of_the_day              = string
+        boot_volume_encryption_key_name = string
+        app_id_key_name                 = string
+        claims_to_roles = list(
+          object({
+            email = string
+            roles = list(string)
+          })
+        )
+        security_groups = optional(list(string))
+        security_group = optional(
+          object({
+            name = string
+            rules = list(
+              object({
+                name      = string
+                direction = string
+                source    = string
+                tcp = optional(
+                  object({
+                    port_max = number
+                    port_min = number
+                  })
+                )
+                udp = optional(
+                  object({
+                    port_max = number
+                    port_min = number
+                  })
+                )
+                icmp = optional(
+                  object({
+                    type = number
+                    code = number
+                  })
+                )
+              })
+            )
+          })
+        )
+
+
+      }
+    )
+  )
+  default = []
+  # vsi name validation
+  validation {
+    condition     = length(distinct([for name in flatten(var.teleport_vsi[*].name) : name])) == length(flatten(var.teleport_vsi[*].name))
+    error_message = "Duplicate teleport_vsi name. Please provide unique teleport_vsi names."
   }
 }
 

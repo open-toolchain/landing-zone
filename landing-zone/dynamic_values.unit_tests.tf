@@ -36,6 +36,8 @@ locals {
   assert_key_exists_in_map                     = lookup(module.unit_tests.cos_key_map, "data-bucket-key")
   assert_bucket_exists_in_instance_map         = lookup(module.unit_tests.bucket_to_instance_map, "data-bucket")
   assert_bucket_contains_correct_api_key       = regex("1234", module.unit_tests.bucket_to_instance_map["data-bucket"].bind_key)
+  assert_cos_keys_map_contains_HMAC_key        = regex(module.unit_tests.cos_key_map["teleport-key"].parameters.HMAC, true)
+  assert_cos_keys_list_contains_HMAC_key       = regex(true, module.unit_tests.cos_keys_list[1].parameters.HMAC)
 }
 
 ##############################################################################
@@ -140,6 +142,19 @@ locals {
 
 
 ##############################################################################
+# Bastion Host Unit Tests
+##############################################################################
+
+locals {
+  assert_bastion_return_correct_amount_of_subnets = regex("1", tostring(length(module.unit_tests.bastion_template_data_list)))
+  assert_bastion_return_correct_template_name     = regex("ut-teleport-ut-test-subnet-1", module.unit_tests.bastion_template_data_list[0].name)
+  assert_template_found_in_template_map           = lookup(module.unit_tests.bastion_template_data_map, "ut-teleport-ut-test-subnet-1")
+}
+
+##############################################################################
+
+
+##############################################################################
 # IAM Unit Tests
 ##############################################################################
 
@@ -151,6 +166,17 @@ locals {
   assert_dynamic_rule_map_has_policy              = lookup(module.unit_tests.dynamic_rules, "dynamic-policy")
   assert_account_management_list_has_group_name   = regex("ut-test", module.unit_tests.account_management_list[0].group)
   assert_access_groups_with_invite_contains_group = lookup(module.unit_tests.access_groups_with_invites, "ut-test")
+}
+
+##############################################################################
+
+
+##############################################################################
+# App Id Unit Tests
+##############################################################################
+
+locals {
+  assert_appid_instance_contains_redirect_url = regex("https://ut-teleport.yes:3080/v1/webapi/oidc/callback", module.unit_tests.appid_redirect_urls[0])
 }
 
 ##############################################################################

@@ -140,8 +140,9 @@ locals {
         ]
         # Key is needed to initialize actibity tracker
         keys = [{
-          name = "cos-bind-key"
-          role = "Writer"
+          name        = "cos-bind-key"
+          role        = "Writer"
+          enable_HMAC = false
         }]
       },
       # COS instance for everything else

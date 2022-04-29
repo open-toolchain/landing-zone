@@ -122,3 +122,31 @@ variable "access_groups" {
 }
 
 ##############################################################################
+
+##############################################################################
+# Bastion VSI Variables
+##############################################################################
+
+variable "bastion_vsi" {
+  description = "Direct reference to Bastion VSI variable"
+}
+
+##############################################################################
+
+##############################################################################
+# App Id Variables
+##############################################################################
+
+variable "appid" {
+  description = "Direct reference to App ID variable"
+}
+
+variable "appid_resource" {
+  description = "Created App ID instance resource"
+}
+
+variable "appid_data" {
+  description = "App ID data resource"
+}
+
+##############################################################################

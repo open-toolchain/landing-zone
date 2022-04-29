@@ -61,6 +61,7 @@ resource "ibm_resource_key" "key" {
   role                 = each.value.role
   resource_instance_id = local.cos_instance_ids[each.value.instance]
   tags                 = (var.tags != null ? var.tags : null)
+  parameters           = each.value.parameters
 }
 
 ##############################################################################

@@ -21,7 +21,11 @@ module "dynamic_values" {
   virtual_private_endpoints = var.virtual_private_endpoints
   vpn_gateways              = var.vpn_gateways
   security_groups           = var.security_groups
+  bastion_vsi               = var.teleport_vsi
   access_groups             = var.access_groups
+  appid                     = var.appid
+  appid_resource            = ibm_resource_instance.appid
+  appid_data                = data.ibm_resource_instance.appid
 }
 
 ##############################################################################
@@ -50,6 +54,40 @@ module "unit_tests" {
   security_groups           = local.unit_test_config.security_groups
   vsi                       = local.unit_test_config.vsi
   ssh_keys                  = local.unit_test_config.ssh_keys
+  appid_resource            = local.mock_appid_instance
+  appid_data                = local.mock_appid_data_instance
+
+  bastion_vsi = [
+    {
+      name               = "teleport"
+      image_name         = "ubuntu"
+      vpc_name           = "test"
+      resource_group     = "default"
+      subnet_name        = "ut-test-subnet-1"
+      ssh_keys           = ["test-key"]
+      machine_type       = "test-machine_type"
+      teleport_license   = "yes"
+      https_cert         = "yes"
+      https_key          = "yes"
+      hostname           = "yes"
+      domain             = "yes"
+      cos_bucket_name    = "yes"
+      cos_key_name       = "yes"
+      teleport_version   = "yes"
+      message_of_the_day = "yes"
+      claims_to_roles    = []
+      app_id_key_name    = "test"
+    }
+  ]
+
+  appid = {
+    name           = "ut-appid"
+    resource_group = "default"
+    use_data       = true
+    keys           = ["ut-teleport-key"]
+    create_app_id  = true
+  }
+
   access_groups = [
     {
       name = "test",
@@ -145,7 +183,12 @@ locals {
         ]
         keys = [
           {
-            name = "data-bucket-key"
+            name        = "data-bucket-key"
+            enable_HMAC = false
+          },
+          {
+            name        = "teleport-key"
+            enable_HMAC = true
           }
         ]
       },
@@ -211,6 +254,7 @@ locals {
     vsi = [
       {
         name         = "vsi"
+        image_name   = "ubuntu"
         subnet_names = ["subnet-2", "subnet-4"]
         vpc_name     = "test"
       }
@@ -294,6 +338,22 @@ locals {
       }
     }
   }
+
+  # Mock appid instance list
+  mock_appid_instance = [{
+    name = "ut-test-appid"
+    id   = ":::::::2345"
+
+  }]
+
+  # Mock appid data list
+  mock_appid_data_instance = [{
+    name = "data-appid"
+    id   = ":::::::6789"
+    guid = ":::::::4321"
+
+  }]
+
 
   # Mock Resource Group Map
   mock_resource_group_map = {

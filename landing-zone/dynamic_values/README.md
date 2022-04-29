@@ -60,3 +60,6 @@ vpe_subnet_reserved_ip_map                  | Map of reserved subnet ips for vpe
 vpn_gateway_map                             | Map of VPN Gateways with VPC data
 vpn_connection_list                         | List of VPN gateway connections
 vpn_connection_map                          | Map of VPN gateway connections
+bastion_template_data_map                   | Map of Bastion Host template data
+bastion_vsi_map                             | Map of Bastion Host VSI deployments
+bastion_template_data_list                  | Map of Bastion Host template data list

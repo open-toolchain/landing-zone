@@ -45,23 +45,20 @@ locals {
       ssh_key
     )
   ]
-}
+  vsi_images_list = flatten([
+    for vsi_group in flatten([var.vsi, var.bastion_vsi]) :
+    [{
+      name       = "${var.prefix}-${vsi_group.name}"
+      image_name = vsi_group.image_name
+    }]
 
-##############################################################################
+  ])
 
+  vsi_images_map = {
+    for vsi_image in local.vsi_images_list :
+    (vsi_image.name) => vsi_image
 
-##############################################################################
-# VSI Outputs
-##############################################################################
-
-output "vsi_map" {
-  description = "Map of VSI deployments"
-  value       = local.vsi_map
-}
-
-output "ssh_keys" {
-  description = "List of SSH keys with resource group ID added"
-  value       = local.ssh_keys
+  }
 }
 
 ##############################################################################
