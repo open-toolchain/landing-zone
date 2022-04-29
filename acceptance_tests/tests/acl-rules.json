@@ -1,0 +1,282 @@
+{
+  "management": [
+    {
+      "action": "allow",
+      "destination": "10.0.0.0/8",
+      "direction": "inbound",
+      "icmp": [],
+      "name": "roks-create-worker-nodes-inbound",
+      "source": "161.26.0.0/16",
+      "tcp": [],
+      "udp": []
+    },
+    {
+      "action": "allow",
+      "destination": "161.26.0.0/16",
+      "direction": "outbound",
+      "icmp": [],
+      "name": "roks-create-worker-nodes-outbound",
+      "source": "10.0.0.0/8",
+      "tcp": [],
+      "udp": []
+    },
+    {
+      "action": "allow",
+      "destination": "10.0.0.0/8",
+      "direction": "inbound",
+      "icmp": [],
+      "name": "roks-nodes-to-service-inbound",
+      "source": "166.8.0.0/14",
+      "tcp": [],
+      "udp": []
+    },
+    {
+      "action": "allow",
+      "destination": "166.8.0.0/14",
+      "direction": "outbound",
+      "icmp": [],
+      "name": "roks-nodes-to-service-outbound",
+      "source": "10.0.0.0/8",
+      "tcp": [],
+      "udp": []
+    },
+    {
+      "action": "allow",
+      "destination": "10.0.0.0/8",
+      "direction": "inbound",
+      "icmp": [],
+      "name": "allow-app-incoming-traffic-requests",
+      "source": "10.0.0.0/8",
+      "tcp": [
+        {
+          "port_max": 65535,
+          "port_min": 1,
+          "source_port_max": 30000,
+          "source_port_min": 30000
+        }
+      ],
+      "udp": []
+    },
+    {
+      "action": "allow",
+      "destination": "10.0.0.0/8",
+      "direction": "outbound",
+      "icmp": [],
+      "name": "allow-app-outgoing-traffic-requests",
+      "source": "10.0.0.0/8",
+      "tcp": [
+        {
+          "port_max": 32767,
+          "port_min": 30000,
+          "source_port_max": 65535,
+          "source_port_min": 1
+        }
+      ],
+      "udp": []
+    },
+    {
+      "action": "allow",
+      "destination": "10.0.0.0/8",
+      "direction": "inbound",
+      "icmp": [],
+      "name": "allow-lb-incoming-traffic-requests",
+      "source": "10.0.0.0/8",
+      "tcp": [
+        {
+          "port_max": 443,
+          "port_min": 443,
+          "source_port_max": 65535,
+          "source_port_min": 1
+        }
+      ],
+      "udp": []
+    },
+    {
+      "action": "allow",
+      "destination": "10.0.0.0/8",
+      "direction": "outbound",
+      "icmp": [],
+      "name": "allow-lb-outgoing-traffic-requests",
+      "source": "10.0.0.0/8",
+      "tcp": [
+        {
+          "port_max": 65535,
+          "port_min": 1,
+          "source_port_max": 443,
+          "source_port_min": 443
+        }
+      ],
+      "udp": []
+    },
+    {
+      "action": "allow",
+      "destination": "10.0.0.0/8",
+      "direction": "inbound",
+      "icmp": [],
+      "name": "allow-ibm-inbound",
+      "source": "161.26.0.0/16",
+      "tcp": [],
+      "udp": []
+    },
+    {
+      "action": "allow",
+      "destination": "10.0.0.0/8",
+      "direction": "inbound",
+      "icmp": [],
+      "name": "allow-all-network-inbound",
+      "source": "10.0.0.0/8",
+      "tcp": [],
+      "udp": []
+    },
+    {
+      "action": "allow",
+      "destination": "0.0.0.0/0",
+      "direction": "outbound",
+      "icmp": [],
+      "name": "allow-all-outbound",
+      "source": "0.0.0.0/0",
+      "tcp": [],
+      "udp": []
+    }
+  ],
+  "workload": [
+    {
+      "action": "allow",
+      "destination": "10.0.0.0/8",
+      "direction": "inbound",
+      "icmp": [],
+      "name": "roks-create-worker-nodes-inbound",
+      "source": "161.26.0.0/16",
+      "tcp": [],
+      "udp": []
+    },
+    {
+      "action": "allow",
+      "destination": "161.26.0.0/16",
+      "direction": "outbound",
+      "icmp": [],
+      "name": "roks-create-worker-nodes-outbound",
+      "source": "10.0.0.0/8",
+      "tcp": [],
+      "udp": []
+    },
+    {
+      "action": "allow",
+      "destination": "10.0.0.0/8",
+      "direction": "inbound",
+      "icmp": [],
+      "name": "roks-nodes-to-service-inbound",
+      "source": "166.8.0.0/14",
+      "tcp": [],
+      "udp": []
+    },
+    {
+      "action": "allow",
+      "destination": "166.8.0.0/14",
+      "direction": "outbound",
+      "icmp": [],
+      "name": "roks-nodes-to-service-outbound",
+      "source": "10.0.0.0/8",
+      "tcp": [],
+      "udp": []
+    },
+    {
+      "action": "allow",
+      "destination": "10.0.0.0/8",
+      "direction": "inbound",
+      "icmp": [],
+      "name": "allow-app-incoming-traffic-requests",
+      "source": "10.0.0.0/8",
+      "tcp": [
+        {
+          "port_max": 65535,
+          "port_min": 1,
+          "source_port_max": 30000,
+          "source_port_min": 30000
+        }
+      ],
+      "udp": []
+    },
+    {
+      "action": "allow",
+      "destination": "10.0.0.0/8",
+      "direction": "outbound",
+      "icmp": [],
+      "name": "allow-app-outgoing-traffic-requests",
+      "source": "10.0.0.0/8",
+      "tcp": [
+        {
+          "port_max": 32767,
+          "port_min": 30000,
+          "source_port_max": 65535,
+          "source_port_min": 1
+        }
+      ],
+      "udp": []
+    },
+    {
+      "action": "allow",
+      "destination": "10.0.0.0/8",
+      "direction": "inbound",
+      "icmp": [],
+      "name": "allow-lb-incoming-traffic-requests",
+      "source": "10.0.0.0/8",
+      "tcp": [
+        {
+          "port_max": 443,
+          "port_min": 443,
+          "source_port_max": 65535,
+          "source_port_min": 1
+        }
+      ],
+      "udp": []
+    },
+    {
+      "action": "allow",
+      "destination": "10.0.0.0/8",
+      "direction": "outbound",
+      "icmp": [],
+      "name": "allow-lb-outgoing-traffic-requests",
+      "source": "10.0.0.0/8",
+      "tcp": [
+        {
+          "port_max": 65535,
+          "port_min": 1,
+          "source_port_max": 443,
+          "source_port_min": 443
+        }
+      ],
+      "udp": []
+    },
+    {
+      "action": "allow",
+      "destination": "10.0.0.0/8",
+      "direction": "inbound",
+      "icmp": [],
+      "name": "allow-ibm-inbound",
+      "source": "161.26.0.0/16",
+      "tcp": [],
+      "udp": []
+    },
+    {
+      "action": "allow",
+      "destination": "10.0.0.0/8",
+      "direction": "inbound",
+      "icmp": [],
+      "name": "allow-all-network-inbound",
+      "source": "10.0.0.0/8",
+      "tcp": [],
+      "udp": []
+    },
+    {
+      "action": "allow",
+      "destination": "0.0.0.0/0",
+      "direction": "outbound",
+      "icmp": [],
+      "name": "allow-all-outbound",
+      "source": "0.0.0.0/0",
+      "tcp": [],
+      "udp": []
+    }
+  ]
+}

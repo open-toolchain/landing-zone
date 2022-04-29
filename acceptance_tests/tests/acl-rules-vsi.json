@@ -1,0 +1,66 @@
+{
+  "management": [
+    {
+      "action": "allow",
+      "destination": "10.0.0.0/8",
+      "direction": "inbound",
+      "icmp": [],
+      "name": "allow-ibm-inbound",
+      "source": "161.26.0.0/16",
+      "tcp": [],
+      "udp": []
+    },
+    {
+      "action": "allow",
+      "destination": "10.0.0.0/8",
+      "direction": "inbound",
+      "icmp": [],
+      "name": "allow-all-network-inbound",
+      "source": "10.0.0.0/8",
+      "tcp": [],
+      "udp": []
+    },
+    {
+      "action": "allow",
+      "destination": "0.0.0.0/0",
+      "direction": "outbound",
+      "icmp": [],
+      "name": "allow-all-outbound",
+      "source": "0.0.0.0/0",
+      "tcp": [],
+      "udp": []
+    }
+  ],
+  "workload": [
+    {
+      "action": "allow",
+      "destination": "10.0.0.0/8",
+      "direction": "inbound",
+      "icmp": [],
+      "name": "allow-ibm-inbound",
+      "source": "161.26.0.0/16",
+      "tcp": [],
+      "udp": []
+    },
+    {
+      "action": "allow",
+      "destination": "10.0.0.0/8",
+      "direction": "inbound",
+      "icmp": [],
+      "name": "allow-all-network-inbound",
+      "source": "10.0.0.0/8",
+      "tcp": [],
+      "udp": []
+    },
+    {
+      "action": "allow",
+      "destination": "0.0.0.0/0",
+      "direction": "outbound",
+      "icmp": [],
+      "name": "allow-all-outbound",
+      "source": "0.0.0.0/0",
+      "tcp": [],
+      "udp": []
+    }
+  ]
+}

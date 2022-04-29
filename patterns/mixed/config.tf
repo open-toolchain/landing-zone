@@ -394,7 +394,7 @@ locals {
 ##############################################################################
 
 data "external" "format_output" {
-  program = ["python3", "../../scripts/output.py", local.string]
+  program = ["python3", "${path.module}/scripts/output.py", local.string]
 }
 
 ##############################################################################

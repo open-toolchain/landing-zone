@@ -10,3 +10,6 @@ dev.sh
 config_test/
 config_test.tf
 dev.*
+node_modules/
+.env
+package-lock.json

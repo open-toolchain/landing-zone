@@ -1,0 +1,866 @@
+require("dotenv").config();
+const tfxjs = require("tfxjs");
+const tfx = new tfxjs("./patterns/vsi", "ibmcloud_api_key", { quiet: true });
+const aclRulesVsi = require("./acl-rules-vsi.json");
+const tags = ["acceptance-test", "landing-zone"];
+
+tfx.plan("LandingZone", () => {
+  tfx.module(
+    "Root Module",
+    "module.acceptance_tests.module.landing-zone",
+    tfx.resource(
+      "Activity Tracker Route",
+      "ibm_atracker_route.atracker_route[0]",
+      {
+        name: "at-test-atracker-route",
+        receive_global_events: true,
+      }
+    ),
+    tfx.resource(
+      "Activity Tracker Target",
+      "ibm_atracker_target.atracker_target",
+      {
+        cos_endpoint: [
+          {
+            bucket: "at-test-atracker-bucket",
+            endpoint:
+              "s3.private.us-south.cloud-object-storage.appdomain.cloud",
+          },
+        ],
+        target_type: "cloud_object_storage",
+        name: "at-test-atracker",
+      }
+    ),
+    tfx.resource(
+      "Workload Object Storage Bucket",
+      `ibm_cos_bucket.buckets[\"workload-bucket\"]`,
+      {
+        bucket_name: "at-test-workload-bucket",
+        cross_region_location: null,
+        endpoint_type: "public",
+        force_delete: true,
+        hard_quota: null,
+        region_location: "us-south",
+        retention_rule: [],
+        single_site_location: null,
+        storage_class: "standard",
+      }
+    ),
+    tfx.resource(
+      "Management Object Storage Bucket",
+      `ibm_cos_bucket.buckets[\"management-bucket\"]`,
+      {
+        bucket_name: "at-test-management-bucket",
+        cross_region_location: null,
+        endpoint_type: "public",
+        force_delete: true,
+        hard_quota: null,
+        region_location: "us-south",
+        retention_rule: [],
+        single_site_location: null,
+        storage_class: "standard",
+      }
+    ),
+    tfx.resource(
+      "Activity Tracker Object Storage Bucket",
+      `ibm_cos_bucket.buckets[\"atracker-bucket\"]`,
+      {
+        bucket_name: "at-test-atracker-bucket",
+        cross_region_location: null,
+        endpoint_type: "public",
+        force_delete: true,
+        hard_quota: null,
+        region_location: "us-south",
+        retention_rule: [],
+        single_site_location: null,
+        storage_class: "standard",
+      }
+    ),
+    tfx.resource(
+      "IAM Policy Flow Logs to Atracker Object Storage",
+      `ibm_iam_authorization_policy.policy[\"flow-logs-atracker-cos-cos\"]`,
+      {
+        description:
+          "Allow flow logs write access cloud object storage instance",
+        roles: ["Writer"],
+        source_resource_type: "flow-log-collector",
+        source_service_name: "is",
+        target_resource_group_id: null,
+        target_resource_type: null,
+        target_service_name: "cloud-object-storage",
+      }
+    ),
+    tfx.resource(
+      "IAM Policy Atracker Object Storage to Key Managemnet",
+      `ibm_iam_authorization_policy.policy[\"cos-cos-to-key-management\"]`,
+      {
+        description: "Allow COS instance to read from KMS instance",
+        roles: ["Reader"],
+        source_resource_group_id: null,
+        source_resource_type: null,
+        source_service_name: "cloud-object-storage",
+        target_resource_group_id: null,
+        target_resource_type: null,
+        target_service_name: "kms",
+      }
+    ),
+    tfx.resource(
+      "IAM Policy Atracker Object Storage to Key Managemnet",
+      `ibm_iam_authorization_policy.policy[\"cos-atracker-cos-to-key-management\"]`,
+      {
+        description: "Allow COS instance to read from KMS instance",
+        roles: ["Reader"],
+        source_resource_group_id: null,
+        source_resource_type: null,
+        source_service_name: "cloud-object-storage",
+        target_resource_group_id: null,
+        target_resource_type: null,
+        target_service_name: "kms",
+      }
+    ),
+    tfx.resource(
+      "IAM Policy Flow Logs to Object Storage",
+      `ibm_iam_authorization_policy.policy[\"flow-logs-cos-cos\"]`,
+      {
+        description:
+          "Allow flow logs write access cloud object storage instance",
+        roles: ["Writer"],
+        source_resource_type: "flow-log-collector",
+        source_service_name: "is",
+        target_resource_group_id: null,
+        target_resource_type: null,
+        target_service_name: "cloud-object-storage",
+      }
+    ),
+    tfx.resource(
+      "IAM Policy Management Resource Group to Block Storage",
+      'ibm_iam_authorization_policy.policy["block-storage"]',
+      {
+        description:
+          "Allow block storage volumes to be encrypted by KMS instance",
+        roles: ["Reader"],
+        source_resource_instance_id: null,
+        source_resource_type: null,
+        source_service_name: "server-protect",
+        target_resource_group_id: null,
+        target_resource_type: null,
+        target_service_name: "kms",
+      }
+    ),
+    tfx.resource(
+      "Flow Logs for Management VPC",
+      'ibm_is_flow_log.flow_logs["management"]',
+      {
+        active: true,
+        name: "management-logs",
+        storage_bucket: "at-test-management-bucket",
+        timeouts: null,
+      }
+    ),
+    tfx.resource(
+      "Flow Logs for Workload VPC",
+      'ibm_is_flow_log.flow_logs["workload"]',
+      {
+        active: true,
+        name: "workload-logs",
+        storage_bucket: "at-test-workload-bucket",
+        timeouts: null,
+      }
+    ),
+    tfx.resource(
+      "Virtual Endpoint Gateway Object Storage for Management VPC",
+      'ibm_is_virtual_endpoint_gateway.endpoint_gateway["management-cos"]',
+      {
+        name: "at-test-management-cos",
+        target: [
+          {
+            crn: "crn:v1:bluemix:public:cloud-object-storage:global:::endpoint:s3.direct.us-south.cloud-object-storage.appdomain.cloud",
+            name: null,
+            resource_type: "provider_cloud_service",
+          },
+        ],
+      }
+    ),
+    tfx.resource(
+      "Virtual Endpoint Gateway Object Storage for Workload VPC",
+      'ibm_is_virtual_endpoint_gateway.endpoint_gateway["workload-cos"]',
+      {
+        name: "at-test-workload-cos",
+        target: [
+          {
+            crn: "crn:v1:bluemix:public:cloud-object-storage:global:::endpoint:s3.direct.us-south.cloud-object-storage.appdomain.cloud",
+            name: null,
+            resource_type: "provider_cloud_service",
+          },
+        ],
+      }
+    ),
+    tfx.resource(
+      "Endpoint Gateway for Object Storage Reserved IP Management VPC Zone 1",
+      'ibm_is_subnet_reserved_ip.ip["management-cos-gateway-vpe-zone-1-ip"]',
+      {}
+    ),
+    tfx.resource(
+      "Endpoint Gateway for Object Storage Reserved IP Management VPC Zone 2",
+      'ibm_is_subnet_reserved_ip.ip["management-cos-gateway-vpe-zone-2-ip"]',
+      {}
+    ),
+    tfx.resource(
+      "Endpoint Gateway for Object Storage Reserved IP Management VPC Zone 3",
+      'ibm_is_subnet_reserved_ip.ip["management-cos-gateway-vpe-zone-3-ip"]',
+      {}
+    ),
+    tfx.resource(
+      "Endpoint Gateway for Object Storage Reserved IP Workload VPC Zone 1",
+      'ibm_is_subnet_reserved_ip.ip["workload-cos-gateway-vpe-zone-1-ip"]',
+      {}
+    ),
+    tfx.resource(
+      "Endpoint Gateway for Object Storage Reserved IP Workload VPC Zone 2",
+      'ibm_is_subnet_reserved_ip.ip["workload-cos-gateway-vpe-zone-2-ip"]',
+      {}
+    ),
+    tfx.resource(
+      "Endpoint Gateway for Object Storage Reserved IP Workload VPC Zone 3",
+      'ibm_is_subnet_reserved_ip.ip["workload-cos-gateway-vpe-zone-3-ip"]',
+      {}
+    ),
+    tfx.resource(
+      "Endpoint Gateway IP For Management COS Zone 1",
+      'ibm_is_virtual_endpoint_gateway_ip.endpoint_gateway_ip["management-cos-gateway-vpe-zone-1-ip"]',
+      {}
+    ),
+    tfx.resource(
+      "Endpoint Gateway IP For Management COS Zone 2",
+      'ibm_is_virtual_endpoint_gateway_ip.endpoint_gateway_ip["management-cos-gateway-vpe-zone-2-ip"]',
+      {}
+    ),
+    tfx.resource(
+      "Endpoint Gateway IP For Management COS Zone 3",
+      'ibm_is_virtual_endpoint_gateway_ip.endpoint_gateway_ip["management-cos-gateway-vpe-zone-3-ip"]',
+      {}
+    ),
+    tfx.resource(
+      "Endpoint Gateway IP For Workload COS Zone 1",
+      'ibm_is_virtual_endpoint_gateway_ip.endpoint_gateway_ip["workload-cos-gateway-vpe-zone-1-ip"]',
+      {}
+    ),
+    tfx.resource(
+      "Endpoint Gateway IP For Workload COS Zone 2",
+      'ibm_is_virtual_endpoint_gateway_ip.endpoint_gateway_ip["workload-cos-gateway-vpe-zone-2-ip"]',
+      {}
+    ),
+    tfx.resource(
+      "Endpoint Gateway IP For Workload COS Zone 3",
+      'ibm_is_virtual_endpoint_gateway_ip.endpoint_gateway_ip["workload-cos-gateway-vpe-zone-3-ip"]',
+      {}
+    ),
+    tfx.resource(
+      "VPN Gateway for Management VPC",
+      'ibm_is_vpn_gateway.gateway["management-gateway"]',
+      {
+        mode: "route",
+        name: "at-test-management-gateway",
+        tags: tags,
+        timeouts: { create: null, delete: "1h" },
+      }
+    ),
+    tfx.resource(
+      "Resource Groups Managment",
+      'ibm_resource_group.resource_groups["at-test-management-rg"]',
+      {
+        name: "at-test-management-rg",
+      }
+    ),
+    tfx.resource(
+      "Resource Groups",
+      'ibm_resource_group.resource_groups["at-test-service-rg"]',
+      {
+        name: "at-test-service-rg",
+      }
+    ),
+    tfx.resource(
+      "Resource Groups Workload",
+      'ibm_resource_group.resource_groups["at-test-workload-rg"]',
+      {
+        name: "at-test-workload-rg",
+      }
+    ),
+    tfx.resource(
+      "Cloud Object Storage Instance Atracker",
+      'ibm_resource_instance.cos["atracker-cos"]',
+      {
+        location: "global",
+        name: "at-test-atracker-cos",
+        plan: "standard",
+        service: "cloud-object-storage",
+        tags: tags,
+      }
+    ),
+    tfx.resource(
+      "Cloud Object Storage Instance",
+      'ibm_resource_instance.cos["cos"]',
+      {
+        location: "global",
+        name: "at-test-cos",
+        plan: "standard",
+        service: "cloud-object-storage",
+        tags: tags,
+      }
+    ),
+    tfx.resource(
+      "Cloud Object Storage Bind Resource Key",
+      'ibm_resource_key.key["cos-bind-key"]',
+      {
+        name: "at-test-cos-bind-key",
+        role: "Writer",
+        tags: tags,
+      }
+    ),
+    tfx.resource(
+      "Transit Gateway Connection Management",
+      'ibm_tg_connection.connection["management"]',
+      {
+        name: "at-test-management-hub-connection",
+        network_type: "vpc",
+        timeouts: { create: "30m", delete: "30m", update: null },
+      }
+    ),
+    tfx.resource(
+      "Transit Gateway Connection Workload",
+      'ibm_tg_connection.connection["workload"]',
+      {
+        name: "at-test-workload-hub-connection",
+        network_type: "vpc",
+        timeouts: { create: "30m", delete: "30m", update: null },
+      }
+    ),
+    tfx.resource("Transit Gateway", "ibm_tg_gateway.transit_gateway[0]", {
+      global: false,
+      location: "us-south",
+      name: "at-test-transit-gateway",
+      timeouts: { create: "30m", delete: "30m", update: null },
+    })
+  );
+
+  tfx.module(
+    "Key Management Module",
+    "module.acceptance_tests.module.landing-zone.module.key_management",
+    tfx.resource(
+      "Landing Zone Key Management Atracker",
+      'ibm_kms_key.key["at-test-atracker-key"]',
+      {
+        force_delete: true,
+        key_name: "at-test-atracker-key",
+        key_ring_id: "at-test-slz-ring",
+        standard_key: false,
+        timeouts: null,
+      }
+    ),
+    tfx.resource(
+      "Landing Zone Key Management VSI Volume",
+      'ibm_kms_key.key["at-test-vsi-volume-key"]',
+      {
+        force_delete: true,
+        key_name: "at-test-vsi-volume-key",
+        key_ring_id: "at-test-slz-ring",
+        standard_key: false,
+        timeouts: null,
+      }
+    ),
+    tfx.resource(
+      "Landing Zone Key Management Ring",
+      'ibm_kms_key_rings.rings["at-test-slz-ring"]',
+      {
+        key_ring_id: "at-test-slz-ring",
+      }
+    ),
+    tfx.resource(
+      "Landing Zone Key Management Test Key",
+      'ibm_kms_key.key["at-test-slz-key"]',
+      {
+        force_delete: true,
+        key_name: "at-test-slz-key",
+        key_ring_id: "at-test-slz-ring",
+        standard_key: false,
+      }
+    ),
+    tfx.resource(
+      "Landing Zone Key Managment Resource Instance",
+      "ibm_resource_instance.kms[0]",
+      {
+        location: "us-south",
+        name: "at-test-slz-kms",
+        plan: "tiered-pricing",
+        service: "kms",
+        timeouts: null,
+      }
+    )
+  );
+
+  tfx.module(
+    "SSH Key Module",
+    "module.acceptance_tests.module.landing-zone.module.ssh_keys",
+    tfx.resource("Landing Zone SSH Key", 'ibm_is_ssh_key.ssh_key["ssh-key"]', {
+      name: "at-test-ssh-key",
+      public_key: "<user defined>",
+      tags: tags,
+    })
+  );
+  tfx.module(
+    "Virtual Private Cloud",
+    'module.acceptance_tests.module.landing-zone.module.vpc["management"]',
+    tfx.resource(
+      "Virtual Private Cloud Management VPN Zone",
+      'ibm_is_subnet.subnet["at-test-management-vpn-zone-1"]',
+      {
+        ip_version: "ipv4",
+        ipv4_cidr_block: "10.10.30.0/24",
+        name: "at-test-management-vpn-zone-1",
+        zone: "us-south-1",
+      }
+    ),
+    tfx.resource(
+      "Virtual Private Cloud Management ACL",
+      'ibm_is_network_acl.network_acl["management-acl"]',
+      {
+        name: "at-test-management-management-acl",
+        rules: aclRulesVsi.management,
+      }
+    ),
+    tfx.resource(
+      "Virtual Private Cloud Managment Subnet VPE Zone 1",
+      'ibm_is_subnet.subnet["at-test-management-vpe-zone-1"]',
+      {
+        ip_version: "ipv4",
+        ipv4_cidr_block: "10.10.20.0/24",
+        name: "at-test-management-vpe-zone-1",
+        public_gateway: null,
+        timeouts: null,
+        zone: "us-south-1",
+      }
+    ),
+    tfx.resource(
+      "Virtual Private Cloud Management Subnet VPE Zone 2",
+      'ibm_is_subnet.subnet["at-test-management-vpe-zone-2"]',
+      {
+        ip_version: "ipv4",
+        ipv4_cidr_block: "10.20.20.0/24",
+        name: "at-test-management-vpe-zone-2",
+        public_gateway: null,
+        timeouts: null,
+        zone: "us-south-2",
+      }
+    ),
+    tfx.resource(
+      "Virtual Private Cloud Management Subnet VPE Zone 3",
+      'ibm_is_subnet.subnet["at-test-management-vpe-zone-3"]',
+      {
+        ip_version: "ipv4",
+        ipv4_cidr_block: "10.30.20.0/24",
+        name: "at-test-management-vpe-zone-3",
+        public_gateway: null,
+        timeouts: null,
+        zone: "us-south-3",
+      }
+    ),
+    tfx.resource(
+      "Virtual Private Cloud Management Subnet Prefix",
+      'ibm_is_vpc_address_prefix.subnet_prefix["at-test-management-vpn-zone-1"]',
+      {
+        cidr: "10.10.30.0/24",
+        is_default: false,
+        name: "at-test-management-vpn-zone-1",
+        zone: "us-south-1",
+      }
+    ),
+    tfx.resource(
+      "Virtual Private Cloud Management Subnet VSI Zone 1",
+      'ibm_is_subnet.subnet["at-test-management-vsi-zone-1"]',
+      {
+        ip_version: "ipv4",
+        ipv4_cidr_block: "10.10.10.0/24",
+        name: "at-test-management-vsi-zone-1",
+        public_gateway: null,
+        timeouts: null,
+        zone: "us-south-1",
+      }
+    ),
+    tfx.resource(
+      "Virtual Private Cloud Management Subnet VSI Zone 2",
+      'ibm_is_subnet.subnet["at-test-management-vsi-zone-2"]',
+      {
+        ip_version: "ipv4",
+        ipv4_cidr_block: "10.20.10.0/24",
+        name: "at-test-management-vsi-zone-2",
+        public_gateway: null,
+        timeouts: null,
+        zone: "us-south-2",
+      }
+    ),
+    tfx.resource(
+      "Virtual Private Cloud Management Subnet VSI Zone 3",
+      'ibm_is_subnet.subnet["at-test-management-vsi-zone-3"]',
+      {
+        ip_version: "ipv4",
+        ipv4_cidr_block: "10.30.10.0/24",
+        name: "at-test-management-vsi-zone-3",
+        public_gateway: null,
+        timeouts: null,
+        zone: "us-south-3",
+      }
+    ),
+    tfx.resource("Virtual Private Cloud Management", "ibm_is_vpc.vpc", {
+      address_prefix_management: "manual",
+      classic_access: false,
+      name: "at-test-management-vpc",
+      timeouts: null,
+    }),
+    tfx.resource(
+      "Virtual Private Cloud Management Subnet Address Prefix VPE",
+      'ibm_is_vpc_address_prefix.subnet_prefix["at-test-management-vpe-zone-1"]',
+      {
+        cidr: "10.10.20.0/24",
+        is_default: false,
+        name: "at-test-management-vpe-zone-1",
+        zone: "us-south-1",
+      }
+    ),
+    tfx.resource(
+      "Virtual Private Cloud Management Subnet Address Prefix VPE",
+      'ibm_is_vpc_address_prefix.subnet_prefix["at-test-management-vpe-zone-2"]',
+      {
+        cidr: "10.20.20.0/24",
+        is_default: false,
+        name: "at-test-management-vpe-zone-2",
+        zone: "us-south-2",
+      }
+    ),
+    tfx.resource(
+      "Virtual Private Cloud Management Subnet Address Prefix VPE",
+      'ibm_is_vpc_address_prefix.subnet_prefix["at-test-management-vpe-zone-3"]',
+      {
+        cidr: "10.30.20.0/24",
+        is_default: false,
+        name: "at-test-management-vpe-zone-3",
+        zone: "us-south-3",
+      }
+    ),
+    tfx.resource(
+      "Virtual Private Cloud Management Subnet Address Prefix VSI",
+      'ibm_is_vpc_address_prefix.subnet_prefix["at-test-management-vsi-zone-1"]',
+      {
+        cidr: "10.10.10.0/24",
+        is_default: false,
+        name: "at-test-management-vsi-zone-1",
+        zone: "us-south-1",
+      }
+    ),
+    tfx.resource(
+      "Virtual Private Cloud Management Subnet Address Prefix VSI",
+      'ibm_is_vpc_address_prefix.subnet_prefix["at-test-management-vsi-zone-2"]',
+      {
+        cidr: "10.20.10.0/24",
+        is_default: false,
+        name: "at-test-management-vsi-zone-2",
+        zone: "us-south-2",
+      }
+    ),
+    tfx.resource(
+      "Virtual Private Cloud Management Subnet Address Prefix VSI",
+      'ibm_is_vpc_address_prefix.subnet_prefix["at-test-management-vsi-zone-3"]',
+      {
+        cidr: "10.30.10.0/24",
+        is_default: false,
+        name: "at-test-management-vsi-zone-3",
+        zone: "us-south-3",
+      }
+    )
+  );
+  tfx.module(
+    "Virtual Private Cloud",
+    'module.acceptance_tests.module.landing-zone.module.vpc["workload"]',
+    tfx.resource(
+      "Virtual Private Cloud Workload ACL",
+      'ibm_is_network_acl.network_acl["workload-acl"]',
+      {
+        name: "at-test-workload-workload-acl",
+        rules: aclRulesVsi.workload,
+      }
+    ),
+    tfx.resource(
+      "Virtual Private Cloud Workload Subnet VPE Zone 1",
+      'ibm_is_subnet.subnet["at-test-workload-vpe-zone-1"]',
+      {
+        ip_version: "ipv4",
+        ipv4_cidr_block: "10.40.20.0/24",
+        name: "at-test-workload-vpe-zone-1",
+        public_gateway: null,
+        timeouts: null,
+        zone: "us-south-1",
+      }
+    ),
+    tfx.resource(
+      "Virtual Private Cloud Workload Subnet VPE Zone 2",
+      'ibm_is_subnet.subnet["at-test-workload-vpe-zone-2"]',
+      {
+        ip_version: "ipv4",
+        ipv4_cidr_block: "10.50.20.0/24",
+        name: "at-test-workload-vpe-zone-2",
+        public_gateway: null,
+        timeouts: null,
+        zone: "us-south-2",
+      }
+    ),
+    tfx.resource(
+      "Virtual Private Cloud Workload Subnet VPE Zone 3",
+      'ibm_is_subnet.subnet["at-test-workload-vpe-zone-3"]',
+      {
+        ip_version: "ipv4",
+        ipv4_cidr_block: "10.60.20.0/24",
+        name: "at-test-workload-vpe-zone-3",
+        public_gateway: null,
+        timeouts: null,
+        zone: "us-south-3",
+      }
+    ),
+    tfx.resource(
+      "Virtual Private Cloud Workload Subnet VSI Zone 1",
+      'ibm_is_subnet.subnet["at-test-workload-vsi-zone-1"]',
+      {
+        ip_version: "ipv4",
+        ipv4_cidr_block: "10.40.10.0/24",
+        name: "at-test-workload-vsi-zone-1",
+        public_gateway: null,
+        timeouts: null,
+        zone: "us-south-1",
+      }
+    ),
+    tfx.resource(
+      "Virtual Private Cloud Workload Subnet VSI Zone 2",
+      'ibm_is_subnet.subnet["at-test-workload-vsi-zone-2"]',
+      {
+        ip_version: "ipv4",
+        ipv4_cidr_block: "10.50.10.0/24",
+        name: "at-test-workload-vsi-zone-2",
+        public_gateway: null,
+        timeouts: null,
+        zone: "us-south-2",
+      }
+    ),
+    tfx.resource(
+      "Virtual Private Cloud Workload Subnet VSI Zone 3",
+      'ibm_is_subnet.subnet["at-test-workload-vsi-zone-3"]',
+      {
+        ip_version: "ipv4",
+        ipv4_cidr_block: "10.60.10.0/24",
+        name: "at-test-workload-vsi-zone-3",
+        public_gateway: null,
+        timeouts: null,
+        zone: "us-south-3",
+      }
+    ),
+    tfx.resource("Virtual Private Cloud Workload", "ibm_is_vpc.vpc", {
+      address_prefix_management: "manual",
+      classic_access: false,
+      name: "at-test-workload-vpc",
+      timeouts: null,
+    }),
+    tfx.resource(
+      "Virtual Private Cloud Workload Subnet Address Prefix VPE",
+      'ibm_is_vpc_address_prefix.subnet_prefix["at-test-workload-vpe-zone-1"]',
+      {
+        cidr: "10.40.20.0/24",
+        is_default: false,
+        name: "at-test-workload-vpe-zone-1",
+        zone: "us-south-1",
+      }
+    ),
+    tfx.resource(
+      "Virtual Private Cloud Workload Subnet Address Prefix VPE",
+      'ibm_is_vpc_address_prefix.subnet_prefix["at-test-workload-vpe-zone-2"]',
+      {
+        cidr: "10.50.20.0/24",
+        is_default: false,
+        name: "at-test-workload-vpe-zone-2",
+        zone: "us-south-2",
+      }
+    ),
+    tfx.resource(
+      "Virtual Private Cloud Workload Subnet Address Prefix VPE",
+      'ibm_is_vpc_address_prefix.subnet_prefix["at-test-workload-vpe-zone-3"]',
+      {
+        cidr: "10.60.20.0/24",
+        is_default: false,
+        name: "at-test-workload-vpe-zone-3",
+        zone: "us-south-3",
+      }
+    ),
+    tfx.resource(
+      "Virtual Private Cloud Workload Subnet Address Prefix VSI",
+      'ibm_is_vpc_address_prefix.subnet_prefix["at-test-workload-vsi-zone-1"]',
+      {
+        cidr: "10.40.10.0/24",
+        is_default: false,
+        name: "at-test-workload-vsi-zone-1",
+        zone: "us-south-1",
+      }
+    ),
+    tfx.resource(
+      "Virtual Private Cloud Workload Subnet Address Prefix VSI",
+      'ibm_is_vpc_address_prefix.subnet_prefix["at-test-workload-vsi-zone-2"]',
+      {
+        cidr: "10.50.10.0/24",
+        is_default: false,
+        name: "at-test-workload-vsi-zone-2",
+        zone: "us-south-2",
+      }
+    ),
+    tfx.resource(
+      "Virtual Private Cloud Workload Subnet Address Prefix VSI",
+      'ibm_is_vpc_address_prefix.subnet_prefix["at-test-workload-vsi-zone-3"]',
+      {
+        cidr: "10.60.10.0/24",
+        is_default: false,
+        name: "at-test-workload-vsi-zone-3",
+        zone: "us-south-3",
+      }
+    )
+  );
+  tfx.module(
+    "Virtual Server Instance",
+    'module.acceptance_tests.module.landing-zone.module.vsi["at-test-management-server"]',
+    [
+      tfx.resource(
+        "Virtual Server Instance Management Server 1",
+        'ibm_is_instance.vsi["at-test-management-server-1"]',
+        {
+          force_action: false,
+          image: "r006-34ceeafe-fcc6-11e9-893a-57dde2f48a21",
+          name: "at-test-management-server-1",
+          profile: "cx2-2x4",
+          wait_before_delete: true,
+          zone: "us-south-1",
+        }
+      ),
+      tfx.resource(
+        "Virtual Server Instance Management Server 2",
+        'ibm_is_instance.vsi["at-test-management-server-2"]',
+        {
+          force_action: false,
+          image: "r006-34ceeafe-fcc6-11e9-893a-57dde2f48a21",
+          name: "at-test-management-server-2",
+          profile: "cx2-2x4",
+          wait_before_delete: true,
+          zone: "us-south-2",
+        }
+      ),
+      tfx.resource(
+        "Virtual Server Instance Management Server 3",
+        'ibm_is_instance.vsi["at-test-management-server-3"]',
+        {
+          force_action: false,
+          image: "r006-34ceeafe-fcc6-11e9-893a-57dde2f48a21",
+          name: "at-test-management-server-3",
+          profile: "cx2-2x4",
+          wait_before_delete: true,
+          zone: "us-south-3",
+        }
+      ),
+      tfx.resource(
+        "Virtual Server Instance Security Group",
+        'ibm_is_security_group.security_group["management"]',
+        {
+          name: "management",
+        }
+      ),
+      tfx.resource(
+        "Virtual Server Instance Security Group Rules Inbound",
+        'ibm_is_security_group_rule.security_group_rules["management-allow-ibm-inbound"]',
+        {
+          direction: "inbound",
+          icmp: [],
+          ip_version: "ipv4",
+          remote: "161.26.0.0/16",
+          tcp: [],
+          udp: [],
+        }
+      ),
+      tfx.resource(
+        "Virtual Server Instance Security Group Rules Inbound",
+        'ibm_is_security_group_rule.security_group_rules["management-allow-vpc-inbound"]',
+        {
+          direction: "inbound",
+          icmp: [],
+          ip_version: "ipv4",
+          remote: "10.0.0.0/8",
+          tcp: [],
+          udp: [],
+        }
+      ),
+      tfx.resource(
+        "Virtual Server Instance Security Group Rules Outbound",
+        'ibm_is_security_group_rule.security_group_rules["management-allow-ibm-tcp-443-outbound"]',
+        {
+          direction: "outbound",
+          icmp: [],
+          ip_version: "ipv4",
+          remote: "161.26.0.0/16",
+          tcp: [
+            {
+              port_max: 443,
+              port_min: 443,
+            },
+          ],
+          udp: [],
+        }
+      ),
+      tfx.resource(
+        "Virtual Server Instance Security Group Rules Outbound",
+        'ibm_is_security_group_rule.security_group_rules["management-allow-ibm-tcp-53-outbound"]',
+        {
+          direction: "outbound",
+          icmp: [],
+          ip_version: "ipv4",
+          remote: "161.26.0.0/16",
+          tcp: [
+            {
+              port_max: 53,
+              port_min: 53,
+            },
+          ],
+          udp: [],
+        }
+      ),
+      tfx.resource(
+        "Virtual Server Instance Security Group Rules Outbound",
+        'ibm_is_security_group_rule.security_group_rules["management-allow-ibm-tcp-80-outbound"]',
+        {
+          direction: "outbound",
+          icmp: [],
+          ip_version: "ipv4",
+          remote: "161.26.0.0/16",
+          tcp: [
+            {
+              port_max: 80,
+              port_min: 80,
+            },
+          ],
+          udp: [],
+        }
+      ),
+      tfx.resource(
+        "Virtual Server Instance Security Group Rules Outbound",
+        'ibm_is_security_group_rule.security_group_rules["management-allow-vpc-outbound"]',
+        {
+          direction: "outbound",
+          icmp: [],
+          ip_version: "ipv4",
+          remote: "10.0.0.0/8",
+          tcp: [],
+          udp: [],
+        }
+      ),
+    ]
+  );
+});
