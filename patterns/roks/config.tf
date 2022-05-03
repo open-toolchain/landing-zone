@@ -14,6 +14,14 @@ locals {
     : ["Default", "service", var.hs_crypto_resource_group]
   )
 
+  # Prepend edge to list if enabled
+  vpc_list = (
+    var.enable_edge_vpc
+    ? concat(["edge"], var.vpcs)
+    : var.vpcs
+  )
+
+
   ##############################################################################
   # Dynamic configuration for landing zone environment
   ##############################################################################
@@ -23,7 +31,7 @@ locals {
     # get default, Default and hs crypto if included. 
     ##############################################################################
     resource_groups = [
-      for group in distinct(concat(local.resource_group_list, var.vpcs)) :
+      for group in distinct(concat(local.resource_group_list, local.vpc_list)) :
       {
         name   = group == "Default" || group == "default" || group == var.hs_crypto_resource_group ? group : "${var.prefix}-${group}-rg"
         create = (group == "Default" || group == "default" || group == var.hs_crypto_resource_group) ? false : true
@@ -35,16 +43,21 @@ locals {
     # Create one VPC for each name in VPC variable
     ##############################################################################
     vpcs = [
-      for network in var.vpcs :
+      for network in local.vpc_list :
       {
-        prefix                       = network
-        resource_group               = "${var.prefix}-${network}-rg"
-        flow_logs_bucket_name        = "${network}-bucket"
+        prefix                = network
+        resource_group        = "${var.prefix}-${network}-rg"
+        flow_logs_bucket_name = "${network}-bucket"
+        address_prefixes = {
+          # Address prefixes need to be set for edge vpc, otherwise will be empty array
+          zone-1 = network == local.vpc_list[0] && var.enable_edge_vpc ? ["10.5.0.0/16"] : []
+          zone-2 = network == local.vpc_list[0] && var.enable_edge_vpc ? ["10.6.0.0/16"] : []
+          zone-3 = network == local.vpc_list[0] && var.enable_edge_vpc ? ["10.7.0.0/16"] : []
+        }
         default_security_group_rules = []
         network_acls = [
           {
-            name              = "${network}-acl"
-            add_cluster_rules = true
+            name = "${network}-acl"
             rules = [
               {
                 name        = "allow-ibm-inbound"
@@ -86,10 +99,22 @@ locals {
         subnets = {
           for zone in [1, 2, 3] :
           "zone-${zone}" => [
-            for subnet in(network == var.vpcs[0] && zone == 1 ? ["vsi", "vpe", "vpn"] : ["vsi", "vpe"]) :
+            for subnet in(
+              var.enable_edge_vpc && network == local.vpc_list[0]                                                 # if network 0 and enable edge
+              ? ["vpn-1", "vpn-2", "f5-external", "f5-management", "f5-workload", "f5-bastion", "bastion", "vpe"] # seven tiers
+              : network == local.vpc_list[0] && zone == 1 && !var.enable_edge_vpc                                 # otherwise if zone 1
+              ? ["vsi", "vpe", "vpn"]                                                                             # vpn
+              : ["vsi", "vpe"]                                                                                    # else regular
+            ) :
             {
-              name           = "${subnet}-zone-${zone}"
-              cidr           = "10.${zone + (index(var.vpcs, network) * 3)}0.${1 + index(["vsi", "vpe", "vpn"], subnet)}0.0/24"
+              name = "${subnet}-zone-${zone}"
+              cidr = (
+                var.enable_edge_vpc && network == local.vpc_list[0]
+                # Ensure edge doesn't conflict with existing cidr
+                ? "10.${zone + 4}.${1 + index(["vpn-1", "vpn-2", "f5-external", "f5-management", "f5-workload", "f5-bastion", "bastion", "vpe"], subnet)}0.0/24"
+                # CIDR expression
+                : "10.${zone + (index(var.vpcs, network) * 3)}0.${1 + index(["vsi", "vpe", "vpn"], subnet)}0.0/24"
+              )
               public_gateway = false
               acl_name       = "${network}-acl"
             }
@@ -104,7 +129,7 @@ locals {
     ##############################################################################
     enable_transit_gateway         = true
     transit_gateway_resource_group = "${var.prefix}-service-rg"
-    transit_gateway_connections    = var.vpcs
+    transit_gateway_connections    = local.vpc_list
     ##############################################################################
 
     ##############################################################################
@@ -141,7 +166,7 @@ locals {
         plan           = "standard"
         buckets = [
           # Create one flow log bucket for each VPC network
-          for network in var.vpcs :
+          for network in local.vpc_list :
           {
             name          = "${network}-bucket"
             storage_class = "standard"
@@ -182,7 +207,7 @@ locals {
       service_type = "cloud-object-storage"
       vpcs = [
         # Create VPE for each VPC in VPE tier
-        for network in var.vpcs :
+        for network in local.vpc_list :
         {
           name    = network
           subnets = ["vpe-zone-1", "vpe-zone-2", "vpe-zone-3"]
@@ -248,17 +273,17 @@ locals {
 
     ##############################################################################
     # VPN Gateway
-    # > Create a gateway in first vpc
+    # > Create a gateway in first vpc if edge vpc is not enabled    
     ##############################################################################
-    vpn_gateways = [
+    vpn_gateways = !var.enable_edge_vpc ? [
       {
-        name           = "${var.vpcs[0]}-gateway"
-        vpc_name       = "${var.vpcs[0]}"
+        name           = "${local.vpc_list[0]}-gateway"
+        vpc_name       = "${local.vpc_list[0]}"
         subnet_name    = "vpn-zone-1"
-        resource_group = "${var.prefix}-${var.vpcs[0]}-rg"
+        resource_group = "${var.prefix}-${local.vpc_list[0]}-rg"
         connections    = []
       }
-    ]
+    ] : []
     ##############################################################################
 
 

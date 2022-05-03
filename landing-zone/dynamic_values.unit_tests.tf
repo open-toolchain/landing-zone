@@ -180,3 +180,19 @@ locals {
 }
 
 ##############################################################################
+
+
+##############################################################################
+# F5 Unit Tests
+##############################################################################
+
+locals {
+  assert_subnets_correct_list           = regex("ut-test-subnet-1", module.unit_tests.f5_vsi_map["ut-f5-zone-1"].subnets[0].name)
+  assert_correct_subnet_length          = regex("1", tostring(length(module.unit_tests.f5_vsi_map["ut-f5-zone-1"].subnets)))
+  assert_secondary_subnets_correct_list = regex("ut-test-subnet-f5-1", module.unit_tests.f5_vsi_map["ut-f5-zone-1"].secondary_subnets[0].name)
+  assert_correct_zone                   = regex("1-zone", module.unit_tests.f5_vsi_map["ut-f5-zone-1"].zone)
+  assert_template_rendered_for_vsi      = lookup(module.unit_tests.f5_template_map, "ut-f5-zone-1")
+  assert_template_reges                 = regex("#cloud-config\nchpasswd:\n  expire: false\n  list: |\n    admin:frog\ntmos_dhcpv4_tmm:\n  enabled: true\n  rd_enabled: false\n  icontrollx_trusted_sources: false\n  inject_routes: true\n  configsync_interface: 1.1\n  default_route_interface: 1.2\n  dhcp_timeout: 120\n  dhcpv4_options:\n    mgmt:\n      host-name: f5-ve-01\n      domain-name: f5-ve-01\n    '1.2':\n      routers: 10.0.0.1\n  do_enabled: true \n  do_declaration: null\n  do_declaration_url: null\n  do_declaration_url_headers:\n    PRIVATE-TOKEN: x6VpQuWhiT_KgT3mzyTe\n  do_template_variables:\n    primary_dns: 8.8.8.8\n    secondary_dns: 1.1.1.1\n    timezone: Europe/Paris\n    primary_ntp: 132.163.96.5\n    secondary_ntp: 132.163.97.5\n    primary_radius: 10.20.22.20\n    primary_radius_secret: testing123\n    secondary_radius: 10.20.23.20\n    secondary_radius_secret: testing123\n  as3_enabled: true\n  as3_declaration_url: null\n  as3_declaration_url_headers:\n    PRIVATE-TOKEN: x6VpQuWhiT_KgT3mzyTe\n  as3_template_variables:\n    selfip_snat_address: 10.20.40.40\n  ts_enabled: true\n  ts_declaration_url: null\n  ts_declaration_url_headers:\n    PRIVATE-TOKEN: x6VpQuWhiT_KgT3mzyTe\n  ts_template_variables:\n    splunk_log_ingest: 10.20.23.30\n    splunk_password: 0f29e5dc-bee8-4898-9054-9b66574a3e14\n  phone_home_url: null\n  phone_home_url_verify_tls: false\n  phone_home_url_metadata:\n    template_source: f5devcentral/ibmcloud_schematics_bigip_multinic_declared\n    template_version: 20210201\n    zone: 1-zone\n    vpc: 1234\n    app_id: null\n  tgactive_url: \n  tgstandby_url: null\n  tgrefresh_url: null\n  ", module.unit_tests.f5_template_map["ut-f5-zone-1"].user_data)
+}
+
+##############################################################################

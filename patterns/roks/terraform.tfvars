@@ -2,6 +2,7 @@ TF_VERSION               = "1.0"
 prefix                   = "< add user data here >"
 region                   = "< add user data here >"
 tags                     = []
+enable_edge_vpc          = false
 vpcs                     = ["management", "frog"]
 enable_transit_gateway   = true
 add_atracker_route       = true

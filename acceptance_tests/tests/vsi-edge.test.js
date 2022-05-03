@@ -1,10 +1,12 @@
 require("dotenv").config();
 const tfxjs = require("tfxjs");
-const tfx = new tfxjs("./patterns/mixed", "ibmcloud_api_key", { quiet: true });
-const aclRules = require("./acl-rules-vsi.json");
+const tfx = new tfxjs("./patterns/edge-vpc", "ibmcloud_api_key", {
+  quiet: true,
+});
+const aclRulesVsi = require("./acl-rules-vsi.json");
 const tags = ["acceptance-test", "landing-zone"];
 
-tfx.plan("LandingZone Mixed Pattern", () => {
+tfx.plan("LandingZone VSI Pattern", () => {
   tfx.module(
     "Root Module",
     "module.acceptance_tests.module.landing-zone",
@@ -32,48 +34,10 @@ tfx.plan("LandingZone Mixed Pattern", () => {
       }
     ),
     tfx.resource(
-      "Workload Cluster",
-      `ibm_container_vpc_cluster.cluster[\"at-test-workload-cluster\"]`,
+      "Workload Object Storage Bucket",
+      `ibm_cos_bucket.buckets[\"workload-bucket\"]`,
       {
-        disable_public_service_endpoint: true,
-        flavor: "bx2.16x64",
-        kube_version: function (value) {
-          return {
-            appendMessage: "to contain _openshift. Got " + value,
-            expectedData: value.indexOf("_openshift") !== -1,
-          };
-        },
-        name: "at-test-workload-cluster",
-        tags: ["acceptance-test", "landing-zone"],
-        timeouts: { create: "3h", delete: "2h", update: "3h" },
-        wait_till: "IngressReady",
-        worker_count: 1,
-        zones: [
-          { name: "us-south-1" },
-          { name: "us-south-2" },
-          { name: "us-south-3" },
-        ],
-      }
-    ),
-    tfx.resource(
-      "Workload Cluster Logging Pool",
-      `ibm_container_vpc_worker_pool.pool[\"at-test-workload-cluster-logging-worker-pool\"]`,
-      {
-        flavor: "bx2.16x64",
-        worker_count: 1,
-        worker_pool_name: "logging-worker-pool",
-        zones: [
-          { name: "us-south-1" },
-          { name: "us-south-2" },
-          { name: "us-south-3" },
-        ],
-      }
-    ),
-    tfx.resource(
-      "Activity Tracker Object Storage Bucket",
-      `ibm_cos_bucket.buckets[\"atracker-bucket\"]`,
-      {
-        bucket_name: "at-test-atracker-bucket",
+        bucket_name: "at-test-workload-bucket",
         endpoint_type: "public",
         force_delete: true,
         region_location: "us-south",
@@ -94,10 +58,22 @@ tfx.plan("LandingZone Mixed Pattern", () => {
       }
     ),
     tfx.resource(
-      "Management Object Storage Bucket",
-      `ibm_cos_bucket.buckets[\"workload-bucket\"]`,
+      "Edge Object Storage Bucket",
+      `ibm_cos_bucket.buckets[\"edge-bucket\"]`,
       {
-        bucket_name: "at-test-workload-bucket",
+        bucket_name: "at-test-edge-bucket",
+        endpoint_type: "public",
+        force_delete: true,
+        region_location: "us-south",
+        retention_rule: [],
+        storage_class: "standard",
+      }
+    ),
+    tfx.resource(
+      "Activity Tracker Object Storage Bucket",
+      `ibm_cos_bucket.buckets[\"atracker-bucket\"]`,
+      {
+        bucket_name: "at-test-atracker-bucket",
         endpoint_type: "public",
         force_delete: true,
         region_location: "us-south",
@@ -161,6 +137,15 @@ tfx.plan("LandingZone Mixed Pattern", () => {
       }
     ),
     tfx.resource(
+      "Flow Logs for Edge VPC",
+      'ibm_is_flow_log.flow_logs["edge"]',
+      {
+        active: true,
+        name: "edge-logs",
+        storage_bucket: "at-test-edge-bucket",
+      }
+    ),
+    tfx.resource(
       "Flow Logs for Management VPC",
       'ibm_is_flow_log.flow_logs["management"]',
       {
@@ -176,6 +161,20 @@ tfx.plan("LandingZone Mixed Pattern", () => {
         active: true,
         name: "workload-logs",
         storage_bucket: "at-test-workload-bucket",
+      }
+    ),
+    tfx.resource(
+      "Virtual Endpoint Gateway Object Storage for Edge VPC",
+      'ibm_is_virtual_endpoint_gateway.endpoint_gateway["edge-cos"]',
+      {
+        name: "at-test-edge-cos",
+        target: [
+          {
+            crn: "crn:v1:bluemix:public:cloud-object-storage:global:::endpoint:s3.direct.us-south.cloud-object-storage.appdomain.cloud",
+            name: null,
+            resource_type: "provider_cloud_service",
+          },
+        ],
       }
     ),
     tfx.resource(
@@ -207,6 +206,21 @@ tfx.plan("LandingZone Mixed Pattern", () => {
       }
     ),
     tfx.resource(
+      "Endpoint Gateway for Object Storage Reserved IP Edge VPC Zone 1",
+      'ibm_is_subnet_reserved_ip.ip["edge-cos-gateway-vpe-zone-1-ip"]',
+      {}
+    ),
+    tfx.resource(
+      "Endpoint Gateway for Object Storage Reserved IP Edge VPC Zone 2",
+      'ibm_is_subnet_reserved_ip.ip["edge-cos-gateway-vpe-zone-2-ip"]',
+      {}
+    ),
+    tfx.resource(
+      "Endpoint Gateway for Object Storage Reserved IP Edge VPC Zone 3",
+      'ibm_is_subnet_reserved_ip.ip["edge-cos-gateway-vpe-zone-3-ip"]',
+      {}
+    ),
+    tfx.resource(
       "Endpoint Gateway for Object Storage Reserved IP Management VPC Zone 1",
       'ibm_is_subnet_reserved_ip.ip["management-cos-gateway-vpe-zone-1-ip"]',
       {}
@@ -234,6 +248,21 @@ tfx.plan("LandingZone Mixed Pattern", () => {
     tfx.resource(
       "Endpoint Gateway for Object Storage Reserved IP Workload VPC Zone 3",
       'ibm_is_subnet_reserved_ip.ip["workload-cos-gateway-vpe-zone-3-ip"]',
+      {}
+    ),
+    tfx.resource(
+      "Endpoint Gateway IP For Edge COS Zone 1",
+      'ibm_is_virtual_endpoint_gateway_ip.endpoint_gateway_ip["edge-cos-gateway-vpe-zone-1-ip"]',
+      {}
+    ),
+    tfx.resource(
+      "Endpoint Gateway IP For Edge COS Zone 2",
+      'ibm_is_virtual_endpoint_gateway_ip.endpoint_gateway_ip["edge-cos-gateway-vpe-zone-2-ip"]',
+      {}
+    ),
+    tfx.resource(
+      "Endpoint Gateway IP For Edge COS Zone 3",
+      'ibm_is_virtual_endpoint_gateway_ip.endpoint_gateway_ip["edge-cos-gateway-vpe-zone-3-ip"]',
       {}
     ),
     tfx.resource(
@@ -267,13 +296,10 @@ tfx.plan("LandingZone Mixed Pattern", () => {
       {}
     ),
     tfx.resource(
-      "VPN Gateway for Management VPC",
-      'ibm_is_vpn_gateway.gateway["management-gateway"]',
+      "Resource Groups Edge",
+      'ibm_resource_group.resource_groups["at-test-edge-rg"]',
       {
-        mode: "route",
-        name: "at-test-management-gateway",
-        tags: tags,
-        timeouts: { create: null, delete: "1h" },
+        name: "at-test-edge-rg",
       }
     ),
     tfx.resource(
@@ -329,6 +355,15 @@ tfx.plan("LandingZone Mixed Pattern", () => {
       }
     ),
     tfx.resource(
+      "Transit Gateway Connection Edge",
+      'ibm_tg_connection.connection["edge"]',
+      {
+        name: "at-test-edge-hub-connection",
+        network_type: "vpc",
+        timeouts: { create: "30m", delete: "30m", update: null },
+      }
+    ),
+    tfx.resource(
       "Transit Gateway Connection Management",
       'ibm_tg_connection.connection["management"]',
       {
@@ -357,16 +392,6 @@ tfx.plan("LandingZone Mixed Pattern", () => {
   tfx.module(
     "Key Management Module",
     "module.acceptance_tests.module.landing-zone.module.key_management",
-    tfx.resource(
-      "Landing Zone Key Management ROKS key",
-      'ibm_kms_key.key["at-test-roks-key"]',
-      {
-        force_delete: true,
-        key_name: "at-test-roks-key",
-        key_ring_id: "at-test-slz-ring",
-        standard_key: false,
-      }
-    ),
     tfx.resource(
       "Landing Zone Key Management Atracker",
       'ibm_kms_key.key["at-test-atracker-key"]',
@@ -415,6 +440,7 @@ tfx.plan("LandingZone Mixed Pattern", () => {
       }
     )
   );
+
   tfx.module(
     "SSH Key Module",
     "module.acceptance_tests.module.landing-zone.module.ssh_keys",
@@ -425,24 +451,301 @@ tfx.plan("LandingZone Mixed Pattern", () => {
     })
   );
   tfx.module(
-    "Virtual Private Cloud",
-    'module.acceptance_tests.module.landing-zone.module.vpc["management"]',
+    "Edge Virtual Private Cloud",
+    'module.acceptance_tests.module.landing-zone.module.vpc["edge"]',
     tfx.resource(
-      "Virtual Private Cloud Management VPN Zone",
-      'ibm_is_subnet.subnet["at-test-management-vpn-zone-1"]',
+      "Virtual Private Cloud Edge ACL",
+      'ibm_is_network_acl.network_acl["edge-acl"]',
+      {
+        name: "at-test-edge-edge-acl",
+        rules: aclRulesVsi.management,
+      }
+    ),
+    tfx.resource("Virtual Private Cloud Management", "ibm_is_vpc.vpc", {
+      address_prefix_management: "manual",
+      classic_access: false,
+      name: "at-test-edge-vpc",
+    }),
+    tfx.resource(
+      "Edge Zone 1 Prefix",
+      'ibm_is_vpc_address_prefix.address_prefixes[0]',
+      {
+        "cidr": "10.5.0.0/16",
+        "is_default": false,
+        "name": "at-test-edge-zone-1-1",
+        "zone": "us-south-1"
+      }
+    ),
+    tfx.resource(
+      "Edge Zone 2 Prefix",
+      'ibm_is_vpc_address_prefix.address_prefixes[1]',
+      {
+        "cidr": "10.6.0.0/16",
+        "is_default": false,
+        "name": "at-test-edge-zone-2-1",
+        "zone": "us-south-2"
+      }
+    ),
+    tfx.resource(
+      "Edge Zone 3 Prefix",
+      'ibm_is_vpc_address_prefix.address_prefixes[2]',
+      {
+        "cidr": "10.7.0.0/16",
+        "is_default": false,
+        "name": "at-test-edge-zone-3-1",
+        "zone": "us-south-3"
+      }
+    ),
+    tfx.resource(
+      "Edge Subnet VPN 1 Zone 1",
+      'ibm_is_subnet.subnet["at-test-edge-vpn-1-zone-1"]',
       {
         ip_version: "ipv4",
-        ipv4_cidr_block: "10.10.30.0/24",
-        name: "at-test-management-vpn-zone-1",
+        ipv4_cidr_block: "10.5.10.0/24",
+        name: "at-test-edge-vpn-1-zone-1",
         zone: "us-south-1",
       }
     ),
+    tfx.resource(
+      "Edge Subnet VPN 1 Zone 2",
+      'ibm_is_subnet.subnet["at-test-edge-vpn-1-zone-2"]',
+      {
+        ip_version: "ipv4",
+        ipv4_cidr_block: "10.6.10.0/24",
+        name: "at-test-edge-vpn-1-zone-2",
+        zone: "us-south-2",
+      }
+    ),
+    tfx.resource(
+      "Edge Subnet VPN 1 Zone 3",
+      'ibm_is_subnet.subnet["at-test-edge-vpn-1-zone-3"]',
+      {
+        ip_version: "ipv4",
+        ipv4_cidr_block: "10.7.10.0/24",
+        name: "at-test-edge-vpn-1-zone-3",
+        zone: "us-south-3",
+      }
+    ),
+    tfx.resource(
+      "Edge Subnet VPN 2 Zone 1",
+      'ibm_is_subnet.subnet["at-test-edge-vpn-2-zone-1"]',
+      {
+        ip_version: "ipv4",
+        ipv4_cidr_block: "10.5.20.0/24",
+        name: "at-test-edge-vpn-2-zone-1",
+        zone: "us-south-1",
+      }
+    ),
+    tfx.resource(
+      "Edge Subnet VPN 2 Zone 2",
+      'ibm_is_subnet.subnet["at-test-edge-vpn-2-zone-2"]',
+      {
+        ip_version: "ipv4",
+        ipv4_cidr_block: "10.6.20.0/24",
+        name: "at-test-edge-vpn-2-zone-2",
+        zone: "us-south-2",
+      }
+    ),
+    tfx.resource(
+      "Edge Subnet VPN 2 Zone 3",
+      'ibm_is_subnet.subnet["at-test-edge-vpn-2-zone-3"]',
+      {
+        ip_version: "ipv4",
+        ipv4_cidr_block: "10.7.20.0/24",
+        name: "at-test-edge-vpn-2-zone-3",
+        zone: "us-south-3",
+      }
+    ),
+    tfx.resource(
+      "Edge Subnet f5-external Zone 1",
+      'ibm_is_subnet.subnet["at-test-edge-f5-external-zone-1"]',
+      {
+        ip_version: "ipv4",
+        ipv4_cidr_block: "10.5.30.0/24",
+        name: "at-test-edge-f5-external-zone-1",
+        zone: "us-south-1",
+      }
+    ),
+    tfx.resource(
+      "Edge Subnet f5-external Zone 2",
+      'ibm_is_subnet.subnet["at-test-edge-f5-external-zone-2"]',
+      {
+        ip_version: "ipv4",
+        ipv4_cidr_block: "10.6.30.0/24",
+        name: "at-test-edge-f5-external-zone-2",
+        zone: "us-south-2",
+      }
+    ),
+    tfx.resource(
+      "Edge Subnet f5-external Zone 3",
+      'ibm_is_subnet.subnet["at-test-edge-f5-external-zone-3"]',
+      {
+        ip_version: "ipv4",
+        ipv4_cidr_block: "10.7.30.0/24",
+        name: "at-test-edge-f5-external-zone-3",
+        zone: "us-south-3",
+      }
+    ),
+    tfx.resource(
+      "Edge Subnet f5-management Zone 1",
+      'ibm_is_subnet.subnet["at-test-edge-f5-management-zone-1"]',
+      {
+        ip_version: "ipv4",
+        ipv4_cidr_block: "10.5.40.0/24",
+        name: "at-test-edge-f5-management-zone-1",
+        zone: "us-south-1",
+      }
+    ),
+    tfx.resource(
+      "Edge Subnet f5-management Zone 2",
+      'ibm_is_subnet.subnet["at-test-edge-f5-management-zone-2"]',
+      {
+        ip_version: "ipv4",
+        ipv4_cidr_block: "10.6.40.0/24",
+        name: "at-test-edge-f5-management-zone-2",
+        zone: "us-south-2",
+      }
+    ),
+    tfx.resource(
+      "Edge Subnet f5-management Zone 3",
+      'ibm_is_subnet.subnet["at-test-edge-f5-management-zone-3"]',
+      {
+        ip_version: "ipv4",
+        ipv4_cidr_block: "10.7.40.0/24",
+        name: "at-test-edge-f5-management-zone-3",
+        zone: "us-south-3",
+      }
+    ),
+    tfx.resource(
+      "Edge Subnet f5-workload Zone 1",
+      'ibm_is_subnet.subnet["at-test-edge-f5-workload-zone-1"]',
+      {
+        ip_version: "ipv4",
+        ipv4_cidr_block: "10.5.50.0/24",
+        name: "at-test-edge-f5-workload-zone-1",
+        zone: "us-south-1",
+      }
+    ),
+    tfx.resource(
+      "Edge Subnet f5-workload Zone 2",
+      'ibm_is_subnet.subnet["at-test-edge-f5-workload-zone-2"]',
+      {
+        ip_version: "ipv4",
+        ipv4_cidr_block: "10.6.50.0/24",
+        name: "at-test-edge-f5-workload-zone-2",
+        zone: "us-south-2",
+      }
+    ),
+    tfx.resource(
+      "Edge Subnet f5-workload Zone 3",
+      'ibm_is_subnet.subnet["at-test-edge-f5-workload-zone-3"]',
+      {
+        ip_version: "ipv4",
+        ipv4_cidr_block: "10.7.50.0/24",
+        name: "at-test-edge-f5-workload-zone-3",
+        zone: "us-south-3",
+      }
+    ),
+    tfx.resource(
+      "Edge Subnet f5-bastion Zone 1",
+      'ibm_is_subnet.subnet["at-test-edge-f5-bastion-zone-1"]',
+      {
+        ip_version: "ipv4",
+        ipv4_cidr_block: "10.5.60.0/24",
+        name: "at-test-edge-f5-bastion-zone-1",
+        zone: "us-south-1",
+      }
+    ),
+    tfx.resource(
+      "Edge Subnet f5-bastion Zone 2",
+      'ibm_is_subnet.subnet["at-test-edge-f5-bastion-zone-2"]',
+      {
+        ip_version: "ipv4",
+        ipv4_cidr_block: "10.6.60.0/24",
+        name: "at-test-edge-f5-bastion-zone-2",
+        zone: "us-south-2",
+      }
+    ),
+    tfx.resource(
+      "Edge Subnet f5-bastion Zone 3",
+      'ibm_is_subnet.subnet["at-test-edge-f5-bastion-zone-3"]',
+      {
+        ip_version: "ipv4",
+        ipv4_cidr_block: "10.7.60.0/24",
+        name: "at-test-edge-f5-bastion-zone-3",
+        zone: "us-south-3",
+      }
+    ),
+    tfx.resource(
+      "Edge Subnet bastion Zone 1",
+      'ibm_is_subnet.subnet["at-test-edge-bastion-zone-1"]',
+      {
+        ip_version: "ipv4",
+        ipv4_cidr_block: "10.5.70.0/24",
+        name: "at-test-edge-bastion-zone-1",
+        zone: "us-south-1",
+      }
+    ),
+    tfx.resource(
+      "Edge Subnet bastion Zone 2",
+      'ibm_is_subnet.subnet["at-test-edge-bastion-zone-2"]',
+      {
+        ip_version: "ipv4",
+        ipv4_cidr_block: "10.6.70.0/24",
+        name: "at-test-edge-bastion-zone-2",
+        zone: "us-south-2",
+      }
+    ),
+    tfx.resource(
+      "Edge Subnet bastion Zone 3",
+      'ibm_is_subnet.subnet["at-test-edge-bastion-zone-3"]',
+      {
+        ip_version: "ipv4",
+        ipv4_cidr_block: "10.7.70.0/24",
+        name: "at-test-edge-bastion-zone-3",
+        zone: "us-south-3",
+      }
+    ),
+    tfx.resource(
+      "Edge Subnet VPE Zone 1",
+      'ibm_is_subnet.subnet["at-test-edge-vpe-zone-1"]',
+      {
+        ip_version: "ipv4",
+        ipv4_cidr_block: "10.5.80.0/24",
+        name: "at-test-edge-vpe-zone-1",
+        zone: "us-south-1",
+      }
+    ),
+    tfx.resource(
+      "Edge Subnet VPE Zone 2",
+      'ibm_is_subnet.subnet["at-test-edge-vpe-zone-2"]',
+      {
+        ip_version: "ipv4",
+        ipv4_cidr_block: "10.6.80.0/24",
+        name: "at-test-edge-vpe-zone-2",
+        zone: "us-south-2",
+      }
+    ),
+    tfx.resource(
+      "Edge Subnet VPE Zone 3",
+      'ibm_is_subnet.subnet["at-test-edge-vpe-zone-3"]',
+      {
+        ip_version: "ipv4",
+        ipv4_cidr_block: "10.7.80.0/24",
+        name: "at-test-edge-vpe-zone-3",
+        zone: "us-south-3",
+      }
+    ),
+  );
+  tfx.module(
+    "Management Virtual Private Cloud",
+    'module.acceptance_tests.module.landing-zone.module.vpc["management"]',
     tfx.resource(
       "Virtual Private Cloud Management ACL",
       'ibm_is_network_acl.network_acl["management-acl"]',
       {
         name: "at-test-management-management-acl",
-        rules: aclRules.management,
+        rules: aclRulesVsi.management,
       }
     ),
     tfx.resource(
@@ -473,16 +776,6 @@ tfx.plan("LandingZone Mixed Pattern", () => {
         ipv4_cidr_block: "10.30.20.0/24",
         name: "at-test-management-vpe-zone-3",
         zone: "us-south-3",
-      }
-    ),
-    tfx.resource(
-      "Virtual Private Cloud Management Subnet Prefix",
-      'ibm_is_vpc_address_prefix.subnet_prefix["at-test-management-vpn-zone-1"]',
-      {
-        cidr: "10.10.30.0/24",
-        is_default: false,
-        name: "at-test-management-vpn-zone-1",
-        zone: "us-south-1",
       }
     ),
     tfx.resource(
@@ -580,144 +873,144 @@ tfx.plan("LandingZone Mixed Pattern", () => {
         zone: "us-south-3",
       }
     )
-  ),
-    tfx.module(
-      "Virtual Private Cloud",
-      'module.acceptance_tests.module.landing-zone.module.vpc["workload"]',
-      tfx.resource(
-        "Virtual Private Cloud Workload ACL",
-        'ibm_is_network_acl.network_acl["workload-acl"]',
-        {
-          name: "at-test-workload-workload-acl",
-          rules: aclRules.workload,
-        }
-      ),
-      tfx.resource(
-        "Virtual Private Cloud Workload Subnet VPE Zone 1",
-        'ibm_is_subnet.subnet["at-test-workload-vpe-zone-1"]',
-        {
-          ip_version: "ipv4",
-          ipv4_cidr_block: "10.40.20.0/24",
-          name: "at-test-workload-vpe-zone-1",
-          zone: "us-south-1",
-        }
-      ),
-      tfx.resource(
-        "Virtual Private Cloud Workload Subnet VPE Zone 2",
-        'ibm_is_subnet.subnet["at-test-workload-vpe-zone-2"]',
-        {
-          ip_version: "ipv4",
-          ipv4_cidr_block: "10.50.20.0/24",
-          name: "at-test-workload-vpe-zone-2",
-          zone: "us-south-2",
-        }
-      ),
-      tfx.resource(
-        "Virtual Private Cloud Workload Subnet VPE Zone 3",
-        'ibm_is_subnet.subnet["at-test-workload-vpe-zone-3"]',
-        {
-          ip_version: "ipv4",
-          ipv4_cidr_block: "10.60.20.0/24",
-          name: "at-test-workload-vpe-zone-3",
-          zone: "us-south-3",
-        }
-      ),
-      tfx.resource(
-        "Virtual Private Cloud Workload Subnet VSI Zone 1",
-        'ibm_is_subnet.subnet["at-test-workload-vsi-zone-1"]',
-        {
-          ip_version: "ipv4",
-          ipv4_cidr_block: "10.40.10.0/24",
-          name: "at-test-workload-vsi-zone-1",
-          zone: "us-south-1",
-        }
-      ),
-      tfx.resource(
-        "Virtual Private Cloud Workload Subnet VSI Zone 2",
-        'ibm_is_subnet.subnet["at-test-workload-vsi-zone-2"]',
-        {
-          ip_version: "ipv4",
-          ipv4_cidr_block: "10.50.10.0/24",
-          name: "at-test-workload-vsi-zone-2",
-          zone: "us-south-2",
-        }
-      ),
-      tfx.resource(
-        "Virtual Private Cloud Workload Subnet VSI Zone 3",
-        'ibm_is_subnet.subnet["at-test-workload-vsi-zone-3"]',
-        {
-          ip_version: "ipv4",
-          ipv4_cidr_block: "10.60.10.0/24",
-          name: "at-test-workload-vsi-zone-3",
-          zone: "us-south-3",
-        }
-      ),
-      tfx.resource("Virtual Private Cloud Workload", "ibm_is_vpc.vpc", {
-        address_prefix_management: "manual",
-        classic_access: false,
-        name: "at-test-workload-vpc",
-      }),
-      tfx.resource(
-        "Virtual Private Cloud Workload Subnet Address Prefix VPE",
-        'ibm_is_vpc_address_prefix.subnet_prefix["at-test-workload-vpe-zone-1"]',
-        {
-          cidr: "10.40.20.0/24",
-          is_default: false,
-          name: "at-test-workload-vpe-zone-1",
-          zone: "us-south-1",
-        }
-      ),
-      tfx.resource(
-        "Virtual Private Cloud Workload Subnet Address Prefix VPE",
-        'ibm_is_vpc_address_prefix.subnet_prefix["at-test-workload-vpe-zone-2"]',
-        {
-          cidr: "10.50.20.0/24",
-          is_default: false,
-          name: "at-test-workload-vpe-zone-2",
-          zone: "us-south-2",
-        }
-      ),
-      tfx.resource(
-        "Virtual Private Cloud Workload Subnet Address Prefix VPE",
-        'ibm_is_vpc_address_prefix.subnet_prefix["at-test-workload-vpe-zone-3"]',
-        {
-          cidr: "10.60.20.0/24",
-          is_default: false,
-          name: "at-test-workload-vpe-zone-3",
-          zone: "us-south-3",
-        }
-      ),
-      tfx.resource(
-        "Virtual Private Cloud Workload Subnet Address Prefix VSI",
-        'ibm_is_vpc_address_prefix.subnet_prefix["at-test-workload-vsi-zone-1"]',
-        {
-          cidr: "10.40.10.0/24",
-          is_default: false,
-          name: "at-test-workload-vsi-zone-1",
-          zone: "us-south-1",
-        }
-      ),
-      tfx.resource(
-        "Virtual Private Cloud Workload Subnet Address Prefix VSI",
-        'ibm_is_vpc_address_prefix.subnet_prefix["at-test-workload-vsi-zone-2"]',
-        {
-          cidr: "10.50.10.0/24",
-          is_default: false,
-          name: "at-test-workload-vsi-zone-2",
-          zone: "us-south-2",
-        }
-      ),
-      tfx.resource(
-        "Virtual Private Cloud Workload Subnet Address Prefix VSI",
-        'ibm_is_vpc_address_prefix.subnet_prefix["at-test-workload-vsi-zone-3"]',
-        {
-          cidr: "10.60.10.0/24",
-          is_default: false,
-          name: "at-test-workload-vsi-zone-3",
-          zone: "us-south-3",
-        }
-      )
-    );
+  );
+  tfx.module(
+    "Workload Virtual Private Cloud",
+    'module.acceptance_tests.module.landing-zone.module.vpc["workload"]',
+    tfx.resource(
+      "Virtual Private Cloud Workload ACL",
+      'ibm_is_network_acl.network_acl["workload-acl"]',
+      {
+        name: "at-test-workload-workload-acl",
+        rules: aclRulesVsi.workload,
+      }
+    ),
+    tfx.resource(
+      "Virtual Private Cloud Workload Subnet VPE Zone 1",
+      'ibm_is_subnet.subnet["at-test-workload-vpe-zone-1"]',
+      {
+        ip_version: "ipv4",
+        ipv4_cidr_block: "10.40.20.0/24",
+        name: "at-test-workload-vpe-zone-1",
+        zone: "us-south-1",
+      }
+    ),
+    tfx.resource(
+      "Virtual Private Cloud Workload Subnet VPE Zone 2",
+      'ibm_is_subnet.subnet["at-test-workload-vpe-zone-2"]',
+      {
+        ip_version: "ipv4",
+        ipv4_cidr_block: "10.50.20.0/24",
+        name: "at-test-workload-vpe-zone-2",
+        zone: "us-south-2",
+      }
+    ),
+    tfx.resource(
+      "Virtual Private Cloud Workload Subnet VPE Zone 3",
+      'ibm_is_subnet.subnet["at-test-workload-vpe-zone-3"]',
+      {
+        ip_version: "ipv4",
+        ipv4_cidr_block: "10.60.20.0/24",
+        name: "at-test-workload-vpe-zone-3",
+        zone: "us-south-3",
+      }
+    ),
+    tfx.resource(
+      "Virtual Private Cloud Workload Subnet VSI Zone 1",
+      'ibm_is_subnet.subnet["at-test-workload-vsi-zone-1"]',
+      {
+        ip_version: "ipv4",
+        ipv4_cidr_block: "10.40.10.0/24",
+        name: "at-test-workload-vsi-zone-1",
+        zone: "us-south-1",
+      }
+    ),
+    tfx.resource(
+      "Virtual Private Cloud Workload Subnet VSI Zone 2",
+      'ibm_is_subnet.subnet["at-test-workload-vsi-zone-2"]',
+      {
+        ip_version: "ipv4",
+        ipv4_cidr_block: "10.50.10.0/24",
+        name: "at-test-workload-vsi-zone-2",
+        zone: "us-south-2",
+      }
+    ),
+    tfx.resource(
+      "Virtual Private Cloud Workload Subnet VSI Zone 3",
+      'ibm_is_subnet.subnet["at-test-workload-vsi-zone-3"]',
+      {
+        ip_version: "ipv4",
+        ipv4_cidr_block: "10.60.10.0/24",
+        name: "at-test-workload-vsi-zone-3",
+        zone: "us-south-3",
+      }
+    ),
+    tfx.resource("Virtual Private Cloud Workload", "ibm_is_vpc.vpc", {
+      address_prefix_management: "manual",
+      classic_access: false,
+      name: "at-test-workload-vpc",
+    }),
+    tfx.resource(
+      "Virtual Private Cloud Workload Subnet Address Prefix VPE",
+      'ibm_is_vpc_address_prefix.subnet_prefix["at-test-workload-vpe-zone-1"]',
+      {
+        cidr: "10.40.20.0/24",
+        is_default: false,
+        name: "at-test-workload-vpe-zone-1",
+        zone: "us-south-1",
+      }
+    ),
+    tfx.resource(
+      "Virtual Private Cloud Workload Subnet Address Prefix VPE",
+      'ibm_is_vpc_address_prefix.subnet_prefix["at-test-workload-vpe-zone-2"]',
+      {
+        cidr: "10.50.20.0/24",
+        is_default: false,
+        name: "at-test-workload-vpe-zone-2",
+        zone: "us-south-2",
+      }
+    ),
+    tfx.resource(
+      "Virtual Private Cloud Workload Subnet Address Prefix VPE",
+      'ibm_is_vpc_address_prefix.subnet_prefix["at-test-workload-vpe-zone-3"]',
+      {
+        cidr: "10.60.20.0/24",
+        is_default: false,
+        name: "at-test-workload-vpe-zone-3",
+        zone: "us-south-3",
+      }
+    ),
+    tfx.resource(
+      "Virtual Private Cloud Workload Subnet Address Prefix VSI",
+      'ibm_is_vpc_address_prefix.subnet_prefix["at-test-workload-vsi-zone-1"]',
+      {
+        cidr: "10.40.10.0/24",
+        is_default: false,
+        name: "at-test-workload-vsi-zone-1",
+        zone: "us-south-1",
+      }
+    ),
+    tfx.resource(
+      "Virtual Private Cloud Workload Subnet Address Prefix VSI",
+      'ibm_is_vpc_address_prefix.subnet_prefix["at-test-workload-vsi-zone-2"]',
+      {
+        cidr: "10.50.10.0/24",
+        is_default: false,
+        name: "at-test-workload-vsi-zone-2",
+        zone: "us-south-2",
+      }
+    ),
+    tfx.resource(
+      "Virtual Private Cloud Workload Subnet Address Prefix VSI",
+      'ibm_is_vpc_address_prefix.subnet_prefix["at-test-workload-vsi-zone-3"]',
+      {
+        cidr: "10.60.10.0/24",
+        is_default: false,
+        name: "at-test-workload-vsi-zone-3",
+        zone: "us-south-3",
+      }
+    )
+  );
   tfx.module(
     "Virtual Server Instance",
     'module.acceptance_tests.module.landing-zone.module.vsi["at-test-management-server"]',

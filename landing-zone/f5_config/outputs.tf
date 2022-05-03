@@ -1,14 +1,10 @@
 ##############################################################################
-# Terraform Providers
+# F5 Outputs
 ##############################################################################
 
-terraform {
-  required_providers {
-    ibm = {
-      source  = "IBM-Cloud/ibm"
-      version = "~>1.40.1"
-    }
-  }
+output "user_data" {
+  description = "Cloud Init data for F5 instance"
+  value       = data.template_file.user_data.rendered
 }
 
 ##############################################################################

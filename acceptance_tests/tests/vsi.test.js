@@ -4,7 +4,7 @@ const tfx = new tfxjs("./patterns/vsi", "ibmcloud_api_key", { quiet: true });
 const aclRulesVsi = require("./acl-rules-vsi.json");
 const tags = ["acceptance-test", "landing-zone"];
 
-tfx.plan("LandingZone", () => {
+tfx.plan("LandingZone VSI Pattern", () => {
   tfx.module(
     "Root Module",
     "module.acceptance_tests.module.landing-zone",
@@ -36,13 +36,10 @@ tfx.plan("LandingZone", () => {
       `ibm_cos_bucket.buckets[\"workload-bucket\"]`,
       {
         bucket_name: "at-test-workload-bucket",
-        cross_region_location: null,
         endpoint_type: "public",
         force_delete: true,
-        hard_quota: null,
         region_location: "us-south",
         retention_rule: [],
-        single_site_location: null,
         storage_class: "standard",
       }
     ),
@@ -51,13 +48,10 @@ tfx.plan("LandingZone", () => {
       `ibm_cos_bucket.buckets[\"management-bucket\"]`,
       {
         bucket_name: "at-test-management-bucket",
-        cross_region_location: null,
         endpoint_type: "public",
         force_delete: true,
-        hard_quota: null,
         region_location: "us-south",
         retention_rule: [],
-        single_site_location: null,
         storage_class: "standard",
       }
     ),
@@ -66,13 +60,10 @@ tfx.plan("LandingZone", () => {
       `ibm_cos_bucket.buckets[\"atracker-bucket\"]`,
       {
         bucket_name: "at-test-atracker-bucket",
-        cross_region_location: null,
         endpoint_type: "public",
         force_delete: true,
-        hard_quota: null,
         region_location: "us-south",
         retention_rule: [],
-        single_site_location: null,
         storage_class: "standard",
       }
     ),
@@ -85,8 +76,6 @@ tfx.plan("LandingZone", () => {
         roles: ["Writer"],
         source_resource_type: "flow-log-collector",
         source_service_name: "is",
-        target_resource_group_id: null,
-        target_resource_type: null,
         target_service_name: "cloud-object-storage",
       }
     ),
@@ -96,11 +85,7 @@ tfx.plan("LandingZone", () => {
       {
         description: "Allow COS instance to read from KMS instance",
         roles: ["Reader"],
-        source_resource_group_id: null,
-        source_resource_type: null,
         source_service_name: "cloud-object-storage",
-        target_resource_group_id: null,
-        target_resource_type: null,
         target_service_name: "kms",
       }
     ),
@@ -110,11 +95,7 @@ tfx.plan("LandingZone", () => {
       {
         description: "Allow COS instance to read from KMS instance",
         roles: ["Reader"],
-        source_resource_group_id: null,
-        source_resource_type: null,
         source_service_name: "cloud-object-storage",
-        target_resource_group_id: null,
-        target_resource_type: null,
         target_service_name: "kms",
       }
     ),
@@ -127,8 +108,6 @@ tfx.plan("LandingZone", () => {
         roles: ["Writer"],
         source_resource_type: "flow-log-collector",
         source_service_name: "is",
-        target_resource_group_id: null,
-        target_resource_type: null,
         target_service_name: "cloud-object-storage",
       }
     ),
@@ -139,11 +118,7 @@ tfx.plan("LandingZone", () => {
         description:
           "Allow block storage volumes to be encrypted by KMS instance",
         roles: ["Reader"],
-        source_resource_instance_id: null,
-        source_resource_type: null,
         source_service_name: "server-protect",
-        target_resource_group_id: null,
-        target_resource_type: null,
         target_service_name: "kms",
       }
     ),
@@ -154,7 +129,6 @@ tfx.plan("LandingZone", () => {
         active: true,
         name: "management-logs",
         storage_bucket: "at-test-management-bucket",
-        timeouts: null,
       }
     ),
     tfx.resource(
@@ -164,7 +138,6 @@ tfx.plan("LandingZone", () => {
         active: true,
         name: "workload-logs",
         storage_bucket: "at-test-workload-bucket",
-        timeouts: null,
       }
     ),
     tfx.resource(
@@ -354,7 +327,6 @@ tfx.plan("LandingZone", () => {
         key_name: "at-test-atracker-key",
         key_ring_id: "at-test-slz-ring",
         standard_key: false,
-        timeouts: null,
       }
     ),
     tfx.resource(
@@ -365,7 +337,6 @@ tfx.plan("LandingZone", () => {
         key_name: "at-test-vsi-volume-key",
         key_ring_id: "at-test-slz-ring",
         standard_key: false,
-        timeouts: null,
       }
     ),
     tfx.resource(
@@ -393,7 +364,6 @@ tfx.plan("LandingZone", () => {
         name: "at-test-slz-kms",
         plan: "tiered-pricing",
         service: "kms",
-        timeouts: null,
       }
     )
   );
@@ -435,8 +405,6 @@ tfx.plan("LandingZone", () => {
         ip_version: "ipv4",
         ipv4_cidr_block: "10.10.20.0/24",
         name: "at-test-management-vpe-zone-1",
-        public_gateway: null,
-        timeouts: null,
         zone: "us-south-1",
       }
     ),
@@ -447,8 +415,6 @@ tfx.plan("LandingZone", () => {
         ip_version: "ipv4",
         ipv4_cidr_block: "10.20.20.0/24",
         name: "at-test-management-vpe-zone-2",
-        public_gateway: null,
-        timeouts: null,
         zone: "us-south-2",
       }
     ),
@@ -459,8 +425,6 @@ tfx.plan("LandingZone", () => {
         ip_version: "ipv4",
         ipv4_cidr_block: "10.30.20.0/24",
         name: "at-test-management-vpe-zone-3",
-        public_gateway: null,
-        timeouts: null,
         zone: "us-south-3",
       }
     ),
@@ -481,8 +445,6 @@ tfx.plan("LandingZone", () => {
         ip_version: "ipv4",
         ipv4_cidr_block: "10.10.10.0/24",
         name: "at-test-management-vsi-zone-1",
-        public_gateway: null,
-        timeouts: null,
         zone: "us-south-1",
       }
     ),
@@ -493,8 +455,6 @@ tfx.plan("LandingZone", () => {
         ip_version: "ipv4",
         ipv4_cidr_block: "10.20.10.0/24",
         name: "at-test-management-vsi-zone-2",
-        public_gateway: null,
-        timeouts: null,
         zone: "us-south-2",
       }
     ),
@@ -505,8 +465,6 @@ tfx.plan("LandingZone", () => {
         ip_version: "ipv4",
         ipv4_cidr_block: "10.30.10.0/24",
         name: "at-test-management-vsi-zone-3",
-        public_gateway: null,
-        timeouts: null,
         zone: "us-south-3",
       }
     ),
@@ -514,7 +472,6 @@ tfx.plan("LandingZone", () => {
       address_prefix_management: "manual",
       classic_access: false,
       name: "at-test-management-vpc",
-      timeouts: null,
     }),
     tfx.resource(
       "Virtual Private Cloud Management Subnet Address Prefix VPE",
@@ -595,8 +552,6 @@ tfx.plan("LandingZone", () => {
         ip_version: "ipv4",
         ipv4_cidr_block: "10.40.20.0/24",
         name: "at-test-workload-vpe-zone-1",
-        public_gateway: null,
-        timeouts: null,
         zone: "us-south-1",
       }
     ),
@@ -607,8 +562,6 @@ tfx.plan("LandingZone", () => {
         ip_version: "ipv4",
         ipv4_cidr_block: "10.50.20.0/24",
         name: "at-test-workload-vpe-zone-2",
-        public_gateway: null,
-        timeouts: null,
         zone: "us-south-2",
       }
     ),
@@ -619,8 +572,6 @@ tfx.plan("LandingZone", () => {
         ip_version: "ipv4",
         ipv4_cidr_block: "10.60.20.0/24",
         name: "at-test-workload-vpe-zone-3",
-        public_gateway: null,
-        timeouts: null,
         zone: "us-south-3",
       }
     ),
@@ -631,8 +582,6 @@ tfx.plan("LandingZone", () => {
         ip_version: "ipv4",
         ipv4_cidr_block: "10.40.10.0/24",
         name: "at-test-workload-vsi-zone-1",
-        public_gateway: null,
-        timeouts: null,
         zone: "us-south-1",
       }
     ),
@@ -643,8 +592,6 @@ tfx.plan("LandingZone", () => {
         ip_version: "ipv4",
         ipv4_cidr_block: "10.50.10.0/24",
         name: "at-test-workload-vsi-zone-2",
-        public_gateway: null,
-        timeouts: null,
         zone: "us-south-2",
       }
     ),
@@ -655,8 +602,6 @@ tfx.plan("LandingZone", () => {
         ip_version: "ipv4",
         ipv4_cidr_block: "10.60.10.0/24",
         name: "at-test-workload-vsi-zone-3",
-        public_gateway: null,
-        timeouts: null,
         zone: "us-south-3",
       }
     ),
@@ -664,7 +609,6 @@ tfx.plan("LandingZone", () => {
       address_prefix_management: "manual",
       classic_access: false,
       name: "at-test-workload-vpc",
-      timeouts: null,
     }),
     tfx.resource(
       "Virtual Private Cloud Workload Subnet Address Prefix VPE",

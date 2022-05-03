@@ -58,8 +58,8 @@ data "ibm_resource_instance" "appid" {
 ##############################################################################
 
 resource "ibm_resource_key" "appid_key" {
-  for_each             = var.appid.keys == null ? {} : {
-    for appid_key in var.appid.keys:
+  for_each = var.appid.keys == null ? {} : {
+    for appid_key in var.appid.keys :
     (appid_key) => appid_key
   }
   name                 = "${var.prefix}-${each.key}-app-id-key"

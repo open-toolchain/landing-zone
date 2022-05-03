@@ -895,10 +895,10 @@ variable "appid" {
 
   # app id key validation
   validation {
-    condition     = lookup(var.appid, "keys", null) == null || (
+    condition = lookup(var.appid, "keys", null) == null || (
       length(
         lookup(var.appid, "keys", null) == null ? [] : lookup(var.appid, "keys")
-      ) == length(
+        ) == length(
         distinct(
           lookup(var.appid, "keys", null) == null ? [] : lookup(var.appid, "keys")
         )
@@ -1225,6 +1225,178 @@ variable "access_groups" {
     condition = length(var.access_groups) == length(distinct([
       for group in var.access_groups : group.name
     ]))
+  }
+}
+
+##############################################################################
+
+
+#############################################################################
+# F5 Variables
+##############################################################################
+
+variable "f5_vsi" {
+  description = "A list describing F5 VSI workloads to create"
+  type = list(
+    object({
+      name                            = string
+      vpc_name                        = string
+      primary_subnet_name             = string
+      secondary_subnet_names          = list(string)
+      ssh_keys                        = list(string)
+      f5_image_name                   = string
+      machine_type                    = string
+      resource_group                  = optional(string)
+      enable_floating_ip              = optional(bool)
+      security_groups                 = optional(list(string))
+      boot_volume_encryption_key_name = optional(string)
+      hostname                        = string
+      domain                          = string
+      security_group = optional(
+        object({
+          name = string
+          rules = list(
+            object({
+              name      = string
+              direction = string
+              source    = string
+              tcp = optional(
+                object({
+                  port_max = number
+                  port_min = number
+                })
+              )
+              udp = optional(
+                object({
+                  port_max = number
+                  port_min = number
+                })
+              )
+              icmp = optional(
+                object({
+                  type = number
+                  code = number
+                })
+              )
+            })
+          )
+        })
+      )
+      block_storage_volumes = optional(list(
+        object({
+          name           = string
+          profile        = string
+          capacity       = optional(number)
+          iops           = optional(number)
+          encryption_key = optional(string)
+        })
+      ))
+      load_balancers = optional(list(
+        object({
+          name              = string
+          type              = string
+          listener_port     = number
+          listener_protocol = string
+          connection_limit  = number
+          algorithm         = string
+          protocol          = string
+          health_delay      = number
+          health_retries    = number
+          health_timeout    = number
+          health_type       = string
+          pool_member_port  = string
+          security_group = optional(
+            object({
+              name = string
+              rules = list(
+                object({
+                  name      = string
+                  direction = string
+                  source    = string
+                  tcp = optional(
+                    object({
+                      port_max = number
+                      port_min = number
+                    })
+                  )
+                  udp = optional(
+                    object({
+                      port_max = number
+                      port_min = number
+                    })
+                  )
+                  icmp = optional(
+                    object({
+                      type = number
+                      code = number
+                    })
+                  )
+                })
+              )
+            })
+          )
+        })
+      ))
+    })
+  )
+  default = []
+
+  validation {
+    error_message = "Image names for F5 VSI must be one of [`f5-bigip-15-1-2-1-0-0-10-all-1slot-1`,`f5-bigip-15-1-2-1-0-0-10-ltm-1slot-1`,`f5-bigip-16-0-1-1-0-0-6-ltm-1slot-1`,`f5-bigip-16-0-1-1-0-0-6-all-1slot-1`]."
+    condition = length(
+      [
+        for f5_vsi in var.f5_vsi :
+        f5_vsi if !contains(
+          [
+            "f5-bigip-15-1-2-1-0-0-10-all-1slot-1",
+            "f5-bigip-15-1-2-1-0-0-10-ltm-1slot-1",
+            "f5-bigip-16-0-1-1-0-0-6-ltm-1slot-1",
+            "f5-bigip-16-0-1-1-0-0-6-all-1slot-1"
+          ],
+          f5_vsi.f5_image_name
+        )
+      ]
+    ) == 0
+  }
+}
+
+variable "f5_template_data" {
+  description = "Data for all f5 templates"
+  sensitive = true
+  type = object({
+    tmos_admin_password     = optional(string)
+    license_type            = optional(string)
+    byol_license_basekey    = optional(string)
+    license_host            = optional(string)
+    license_username        = optional(string)
+    license_password        = optional(string)
+    license_pool            = optional(string)
+    license_sku_keyword_1   = optional(string)
+    license_sku_keyword_2   = optional(string)
+    license_unit_of_measure = optional(string)
+    do_declaration_url      = optional(string)
+    as3_declaration_url     = optional(string)
+    ts_declaration_url      = optional(string)
+    phone_home_url          = optional(string)
+    template_source         = optional(string)
+    template_version        = optional(string)
+    app_id                  = optional(string)
+    tgactive_url            = optional(string)
+    tgstandby_url           = optional(string)
+    tgrefresh_url           = optional(string)
+  })
+  default = {
+    tmos_admin_password = "Iamapassword2ru"
+  }
+
+  validation {
+    error_message = "Value for tmos_password must be at least 15 characters, contain one numeric, one uppercase, and one lowercase character."
+    condition = lookup(var.f5_template_data, "tmos_admin_password") == null ? true : (
+      length(var.f5_template_data.tmos_admin_password) >= 15
+      && can(regex("[A-Z]", var.f5_template_data.tmos_admin_password))
+      && can(regex("[a-z]", var.f5_template_data.tmos_admin_password))
+      && can(regex("[0-9]", var.f5_template_data.tmos_admin_password))
+    )
   }
 }
 

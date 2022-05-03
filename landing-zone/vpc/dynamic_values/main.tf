@@ -6,13 +6,19 @@ locals {
   # For each address prefix
   address_prefixes = var.address_prefixes == null ? [] : flatten([
     # For each zone
-    for zone in [for zone in keys(var.address_prefixes) : zone if var.address_prefixes[zone] != null] :
+    for zone in [
+      for zone in ["zone-1", "zone-2", "zone-3"] :
+      zone if var.address_prefixes[zone] != null && length(
+        // If zone is null return empty array, otherwise get zone length
+        var.address_prefixes[zone] == null ? [] : var.address_prefixes[zone]
+      ) > 0
+    ] :
     [
-      for address in range(0, length(zone), 1) :
+      for address in var.address_prefixes[zone] :
       # Return object containing name, zone, and CIDR
       {
-        name = "${var.prefix}-${zone}-${address + 1}"
-        cidr = var.address_prefixes[zone][0]
+        name = "${var.prefix}-${zone}-${index(var.address_prefixes[zone], address) + 1}"
+        cidr = address
         zone = "${var.region}-${index(keys(var.address_prefixes), zone) + 1}"
       }
     ]

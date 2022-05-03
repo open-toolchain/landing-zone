@@ -277,3 +277,19 @@ output "ssh_keys" {
 }
 
 ##############################################################################
+
+##############################################################################
+# VSI Outputs
+##############################################################################
+
+output "f5_vsi_map" {
+  description = "Map of VSI deployments"
+  value       = local.f5_vsi_map
+}
+
+output "f5_template_map" {
+  description = "Map of template data for f5 deployments"
+  value       = module.f5_cloud_init
+}
+
+##############################################################################

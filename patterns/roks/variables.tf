@@ -48,6 +48,12 @@ variable "network_cidr" {
   default     = "10.0.0.0/8"
 }
 
+variable "enable_edge_vpc" {
+  description = "Create an edge VPC. This VPC will be dynamically added to the list of VPCs in `var.vpcs`."
+  type        = bool
+  default     = false
+}
+
 variable "vpcs" {
   description = "List of VPCs to create. The first VPC in this list will always be considered the `management` VPC, and will be where the VPN Gateway is connected. VPCs names can only be a maximum of 16 characters and can only contain letters, numbers, and - characters. VPC names must begin with a letter.. The first VPC in this list will always be considered the `management` VPC, and will be where the VPN Gateway is connected. VPCs names can only be a maximum of 16 characters and can only contain letters, numbers, and - characters. VPC names must begin with a letter."
   type        = list(string)
