@@ -1362,7 +1362,7 @@ variable "f5_vsi" {
 
 variable "f5_template_data" {
   description = "Data for all f5 templates"
-  sensitive = true
+  sensitive   = true
   type = object({
     tmos_admin_password     = optional(string)
     license_type            = optional(string)

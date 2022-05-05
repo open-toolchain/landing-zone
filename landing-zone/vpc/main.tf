@@ -22,15 +22,18 @@ resource "ibm_is_vpc" "vpc" {
 
 locals {
   # For each address prefix
-  address_prefixes = module.dynamic_values.address_prefixes
+  address_prefixes = {
+    for prefix in module.dynamic_values.address_prefixes :
+    (prefix.name) => prefix
+  }
 }
 
 resource "ibm_is_vpc_address_prefix" "address_prefixes" {
-  count = length(local.address_prefixes)
-  name  = local.address_prefixes[count.index].name
-  vpc   = ibm_is_vpc.vpc.id
-  zone  = local.address_prefixes[count.index].zone
-  cidr  = local.address_prefixes[count.index].cidr
+  for_each = local.address_prefixes
+  name     = each.value.name
+  vpc      = ibm_is_vpc.vpc.id
+  zone     = each.value.zone
+  cidr     = each.value.cidr
 }
 
 ##############################################################################

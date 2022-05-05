@@ -53,10 +53,34 @@ variable "network_cidr" {
   default     = "10.0.0.0/8"
 }
 
-variable "enable_edge_vpc" {
+variable "add_edge_vpc" {
   description = "Create an edge VPC. This VPC will be dynamically added to the list of VPCs in `var.vpcs`."
   type        = bool
   default     = false
+}
+
+variable "create_bastion_on_management_vpc" {
+  description = "Set up bastion on management VPC. This value conflicts with `add_edge_vpc`."
+  type        = bool
+  default     = false
+}
+
+variable "vpn_firewall_type" {
+  description = "Bastion type if provisioning bastion. Can be `full-tunnel`, `waf`, or `vpn-and-waf`."
+  type        = string
+  default     = null
+
+  validation {
+    error_message = "Bastion type must be `full-tunnel`, `waf`, `vpn-and-waf` or `null`."
+    condition = (
+      # if bastion type is null
+      var.vpn_firewall_type == null
+      # return true
+      ? true
+      # otherwise check list
+      : contains(["full-tunnel", "waf", "vpn-and-waf"], var.vpn_firewall_type)
+    )
+  }
 }
 
 variable "vpcs" {

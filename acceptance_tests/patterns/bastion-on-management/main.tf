@@ -7,9 +7,9 @@ module "acceptance_tests" {
   ssh_public_key                   = "<user defined>"
   tags                             = ["acceptance-test", "landing-zone"]
   network_cidr                     = "10.0.0.0/8"
-  add_edge_vpc                     = true
+  add_edge_vpc                     = false
+  create_bastion_on_management_vpc = true
   vpn_firewall_type                = "vpn-and-waf"
-  create_bastion_on_management_vpc = false
   vpcs                             = ["management", "workload"]
   enable_transit_gateway           = true
   add_atracker_route               = true

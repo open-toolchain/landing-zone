@@ -53,12 +53,6 @@ variable "network_cidr" {
   default     = "10.0.0.0/8"
 }
 
-variable "enable_edge_vpc" {
-  description = "Create an edge VPC. This VPC will be dynamically added to the list of VPCs in `var.vpcs`."
-  type        = bool
-  default     = false
-}
-
 variable "vpcs" {
   description = "List of VPCs to create. The first VPC in this list will always be considered the `management` VPC, and will be where the VPN Gateway is connected. VPCs names can only be a maximum of 16 characters and can only contain letters, numbers, and - characters. VPC names must begin with a letter.. The first VPC in this list will always be considered the `management` VPC, and will be where the VPN Gateway is connected. VPCs names can only be a maximum of 16 characters and can only contain letters, numbers, and - characters. VPC names must begin with a letter."
   type        = list(string)
@@ -70,6 +64,36 @@ variable "vpcs" {
       for name in var.vpcs :
       name if length(name) > 16 || !can(regex("^([A-z]|[a-z][-a-z0-9]*[a-z0-9])$", name))
     ]) == 0
+  }
+}
+
+variable "add_edge_vpc" {
+  description = "Create an edge VPC. This VPC will be dynamically added to the list of VPCs in `var.vpcs`. This value conflicts with `create_bastion_on_management_vpc`."
+  type        = bool
+  default     = false
+}
+
+variable "create_bastion_on_management_vpc" {
+  description = "Set up bastion on management VPC. This value conflicts with `add_edge_vpc`."
+  type        = bool
+  default     = false
+}
+
+variable "vpn_firewall_type" {
+  description = "Bastion type if provisioning bastion. Can be `full-tunnel`, `waf`, or `vpn-and-waf`."
+  type        = string
+  default     = null
+
+  validation {
+    error_message = "Bastion type must be `full-tunnel`, `waf`, `vpn-and-waf` or `null`."
+    condition = (
+      # if bastion type is null
+      var.vpn_firewall_type == null
+      # return true
+      ? true
+      # otherwise check list
+      : contains(["full-tunnel", "waf", "vpn-and-waf"], var.vpn_firewall_type)
+    )
   }
 }
 

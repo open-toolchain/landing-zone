@@ -7,35 +7,25 @@ locals {
   # Empty string is used to avoid type conflicts with unary operators
   override = jsondecode(var.override ? file("./override.json") : "{}")
 
-  # Add HPCS resource group if included
-  resource_group_list = (
-    var.hs_crypto_resource_group == null
-    ? ["Default", "service"]
-    : ["Default", "service", var.hs_crypto_resource_group]
-  )
-
-  # Prepend edge to list if enabled
-  vpc_list = (
-    var.enable_edge_vpc
-    ? concat(["edge"], var.vpcs)
-    : var.vpcs
-  )
-
   ##############################################################################
   # Dynamic configuration for landing zone environment
   ##############################################################################
+
   config = {
+
     ##############################################################################
     # Create a resource group for each group in the list, and for each VPC
     # get default, Default and hs crypto if included. 
     ##############################################################################
+
     resource_groups = [
       for group in distinct(concat(local.resource_group_list, local.vpc_list)) :
       {
-        name   = group == "Default" || group == "default" || group == var.hs_crypto_resource_group ? group : "${var.prefix}-${group}-rg"
-        create = (group == "Default" || group == "default" || group == var.hs_crypto_resource_group) ? false : true
+        name   = contains(local.dynamic_rg_list, group) ? group : "${var.prefix}-${group}-rg"
+        create = contains(local.dynamic_rg_list, group) ? false : true
       }
     ]
+
     ##############################################################################
 
     ##############################################################################
@@ -53,6 +43,7 @@ locals {
     ##############################################################################
     # Create one VPC for each name in VPC variable
     ##############################################################################
+
     vpcs = [
       for network in local.vpc_list :
       {
@@ -61,9 +52,9 @@ locals {
         flow_logs_bucket_name = "${network}-bucket"
         address_prefixes = {
           # Address prefixes need to be set for edge vpc, otherwise will be empty array
-          zone-1 = network == local.vpc_list[0] && var.enable_edge_vpc ? ["10.5.0.0/16"] : []
-          zone-2 = network == local.vpc_list[0] && var.enable_edge_vpc ? ["10.6.0.0/16"] : []
-          zone-3 = network == local.vpc_list[0] && var.enable_edge_vpc ? ["10.7.0.0/16"] : []
+          zone-1 = local.vpc_use_edge_prefixes[network]["zone-1"]
+          zone-2 = local.vpc_use_edge_prefixes[network]["zone-2"]
+          zone-3 = local.vpc_use_edge_prefixes[network]["zone-3"]
         }
         default_security_group_rules = []
         network_acls = [
@@ -110,20 +101,15 @@ locals {
         subnets = {
           for zone in [1, 2, 3] :
           "zone-${zone}" => [
-            for subnet in(
-              var.enable_edge_vpc && network == local.vpc_list[0]                                                 # if network 0 and enable edge
-              ? ["vpn-1", "vpn-2", "f5-external", "f5-management", "f5-workload", "f5-bastion", "bastion", "vpe"] # seven tiers
-              : network == local.vpc_list[0] && zone == 1 && !var.enable_edge_vpc                                 # otherwise if zone 1
-              ? ["vsi", "vpe", "vpn"]                                                                             # vpn
-              : ["vsi", "vpe"]                                                                                    # else regular
-            ) :
+            for subnet in local.vpc_subnet_tiers[network]["zone-${zone}"] :
             {
               name = "${subnet}-zone-${zone}"
               cidr = (
-                var.enable_edge_vpc && network == local.vpc_list[0]
-                # Ensure edge doesn't conflict with existing cidr
-                ? "10.${zone + 4}.${1 + index(["vpn-1", "vpn-2", "f5-external", "f5-management", "f5-workload", "f5-bastion", "bastion", "vpe"], subnet)}0.0/24"
-                # CIDR expression
+                # If using bastion and is a bastion subnet in vpc 0
+                local.use_bastion && contains(local.bastion_tiers, subnet) && network == local.vpc_list[0]
+                # Create bastion CIDR
+                ? "10.${zone + 4}.${1 + index(local.bastion_tiers, subnet)}0.0/24"
+                # Otherwise create regular network CIDR
                 : "10.${zone + (index(var.vpcs, network) * 3)}0.${1 + index(["vsi", "vpe", "vpn"], subnet)}0.0/24"
               )
               public_gateway = false
@@ -131,8 +117,10 @@ locals {
             }
           ]
         }
+        ##############################################################################
       }
     ]
+
     ##############################################################################
 
     ##############################################################################
@@ -336,11 +324,13 @@ locals {
     ]
     ##############################################################################
 
+
     ##############################################################################
     # VPN Gateway
-    # > Create a gateway in first vpc if edge vpc is not enabled    
+    # > Create a gateway in first vpc if bastion not enabled    
     ##############################################################################
-    vpn_gateways = !var.enable_edge_vpc ? [
+
+    vpn_gateways = !local.use_bastion ? [
       {
         name           = "${local.vpc_list[0]}-gateway"
         vpc_name       = "${local.vpc_list[0]}"
@@ -349,6 +339,7 @@ locals {
         connections    = []
       }
     ] : []
+
     ##############################################################################
 
     ##############################################################################
