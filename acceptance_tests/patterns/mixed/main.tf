@@ -12,8 +12,8 @@ module "acceptance_tests" {
   add_atracker_route       = true
   hs_crypto_instance_name  = null
   hs_crypto_resource_group = null
-  vsi_image_name           = "ibm-ubuntu-16-04-5-minimal-amd64-1"
-  vsi_instance_profile     = "cx2-2x4"
+  vsi_image_name           = "ibm-ubuntu-18-04-6-minimal-amd64-2"
+  vsi_instance_profile     = "cx2-4x8"
   vsi_per_subnet           = 1
   cluster_zones            = 3
   flavor                   = "bx2.16x64"

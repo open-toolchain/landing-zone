@@ -184,8 +184,8 @@ variable "app_id" {
 
 variable "tgactive_url" {
   type        = string
-  default     = ""
   description = "The URL to POST L3 addresses when tgactive is triggered"
+  default     = ""
 }
 
 variable "tgstandby_url" {

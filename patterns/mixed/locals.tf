@@ -36,9 +36,9 @@ locals {
 
   # Static list for bastion tiers by type
   vpn_firewall_types = {
-    full-tunnel = ["f5-external", "f5-management", "f5-bastion"]
-    waf         = ["f5-external", "f5-management", "f5-workload"]
-    vpn-and-waf = ["f5-external", "f5-management", "f5-workload", "f5-bastion"]
+    full-tunnel = ["f5-management", "f5-external", "f5-bastion"]
+    waf         = ["f5-management", "f5-external", "f5-workload"]
+    vpn-and-waf = ["f5-management", "f5-external", "f5-workload", "f5-bastion"]
   }
 
   # Tiers for bastion

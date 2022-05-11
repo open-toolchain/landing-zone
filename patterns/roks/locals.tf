@@ -51,6 +51,7 @@ locals {
     ],
     ["bastion", "vpe"]
   ])
+
   subnet_tiers = ["vsi", "vpe", "vpn"] # Subnet tiers
 
 

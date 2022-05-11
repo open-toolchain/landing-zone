@@ -680,9 +680,9 @@ tfx.plan("LandingZone VSI Pattern", () => {
         'ibm_is_instance.vsi["at-test-management-server-1"]',
         {
           force_action: false,
-          image: "r006-34ceeafe-fcc6-11e9-893a-57dde2f48a21",
+          image: "r006-35668c13-c034-43b2-b0a1-2994b9044cec",
           name: "at-test-management-server-1",
-          profile: "cx2-2x4",
+          profile: "cx2-4x8",
           wait_before_delete: true,
           zone: "us-south-1",
         }
@@ -692,9 +692,9 @@ tfx.plan("LandingZone VSI Pattern", () => {
         'ibm_is_instance.vsi["at-test-management-server-2"]',
         {
           force_action: false,
-          image: "r006-34ceeafe-fcc6-11e9-893a-57dde2f48a21",
+          image: "r006-35668c13-c034-43b2-b0a1-2994b9044cec",
           name: "at-test-management-server-2",
-          profile: "cx2-2x4",
+          profile: "cx2-4x8",
           wait_before_delete: true,
           zone: "us-south-2",
         }
@@ -704,9 +704,9 @@ tfx.plan("LandingZone VSI Pattern", () => {
         'ibm_is_instance.vsi["at-test-management-server-3"]',
         {
           force_action: false,
-          image: "r006-34ceeafe-fcc6-11e9-893a-57dde2f48a21",
+          image: "r006-35668c13-c034-43b2-b0a1-2994b9044cec",
           name: "at-test-management-server-3",
-          profile: "cx2-2x4",
+          profile: "cx2-4x8",
           wait_before_delete: true,
           zone: "us-south-3",
         }

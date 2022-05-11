@@ -39,6 +39,8 @@ module "landing-zone" {
   wait_till                      = local.env.wait_till
   iam_account_settings           = local.env.iam_account_settings
   access_groups                  = local.env.access_groups
+  f5_vsi                         = local.env.f5_vsi
+  f5_template_data               = local.env.f5_template_data
 }
 
 ##############################################################################

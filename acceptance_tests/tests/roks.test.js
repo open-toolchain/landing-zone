@@ -439,7 +439,7 @@ tfx.plan("LandingZone Roks Pattern", () => {
       'ibm_is_network_acl.network_acl["management-acl"]',
       {
         name: "at-test-management-management-acl",
-        rules: aclRules.management,
+        rules: aclRules.workload,
       }
     ),
     tfx.resource(

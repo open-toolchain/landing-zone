@@ -59,7 +59,8 @@ locals {
         default_security_group_rules = []
         network_acls = [
           {
-            name = "${network}-acl"
+            name              = "${network}-acl"
+            add_cluster_rules = true
             rules = [
               {
                 name        = "allow-ibm-inbound"
@@ -343,6 +344,70 @@ locals {
     ##############################################################################
 
     ##############################################################################
+    # F5 Deployment Instances
+    ##############################################################################
+
+    f5_deployments = [
+      for instance in flatten([local.use_bastion ? [1, 2, 3] : []]) :
+      {
+        name                = "f5-zone-${instance}"
+        vpc_name            = local.vpc_list[0]
+        primary_subnet_name = "f5-management-zone-${instance}"
+        f5_image_name       = var.f5_image_name
+        machine_type        = var.f5_instance_profile
+        resource_group      = "${var.prefix}-${local.vpc_list[0]}-rg"
+        domain              = var.domain
+        hostname            = var.hostname
+        ssh_keys            = ["ssh-key"]
+        security_group = {
+          name     = "f5-zone-${instance}"
+          vpc_name = local.vpc_list[0]
+          rules = flatten([
+            # Create single array from dynamically generated and static arrays
+            [
+              {
+                name      = "allow-ibm-inbound"
+                source    = "161.26.0.0/16"
+                direction = "inbound"
+              }
+            ],
+            # Dynamically create rule to allow inbound and outbound network traffic
+            [
+              for direction in ["inbound", "outbound"] :
+              [
+                {
+                  name      = "allow-vpc-${direction}"
+                  source    = "10.0.0.0/8"
+                  direction = direction
+                }
+
+              ]
+            ],
+            # For each port in the list, create an inbound rule to allow traffic out to IBM CIDR
+            [
+              for port in [53, 80, 443] :
+              {
+                name      = "allow-ibm-tcp-${port}-outbound"
+                source    = "161.26.0.0/16"
+                direction = "outbound"
+                tcp = {
+                  port_min = port
+                  port_max = port
+                }
+              }
+            ]
+          ])
+        },
+        secondary_subnet_names = [
+          for subnet in local.vpn_firewall_types[var.vpn_firewall_type] :
+          "${subnet}-zone-${instance}" if subnet != "f5-management"
+        ]
+      }
+    ]
+
+    ##############################################################################
+
+    ##############################################################################
     # IAM Account Settings
     ##############################################################################
     iam_account_settings = {
@@ -396,6 +461,29 @@ locals {
     wait_till                      = lookup(local.override, "wait_till", "IngressReady")
     iam_account_settings           = lookup(local.override, "iam_account_settings", local.config.iam_account_settings)
     access_groups                  = lookup(local.override, "access_groups", local.config.access_groups)
+    f5_vsi                         = lookup(local.override, "f5_vsi", local.config.f5_deployments)
+    f5_template_data = {
+      tmos_admin_password     = lookup(local.override, "f5_template_data", null) == null ? null : lookup(local.override.f5_template_data, "tmos_admin_password", var.tmos_admin_password)
+      license_type            = lookup(local.override, "f5_template_data", null) == null ? null : lookup(local.override.f5_template_data, "license_type", var.license_type)
+      byol_license_basekey    = lookup(local.override, "f5_template_data", null) == null ? null : lookup(local.override.f5_template_data, "byol_license_basekey", var.byol_license_basekey)
+      license_host            = lookup(local.override, "f5_template_data", null) == null ? null : lookup(local.override.f5_template_data, "license_host", var.license_host)
+      license_username        = lookup(local.override, "f5_template_data", null) == null ? null : lookup(local.override.f5_template_data, "license_username", var.license_username)
+      license_password        = lookup(local.override, "f5_template_data", null) == null ? null : lookup(local.override.f5_template_data, "license_password", var.license_password)
+      license_pool            = lookup(local.override, "f5_template_data", null) == null ? null : lookup(local.override.f5_template_data, "license_pool", var.license_pool)
+      license_sku_keyword_1   = lookup(local.override, "f5_template_data", null) == null ? null : lookup(local.override.f5_template_data, "license_sku_keyword_1", var.license_sku_keyword_1)
+      license_sku_keyword_2   = lookup(local.override, "f5_template_data", null) == null ? null : lookup(local.override.f5_template_data, "license_sku_keyword_2", var.license_sku_keyword_2)
+      license_unit_of_measure = lookup(local.override, "f5_template_data", null) == null ? null : lookup(local.override.f5_template_data, "license_unit_of_measure", var.license_unit_of_measure)
+      do_declaration_url      = lookup(local.override, "f5_template_data", null) == null ? null : lookup(local.override.f5_template_data, "do_declaration_url", var.do_declaration_url)
+      as3_declaration_url     = lookup(local.override, "f5_template_data", null) == null ? null : lookup(local.override.f5_template_data, "as3_declaration_url", var.as3_declaration_url)
+      ts_declaration_url      = lookup(local.override, "f5_template_data", null) == null ? null : lookup(local.override.f5_template_data, "ts_declaration_url", var.ts_declaration_url)
+      phone_home_url          = lookup(local.override, "f5_template_data", null) == null ? null : lookup(local.override.f5_template_data, "phone_home_url", var.phone_home_url)
+      template_source         = lookup(local.override, "f5_template_data", null) == null ? null : lookup(local.override.f5_template_data, "template_source", var.template_source)
+      template_version        = lookup(local.override, "f5_template_data", null) == null ? null : lookup(local.override.f5_template_data, "template_version", var.template_version)
+      app_id                  = lookup(local.override, "f5_template_data", null) == null ? null : lookup(local.override.f5_template_data, "app_id", var.app_id)
+      tgactive_url            = lookup(local.override, "f5_template_data", null) == null ? null : lookup(local.override.f5_template_data, "tgactive_url", var.tgactive_url)
+      tgstandby_url           = lookup(local.override, "f5_template_data", null) == null ? null : lookup(local.override.f5_template_data, "tgstandby_url", var.tgstandby_url)
+      tgrefresh_url           = lookup(local.override, "f5_template_data", null) == null ? null : lookup(local.override.f5_template_data, "tgrefresh_url", var.tgrefresh_url)
+    }
   }
   ##############################################################################
 

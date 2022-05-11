@@ -49,8 +49,8 @@ For the [mixed pattern](./patterns/mixed/) and [vsi pattern](./patterns/vsi)
 Name                     | Type         | Description                                                                                                                                                                     | Sensitive | Default
 ------------------------ | ------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------- | ----------------------------------
 ssh_public_key           | string       | Public SSH Key for VSI creation.                                                                                                                                                |           | 
-vsi_image_name           | string       | VSI image name. Use the IBM Cloud CLI command `ibmcloud is images` to see availabled images.                                                                                    |           | ibm-ubuntu-16-04-5-minimal-amd64-1
-vsi_instance_profile     | string       | VSI image profile. Use the IBM Cloud CLI command `ibmcloud is instance-profiles` to see available image profiles.                                                               |           | cx2-2x4
+vsi_image_name           | string       | VSI image name. Use the IBM Cloud CLI command `ibmcloud is images` to see availabled images.                                                                                    |           | ibm-ubuntu-18-04-6-minimal-amd64-2
+vsi_instance_profile     | string       | VSI image profile. Use the IBM Cloud CLI command `ibmcloud is instance-profiles` to see available image profiles.                                                               |           | cx2-4x8
 vsi_per_subnet           | number       | Number of Virtual Servers to create on each VSI subnet.                                                                                                                         |           | 1
 
 ### Variables for Patterns Including OpenShift Clusters

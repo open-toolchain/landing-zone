@@ -1387,6 +1387,7 @@ variable "f5_template_data" {
   })
   default = {
     tmos_admin_password = "Iamapassword2ru"
+    license_type        = "none"
   }
 
   validation {
