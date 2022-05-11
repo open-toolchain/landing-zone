@@ -1239,15 +1239,22 @@ variable "f5_vsi" {
   description = "A list describing F5 VSI workloads to create"
   type = list(
     object({
-      name                            = string
-      vpc_name                        = string
-      primary_subnet_name             = string
-      secondary_subnet_names          = list(string)
+      name                   = string
+      vpc_name               = string
+      primary_subnet_name    = string
+      secondary_subnet_names = list(string)
+      secondary_subnet_security_group_names = list(
+        object({
+          group_name     = string
+          interface_name = string
+        })
+      )
       ssh_keys                        = list(string)
       f5_image_name                   = string
       machine_type                    = string
       resource_group                  = optional(string)
-      enable_floating_ip              = optional(bool)
+      enable_management_floating_ip   = optional(bool)
+      enable_external_floating_ip     = optional(bool)
       security_groups                 = optional(list(string))
       boot_volume_encryption_key_name = optional(string)
       hostname                        = string

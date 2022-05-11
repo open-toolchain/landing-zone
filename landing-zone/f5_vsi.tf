@@ -68,32 +68,44 @@ locals {
 ##############################################################################
 
 module "f5_vsi" {
-  source                = "./vsi"
-  for_each              = local.f5_vsi_map
-  resource_group_id     = each.value.resource_group == null ? null : local.resource_groups[each.value.resource_group]
-  create_security_group = each.value.security_group == null ? false : true
-  prefix                = "${var.prefix}-${each.value.name}"
-  vpc_id                = module.vpc[each.value.vpc_name].vpc_id
-  subnets               = each.value.subnets
-  secondary_subnets     = each.value.secondary_subnets
-  image_id              = lookup(local.public_image_map[each.value.f5_image_name], var.region)
-  boot_volume_encryption_key = each.value.boot_volume_encryption_key_name == null ? "" : [
-    for keys in module.key_management.keys :
-    keys.id if keys.name == each.value.boot_volume_encryption_key_name
-  ][0]
-  security_group_ids = each.value.security_groups == null ? [] : [
-    for group in each.value.security_groups :
-    ibm_is_security_group.security_group[group].id
+  source                      = "./vsi"
+  for_each                    = local.f5_vsi_map
+  resource_group_id           = each.value.resource_group == null ? null : local.resource_groups[each.value.resource_group]
+  create_security_group       = each.value.security_group == null ? false : true
+  prefix                      = "${var.prefix}-${each.value.name}"
+  vpc_id                      = module.vpc[each.value.vpc_name].vpc_id
+  subnets                     = each.value.subnets
+  secondary_subnets           = each.value.secondary_subnets
+  secondary_allow_ip_spoofing = true
+  secondary_security_groups = [
+    for group in each.value.secondary_subnet_security_group_names :
+    {
+      security_group_id = ibm_is_security_group.security_group[group.group_name].id
+      interface_name    = group.interface_name
+    }
   ]
-  ssh_key_ids = [
-    for ssh_key in each.value.ssh_keys :
-    lookup(module.ssh_keys.ssh_key_map, ssh_key).id
-  ]
+  image_id       = lookup(local.public_image_map[each.value.f5_image_name], var.region)
   user_data      = module.dynamic_values.f5_template_map[each.key].user_data
   machine_type   = each.value.machine_type
   vsi_per_subnet = 1
   security_group = each.value.security_group
   load_balancers = each.value.load_balancers == null ? [] : each.value.load_balancers
+  # Get boot volume
+  boot_volume_encryption_key = each.value.boot_volume_encryption_key_name == null ? "" : [
+    for keys in module.key_management.keys :
+    keys.id if keys.name == each.value.boot_volume_encryption_key_name
+  ][0]
+  # Get security group ids
+  security_group_ids = each.value.security_groups == null ? [] : [
+    for group in each.value.security_groups :
+    ibm_is_security_group.security_group[group].id
+  ]
+  # Get ssh keys
+  ssh_key_ids = [
+    for ssh_key in each.value.ssh_keys :
+    lookup(module.ssh_keys.ssh_key_map, ssh_key).id
+  ]
+  # Get block storage volumes
   block_storage_volumes = each.value.block_storage_volumes == null ? [] : [
     # For each block storage volume
     for volume in each.value.block_storage_volumes :
@@ -109,8 +121,9 @@ module "f5_vsi" {
       ][0]
     }
   ]
-  enable_floating_ip = each.value.enable_floating_ip == true ? true : false
-  depends_on         = [module.ssh_keys]
+  enable_floating_ip     = each.value.enable_management_floating_ip == true ? true : false
+  secondary_floating_ips = each.value.enable_external_floating_ip == true ? [each.value.secondary_subnets[0].name] : []
+  depends_on             = [module.ssh_keys]
 }
 
 ##############################################################################

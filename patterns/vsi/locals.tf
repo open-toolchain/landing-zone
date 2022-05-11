@@ -36,9 +36,9 @@ locals {
 
   # Static list for bastion tiers by type
   vpn_firewall_types = {
-    full-tunnel = ["f5-external", "f5-management", "f5-bastion"]
-    waf         = ["f5-external", "f5-management", "f5-workload"]
-    vpn-and-waf = ["f5-external", "f5-management", "f5-workload", "f5-bastion"]
+    full-tunnel = ["f5-management", "f5-external", "f5-bastion"]
+    waf         = ["f5-management", "f5-external", "f5-workload"]
+    vpn-and-waf = ["f5-management", "f5-external", "f5-workload", "f5-bastion"]
   }
 
   # Tiers for bastion
@@ -73,6 +73,89 @@ locals {
         # default to empty
         : []
       )
+    }
+  }
+
+  workload_subnets = ["10.10.10.0/24", "10.20.10.0/24", "10.30.10.0/24", "10.40.10.0/24", "10.50.10.0/24", "10.60.10.0/24"]
+
+  ##############################################################################
+
+  ##############################################################################
+  # F5 Security Groups
+  ##############################################################################
+
+  f5_security_groups = {
+    f5-management = {
+      name     = "f5-management-sg"
+      vpc_name = local.vpc_list[0]
+      rules = flatten([
+        for zone in [1, 2, 3] :
+        [
+          for port in [22, 443] :
+          {
+            name      = "allow-bastion-${zone}-inbound-${port}"
+            direction = "inbound"
+            source    = "10.${4 + zone}.${1 + index(local.bastion_tiers, "bastion")}0.0/24"
+            tcp = {
+              port_max = port
+              port_min = port
+            }
+          }
+        ]
+      ])
+    }
+    f5-external = {
+      name     = "f5-external-sg"
+      vpc_name = local.vpc_list[0]
+      rules = [
+        {
+          name      = "allow-inbound-443"
+          direction = "inbound"
+          source    = "0.0.0.0/0"
+          tcp = {
+            port_max = 443
+            port_min = 443
+          }
+        }
+      ]
+    }
+    f5-workload = {
+      name     = "f5-workload-sg"
+      vpc_name = local.vpc_list[0]
+      rules = flatten([
+        [
+          for subnet in local.workload_subnets :
+          {
+            name      = "allow-workload-subnet-${index(local.workload_subnets, subnet) + 1}"
+            source    = subnet
+            direction = "inbound"
+            tcp = {
+              port_max = 443
+              port_min = 443
+            }
+          } if contains(local.bastion_tiers, "f5-workload")
+        ]
+      ])
+    }
+
+    f5-bastion = {
+      name     = "f5-bastion-sg"
+      vpc_name = local.vpc_list[0]
+      rules = flatten([
+        for zone in [1, 2, 3] :
+        [
+          for ports in [[3023, 3025], [3080, 3080]] :
+          {
+            name      = "allow-zone-${zone}-inbound-${ports[0]}"
+            direction = "inbound"
+            source    = "10.${4 + zone}.${1 + index(local.bastion_tiers, "bastion")}0.0/24"
+            tcp = {
+              port_max = ports[0]
+              port_min = ports[1]
+            }
+          }
+        ] if contains(local.bastion_tiers, "f5-bastion")
+      ])
     }
   }
 
@@ -129,6 +212,12 @@ locals {
   # Prevent users from provisioning bastion subnets without a tier selected
   fail_with_no_vpn_firewall_type = regex("false", tostring(
     var.vpn_firewall_type == null && local.use_bastion
+  ))
+
+  # Prevent users from provisioning using both external and management fip
+  # VSI can only have one floating IP per device
+  fail_with_both_f5_fip = regex("false", tostring(
+    var.enable_f5_management_fip == true && var.enable_f5_external_fip == true
   ))
 }
 

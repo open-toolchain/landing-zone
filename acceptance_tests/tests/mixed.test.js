@@ -1,7 +1,7 @@
 require("dotenv").config();
 const tfxjs = require("tfxjs");
 const tfx = new tfxjs("./patterns/mixed", "ibmcloud_api_key", { quiet: true });
-const aclRules = require("./acl-rules-vsi.json");
+const aclRules = require("./acl-rules.json");
 const tags = ["acceptance-test", "landing-zone"];
 
 tfx.plan("LandingZone Mixed Pattern", () => {
@@ -442,7 +442,7 @@ tfx.plan("LandingZone Mixed Pattern", () => {
       'ibm_is_network_acl.network_acl["management-acl"]',
       {
         name: "at-test-management-management-acl",
-        rules: aclRules.workload,
+        rules: aclRules.management,
       }
     ),
     tfx.resource(

@@ -1,7 +1,7 @@
 require("dotenv").config();
 const tfxjs = require("tfxjs");
 const tfx = new tfxjs("./patterns/roks", "ibmcloud_api_key", { quiet: true });
-const aclRules = require("./acl-rules-vsi.json");
+const aclRules = require("./acl-rules.json");
 const tags = ["acceptance-test", "landing-zone"];
 
 tfx.plan("LandingZone Roks Pattern", () => {

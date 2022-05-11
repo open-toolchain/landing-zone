@@ -350,17 +350,19 @@ locals {
     f5_deployments = [
       for instance in flatten([local.use_bastion ? [1, 2, 3] : []]) :
       {
-        name                = "f5-zone-${instance}"
-        vpc_name            = local.vpc_list[0]
-        primary_subnet_name = "f5-management-zone-${instance}"
-        f5_image_name       = var.f5_image_name
-        machine_type        = var.f5_instance_profile
-        resource_group      = "${var.prefix}-${local.vpc_list[0]}-rg"
-        domain              = var.domain
-        hostname            = var.hostname
-        ssh_keys            = ["ssh-key"]
+        name                          = "f5-zone-${instance}"
+        vpc_name                      = local.vpc_list[0]
+        primary_subnet_name           = "f5-management-zone-${instance}"
+        f5_image_name                 = var.f5_image_name
+        machine_type                  = var.f5_instance_profile
+        resource_group                = "${var.prefix}-${local.vpc_list[0]}-rg"
+        domain                        = var.domain
+        hostname                      = var.hostname
+        ssh_keys                      = ["ssh-key"]
+        enable_management_floating_ip = var.enable_f5_management_fip
+        enable_external_floating_ip   = var.enable_f5_external_fip
         security_group = {
-          name     = "f5-zone-${instance}"
+          name     = "f5-management-sg-${instance}"
           vpc_name = local.vpc_list[0]
           rules = flatten([
             # Create single array from dynamically generated and static arrays
@@ -395,12 +397,24 @@ locals {
                   port_max = port
                 }
               }
+            ],
+            # Add management group rules
+            [
+              for rule in local.f5_security_groups.f5-management.rules :
+              rule
             ]
           ])
         },
         secondary_subnet_names = [
           for subnet in local.vpn_firewall_types[var.vpn_firewall_type] :
           "${subnet}-zone-${instance}" if subnet != "f5-management"
+        ]
+        secondary_subnet_security_group_names = [
+          for subnet in local.vpn_firewall_types[var.vpn_firewall_type] :
+          {
+            group_name     = "${subnet}-sg"
+            interface_name = "${var.prefix}-${local.vpc_list[0]}-${subnet}-zone-${instance}"
+          } if subnet != "f5-management"
         ]
       }
     ]
@@ -436,6 +450,17 @@ locals {
       # }
     ]
     ##############################################################################
+
+    ##############################################################################
+    # F5 Security Groups
+    ##############################################################################
+
+    security_groups = [
+      for tier in flatten([local.use_bastion ? local.vpn_firewall_types[var.vpn_firewall_type] : []]) :
+      local.f5_security_groups[tier]
+    ]
+
+    ##############################################################################  
   }
 
   ##############################################################################
@@ -451,7 +476,7 @@ locals {
     ssh_keys                       = lookup(local.override, "ssh_keys", local.config.ssh_keys)
     network_cidr                   = lookup(local.override, "network_cidr", var.network_cidr)
     vsi                            = lookup(local.override, "vsi", local.config.vsi)
-    security_groups                = lookup(local.override, "security_groups", lookup(local.config, "security_groups", []))
+    security_groups                = lookup(local.override, "security_groups", local.config.security_groups)
     virtual_private_endpoints      = lookup(local.override, "virtual_private_endpoints", local.config.virtual_private_endpoints)
     cos                            = lookup(local.override, "cos", local.config.object_storage)
     service_endpoints              = lookup(local.override, "service_endpoints", "private")
@@ -463,26 +488,26 @@ locals {
     access_groups                  = lookup(local.override, "access_groups", local.config.access_groups)
     f5_vsi                         = lookup(local.override, "f5_vsi", local.config.f5_deployments)
     f5_template_data = {
-      tmos_admin_password     = lookup(local.override, "f5_template_data", null) == null ? null : lookup(local.override.f5_template_data, "tmos_admin_password", var.tmos_admin_password)
-      license_type            = lookup(local.override, "f5_template_data", null) == null ? null : lookup(local.override.f5_template_data, "license_type", var.license_type)
-      byol_license_basekey    = lookup(local.override, "f5_template_data", null) == null ? null : lookup(local.override.f5_template_data, "byol_license_basekey", var.byol_license_basekey)
-      license_host            = lookup(local.override, "f5_template_data", null) == null ? null : lookup(local.override.f5_template_data, "license_host", var.license_host)
-      license_username        = lookup(local.override, "f5_template_data", null) == null ? null : lookup(local.override.f5_template_data, "license_username", var.license_username)
-      license_password        = lookup(local.override, "f5_template_data", null) == null ? null : lookup(local.override.f5_template_data, "license_password", var.license_password)
-      license_pool            = lookup(local.override, "f5_template_data", null) == null ? null : lookup(local.override.f5_template_data, "license_pool", var.license_pool)
-      license_sku_keyword_1   = lookup(local.override, "f5_template_data", null) == null ? null : lookup(local.override.f5_template_data, "license_sku_keyword_1", var.license_sku_keyword_1)
-      license_sku_keyword_2   = lookup(local.override, "f5_template_data", null) == null ? null : lookup(local.override.f5_template_data, "license_sku_keyword_2", var.license_sku_keyword_2)
-      license_unit_of_measure = lookup(local.override, "f5_template_data", null) == null ? null : lookup(local.override.f5_template_data, "license_unit_of_measure", var.license_unit_of_measure)
-      do_declaration_url      = lookup(local.override, "f5_template_data", null) == null ? null : lookup(local.override.f5_template_data, "do_declaration_url", var.do_declaration_url)
-      as3_declaration_url     = lookup(local.override, "f5_template_data", null) == null ? null : lookup(local.override.f5_template_data, "as3_declaration_url", var.as3_declaration_url)
-      ts_declaration_url      = lookup(local.override, "f5_template_data", null) == null ? null : lookup(local.override.f5_template_data, "ts_declaration_url", var.ts_declaration_url)
-      phone_home_url          = lookup(local.override, "f5_template_data", null) == null ? null : lookup(local.override.f5_template_data, "phone_home_url", var.phone_home_url)
-      template_source         = lookup(local.override, "f5_template_data", null) == null ? null : lookup(local.override.f5_template_data, "template_source", var.template_source)
-      template_version        = lookup(local.override, "f5_template_data", null) == null ? null : lookup(local.override.f5_template_data, "template_version", var.template_version)
-      app_id                  = lookup(local.override, "f5_template_data", null) == null ? null : lookup(local.override.f5_template_data, "app_id", var.app_id)
-      tgactive_url            = lookup(local.override, "f5_template_data", null) == null ? null : lookup(local.override.f5_template_data, "tgactive_url", var.tgactive_url)
-      tgstandby_url           = lookup(local.override, "f5_template_data", null) == null ? null : lookup(local.override.f5_template_data, "tgstandby_url", var.tgstandby_url)
-      tgrefresh_url           = lookup(local.override, "f5_template_data", null) == null ? null : lookup(local.override.f5_template_data, "tgrefresh_url", var.tgrefresh_url)
+      tmos_admin_password     = lookup(local.override, "f5_template_data", null) == null ? var.tmos_admin_password : lookup(local.override.f5_template_data, "tmos_admin_password", var.tmos_admin_password)
+      license_type            = lookup(local.override, "f5_template_data", null) == null ? var.license_type : lookup(local.override.f5_template_data, "license_type", var.license_type)
+      byol_license_basekey    = lookup(local.override, "f5_template_data", null) == null ? var.byol_license_basekey : lookup(local.override.f5_template_data, "byol_license_basekey", var.byol_license_basekey)
+      license_host            = lookup(local.override, "f5_template_data", null) == null ? var.license_host : lookup(local.override.f5_template_data, "license_host", var.license_host)
+      license_username        = lookup(local.override, "f5_template_data", null) == null ? var.license_username : lookup(local.override.f5_template_data, "license_username", var.license_username)
+      license_password        = lookup(local.override, "f5_template_data", null) == null ? var.license_password : lookup(local.override.f5_template_data, "license_password", var.license_password)
+      license_pool            = lookup(local.override, "f5_template_data", null) == null ? var.license_pool : lookup(local.override.f5_template_data, "license_pool", var.license_pool)
+      license_sku_keyword_1   = lookup(local.override, "f5_template_data", null) == null ? var.license_sku_keyword_1 : lookup(local.override.f5_template_data, "license_sku_keyword_1", var.license_sku_keyword_1)
+      license_sku_keyword_2   = lookup(local.override, "f5_template_data", null) == null ? var.license_sku_keyword_2 : lookup(local.override.f5_template_data, "license_sku_keyword_2", var.license_sku_keyword_2)
+      license_unit_of_measure = lookup(local.override, "f5_template_data", null) == null ? var.license_unit_of_measure : lookup(local.override.f5_template_data, "license_unit_of_measure", var.license_unit_of_measure)
+      do_declaration_url      = lookup(local.override, "f5_template_data", null) == null ? var.do_declaration_url : lookup(local.override.f5_template_data, "do_declaration_url", var.do_declaration_url)
+      as3_declaration_url     = lookup(local.override, "f5_template_data", null) == null ? var.as3_declaration_url : lookup(local.override.f5_template_data, "as3_declaration_url", var.as3_declaration_url)
+      ts_declaration_url      = lookup(local.override, "f5_template_data", null) == null ? var.ts_declaration_url : lookup(local.override.f5_template_data, "ts_declaration_url", var.ts_declaration_url)
+      phone_home_url          = lookup(local.override, "f5_template_data", null) == null ? var.phone_home_url : lookup(local.override.f5_template_data, "phone_home_url", var.phone_home_url)
+      template_source         = lookup(local.override, "f5_template_data", null) == null ? var.template_source : lookup(local.override.f5_template_data, "template_source", var.template_source)
+      template_version        = lookup(local.override, "f5_template_data", null) == null ? var.template_version : lookup(local.override.f5_template_data, "template_version", var.template_version)
+      app_id                  = lookup(local.override, "f5_template_data", null) == null ? var.app_id : lookup(local.override.f5_template_data, "app_id", var.app_id)
+      tgactive_url            = lookup(local.override, "f5_template_data", null) == null ? var.tgactive_url : lookup(local.override.f5_template_data, "tgactive_url", var.tgactive_url)
+      tgstandby_url           = lookup(local.override, "f5_template_data", null) == null ? var.tgstandby_url : lookup(local.override.f5_template_data, "tgstandby_url", var.tgstandby_url)
+      tgrefresh_url           = lookup(local.override, "f5_template_data", null) == null ? var.tgrefresh_url : lookup(local.override.f5_template_data, "tgrefresh_url", var.tgrefresh_url)
     }
   }
   ##############################################################################

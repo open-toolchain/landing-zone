@@ -542,7 +542,7 @@ tfx.plan("LandingZone VSI Pattern", () => {
       'ibm_is_network_acl.network_acl["workload-acl"]',
       {
         name: "at-test-workload-workload-acl",
-        rules: aclRulesVsi.workload,
+        rules: aclRulesVsi.management,
       }
     ),
     tfx.resource(

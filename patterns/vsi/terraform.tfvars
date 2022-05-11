@@ -40,4 +40,6 @@ app_id                           = null
 tgactive_url                     = ""
 tgstandby_url                    = null
 tgrefresh_url                    = null
+enable_f5_management_fip         = false
+enable_f5_external_fip           = false
 override                         = false

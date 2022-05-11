@@ -337,19 +337,35 @@ variable "secondary_use_vsi_security_group" {
   default     = false
 }
 
-variable "secondary_security_group_ids" {
+variable "secondary_security_groups" {
   description = "IDs of additional security groups to be added to VSI deployment secondary interfaces. A VSI interface can have a maximum of 5 security groups."
-  type        = list(string)
-  default     = []
+  type = list(
+    object({
+      security_group_id = string
+      interface_name    = string
+    })
+  )
+  default = []
 
   validation {
     error_message = "Security group IDs must be unique."
-    condition     = length(var.secondary_security_group_ids) == length(distinct(var.secondary_security_group_ids))
+    condition     = length(var.secondary_security_groups) == length(distinct(var.secondary_security_groups))
   }
 
   validation {
     error_message = "No more than 5 security groups can be added to a VSI deployment."
-    condition     = length(var.secondary_security_group_ids) <= 5
+    condition     = length(var.secondary_security_groups) <= 5
+  }
+}
+
+variable "secondary_floating_ips" {
+  description = "List of secondary interfaces to add floating ips"
+  type        = list(string)
+  default     = []
+
+  validation {
+    error_message = "Secondary floating IPs must contain a unique list of interfaces."
+    condition     = length(var.secondary_floating_ips) == length(distinct(var.secondary_floating_ips))
   }
 }
 

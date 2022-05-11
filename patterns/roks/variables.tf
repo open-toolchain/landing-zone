@@ -370,6 +370,19 @@ variable "tgrefresh_url" {
   default     = "null"
 }
 
+variable "enable_f5_management_fip" {
+  description = "Enable F5 management interface floating IP. Conflicts with `enable_f5_external_fip`, VSI can only have one floating IP per instance."
+  type        = bool
+  default     = false
+}
+
+variable "enable_f5_external_fip" {
+  description = "Enable F5 external interface floating IP. Conflicts with `enable_f5_management_fip`, VSI can only have one floating IP per instance."
+  type        = bool
+  default     = false
+}
+
+
 ##############################################################################
 
 
