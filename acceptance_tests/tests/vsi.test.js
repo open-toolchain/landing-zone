@@ -123,7 +123,7 @@ tfx.plan("LandingZone VSI Pattern", () => {
       }
     ),
     tfx.resource(
-      "Management VPC Flow Logs",
+      "Flow Logs for Management VPC",
       'ibm_is_flow_log.flow_logs["management"]',
       {
         active: true,
@@ -132,7 +132,7 @@ tfx.plan("LandingZone VSI Pattern", () => {
       }
     ),
     tfx.resource(
-      "Workload VPC Flow Logs",
+      "Flow Logs for Workload VPC",
       'ibm_is_flow_log.flow_logs["workload"]',
       {
         active: true,
@@ -141,7 +141,7 @@ tfx.plan("LandingZone VSI Pattern", () => {
       }
     ),
     tfx.resource(
-      "Management VPC Virtual Endpoint Gateway Object Storage",
+      "Virtual Endpoint Gateway Object Storage for Management VPC",
       'ibm_is_virtual_endpoint_gateway.endpoint_gateway["management-cos"]',
       {
         name: "at-test-management-cos",
@@ -155,7 +155,7 @@ tfx.plan("LandingZone VSI Pattern", () => {
       }
     ),
     tfx.resource(
-      "Workload VPC Virtual Endpoint Gateway Object Storage",
+      "Virtual Endpoint Gateway Object Storage for Workload VPC",
       'ibm_is_virtual_endpoint_gateway.endpoint_gateway["workload-cos"]',
       {
         name: "at-test-workload-cos",
@@ -169,32 +169,32 @@ tfx.plan("LandingZone VSI Pattern", () => {
       }
     ),
     tfx.resource(
-      "Management VPC Endpoint Gateway for Object Storage Reserved IP Zone 1",
+      "Endpoint Gateway for Object Storage Reserved IP Management VPC Zone 1",
       'ibm_is_subnet_reserved_ip.ip["management-cos-gateway-vpe-zone-1-ip"]',
       {}
     ),
     tfx.resource(
-      "Management VPC Endpoint Gateway for Object Storage Reserved IP Zone 2",
+      "Endpoint Gateway for Object Storage Reserved IP Management VPC Zone 2",
       'ibm_is_subnet_reserved_ip.ip["management-cos-gateway-vpe-zone-2-ip"]',
       {}
     ),
     tfx.resource(
-      "Management VPC Endpoint Gateway for Object Storage Reserved IP Zone 3",
+      "Endpoint Gateway for Object Storage Reserved IP Management VPC Zone 3",
       'ibm_is_subnet_reserved_ip.ip["management-cos-gateway-vpe-zone-3-ip"]',
       {}
     ),
     tfx.resource(
-      "Workload VPC Endpoint Gateway for Object Storage Reserved IP Zone 1",
+      "Endpoint Gateway for Object Storage Reserved IP Workload VPC Zone 1",
       'ibm_is_subnet_reserved_ip.ip["workload-cos-gateway-vpe-zone-1-ip"]',
       {}
     ),
     tfx.resource(
-      "Workload VPC Endpoint Gateway for Object Storage Reserved IP Zone 2",
+      "Endpoint Gateway for Object Storage Reserved IP Workload VPC Zone 2",
       'ibm_is_subnet_reserved_ip.ip["workload-cos-gateway-vpe-zone-2-ip"]',
       {}
     ),
     tfx.resource(
-      "Workload VPC Endpoint Gateway for Object Storage Reserved IP Zone 3",
+      "Endpoint Gateway for Object Storage Reserved IP Workload VPC Zone 3",
       'ibm_is_subnet_reserved_ip.ip["workload-cos-gateway-vpe-zone-3-ip"]',
       {}
     ),
@@ -229,7 +229,7 @@ tfx.plan("LandingZone VSI Pattern", () => {
       {}
     ),
     tfx.resource(
-      "Management VPC VPN Gateway",
+      "VPN Gateway for Management VPC",
       'ibm_is_vpn_gateway.gateway["management-gateway"]',
       {
         mode: "route",
@@ -239,7 +239,7 @@ tfx.plan("LandingZone VSI Pattern", () => {
       }
     ),
     tfx.resource(
-      "Management Resource Groups ",
+      "Resource Groups Managment",
       'ibm_resource_group.resource_groups["at-test-management-rg"]',
       {
         name: "at-test-management-rg",
@@ -253,7 +253,7 @@ tfx.plan("LandingZone VSI Pattern", () => {
       }
     ),
     tfx.resource(
-      "Workload Resource Groups",
+      "Resource Groups Workload",
       'ibm_resource_group.resource_groups["at-test-workload-rg"]',
       {
         name: "at-test-workload-rg",
@@ -291,7 +291,7 @@ tfx.plan("LandingZone VSI Pattern", () => {
       }
     ),
     tfx.resource(
-      "Management Transit Gateway Connection",
+      "Transit Gateway Connection Management",
       'ibm_tg_connection.connection["management"]',
       {
         name: "at-test-management-hub-connection",
@@ -300,7 +300,7 @@ tfx.plan("LandingZone VSI Pattern", () => {
       }
     ),
     tfx.resource(
-      "Workload Transit Gateway Connection",
+      "Transit Gateway Connection Workload",
       'ibm_tg_connection.connection["workload"]',
       {
         name: "at-test-workload-hub-connection",
@@ -378,10 +378,10 @@ tfx.plan("LandingZone VSI Pattern", () => {
     })
   );
   tfx.module(
-    "Management Virtual Private Cloud",
+    "Virtual Private Cloud",
     'module.acceptance_tests.module.landing-zone.module.vpc["management"]',
     tfx.resource(
-      "Management Virtual Private Cloud VPN Zone",
+      "Virtual Private Cloud Management VPN Zone",
       'ibm_is_subnet.subnet["at-test-management-vpn-zone-1"]',
       {
         ip_version: "ipv4",
@@ -391,7 +391,7 @@ tfx.plan("LandingZone VSI Pattern", () => {
       }
     ),
     tfx.resource(
-      "Management Virtual Private Cloud ACL",
+      "Virtual Private Cloud Management ACL",
       'ibm_is_network_acl.network_acl["management-acl"]',
       {
         name: "at-test-management-management-acl",
@@ -399,7 +399,7 @@ tfx.plan("LandingZone VSI Pattern", () => {
       }
     ),
     tfx.resource(
-      "Management Virtual Private Cloud Subnet VPE Zone 1",
+      "Virtual Private Cloud Managment Subnet VPE Zone 1",
       'ibm_is_subnet.subnet["at-test-management-vpe-zone-1"]',
       {
         ip_version: "ipv4",
@@ -409,7 +409,7 @@ tfx.plan("LandingZone VSI Pattern", () => {
       }
     ),
     tfx.resource(
-      "Management Virtual Private Cloud Subnet VPE Zone 2",
+      "Virtual Private Cloud Management Subnet VPE Zone 2",
       'ibm_is_subnet.subnet["at-test-management-vpe-zone-2"]',
       {
         ip_version: "ipv4",
@@ -419,7 +419,7 @@ tfx.plan("LandingZone VSI Pattern", () => {
       }
     ),
     tfx.resource(
-      "Management Virtual Private Cloud Subnet VPE Zone 3",
+      "Virtual Private Cloud Management Subnet VPE Zone 3",
       'ibm_is_subnet.subnet["at-test-management-vpe-zone-3"]',
       {
         ip_version: "ipv4",
@@ -429,7 +429,7 @@ tfx.plan("LandingZone VSI Pattern", () => {
       }
     ),
     tfx.resource(
-      "Management Virtual Private Cloud Subnet Prefix VPN Zone 1",
+      "Virtual Private Cloud Management Subnet Prefix",
       'ibm_is_vpc_address_prefix.subnet_prefix["at-test-management-vpn-zone-1"]',
       {
         cidr: "10.10.30.0/24",
@@ -439,7 +439,7 @@ tfx.plan("LandingZone VSI Pattern", () => {
       }
     ),
     tfx.resource(
-      "Management Virtual Private Cloud Subnet VSI Zone 1",
+      "Virtual Private Cloud Management Subnet VSI Zone 1",
       'ibm_is_subnet.subnet["at-test-management-vsi-zone-1"]',
       {
         ip_version: "ipv4",
@@ -449,7 +449,7 @@ tfx.plan("LandingZone VSI Pattern", () => {
       }
     ),
     tfx.resource(
-      "Management Virtual Private Cloud Subnet VSI Zone 2",
+      "Virtual Private Cloud Management Subnet VSI Zone 2",
       'ibm_is_subnet.subnet["at-test-management-vsi-zone-2"]',
       {
         ip_version: "ipv4",
@@ -459,7 +459,7 @@ tfx.plan("LandingZone VSI Pattern", () => {
       }
     ),
     tfx.resource(
-      "Management Virtual Private Cloud Subnet VSI Zone 3",
+      "Virtual Private Cloud Management Subnet VSI Zone 3",
       'ibm_is_subnet.subnet["at-test-management-vsi-zone-3"]',
       {
         ip_version: "ipv4",
@@ -474,7 +474,7 @@ tfx.plan("LandingZone VSI Pattern", () => {
       name: "at-test-management-vpc",
     }),
     tfx.resource(
-      "Management Virtual Private Cloud  Subnet Address Prefix VPE Zone 1",
+      "Virtual Private Cloud Management Subnet Address Prefix VPE",
       'ibm_is_vpc_address_prefix.subnet_prefix["at-test-management-vpe-zone-1"]',
       {
         cidr: "10.10.20.0/24",
@@ -484,7 +484,7 @@ tfx.plan("LandingZone VSI Pattern", () => {
       }
     ),
     tfx.resource(
-      "Management Virtual Private Cloud  Subnet Address Prefix VPE Zone 2",
+      "Virtual Private Cloud Management Subnet Address Prefix VPE",
       'ibm_is_vpc_address_prefix.subnet_prefix["at-test-management-vpe-zone-2"]',
       {
         cidr: "10.20.20.0/24",
@@ -494,7 +494,7 @@ tfx.plan("LandingZone VSI Pattern", () => {
       }
     ),
     tfx.resource(
-      "Management Virtual Private Cloud  Subnet Address Prefix VPE Zone 3",
+      "Virtual Private Cloud Management Subnet Address Prefix VPE",
       'ibm_is_vpc_address_prefix.subnet_prefix["at-test-management-vpe-zone-3"]',
       {
         cidr: "10.30.20.0/24",
@@ -504,7 +504,7 @@ tfx.plan("LandingZone VSI Pattern", () => {
       }
     ),
     tfx.resource(
-      "Management Virtual Private Cloud Subnet Address Prefix VSI Zone 1",
+      "Virtual Private Cloud Management Subnet Address Prefix VSI",
       'ibm_is_vpc_address_prefix.subnet_prefix["at-test-management-vsi-zone-1"]',
       {
         cidr: "10.10.10.0/24",
@@ -514,7 +514,7 @@ tfx.plan("LandingZone VSI Pattern", () => {
       }
     ),
     tfx.resource(
-      "Management Virtual Private Cloud Subnet Address Prefix VSI Zone 2",
+      "Virtual Private Cloud Management Subnet Address Prefix VSI",
       'ibm_is_vpc_address_prefix.subnet_prefix["at-test-management-vsi-zone-2"]',
       {
         cidr: "10.20.10.0/24",
@@ -524,7 +524,7 @@ tfx.plan("LandingZone VSI Pattern", () => {
       }
     ),
     tfx.resource(
-      "Management Virtual Private Cloud Subnet Address Prefix VSI Zone 3",
+      "Virtual Private Cloud Management Subnet Address Prefix VSI",
       'ibm_is_vpc_address_prefix.subnet_prefix["at-test-management-vsi-zone-3"]',
       {
         cidr: "10.30.10.0/24",
@@ -535,7 +535,7 @@ tfx.plan("LandingZone VSI Pattern", () => {
     )
   );
   tfx.module(
-    "Workload Virtual Private Cloud",
+    "Virtual Private Cloud",
     'module.acceptance_tests.module.landing-zone.module.vpc["workload"]',
     tfx.resource(
       "Virtual Private Cloud Workload ACL",
@@ -546,7 +546,7 @@ tfx.plan("LandingZone VSI Pattern", () => {
       }
     ),
     tfx.resource(
-      "Workload Virtual Private Cloud Subnet VPE Zone 1",
+      "Virtual Private Cloud Workload Subnet VPE Zone 1",
       'ibm_is_subnet.subnet["at-test-workload-vpe-zone-1"]',
       {
         ip_version: "ipv4",
@@ -556,7 +556,7 @@ tfx.plan("LandingZone VSI Pattern", () => {
       }
     ),
     tfx.resource(
-      "Workload Virtual Private Cloud Subnet VPE Zone 2",
+      "Virtual Private Cloud Workload Subnet VPE Zone 2",
       'ibm_is_subnet.subnet["at-test-workload-vpe-zone-2"]',
       {
         ip_version: "ipv4",
@@ -566,7 +566,7 @@ tfx.plan("LandingZone VSI Pattern", () => {
       }
     ),
     tfx.resource(
-      "Workload Virtual Private Cloud Subnet VPE Zone 3",
+      "Virtual Private Cloud Workload Subnet VPE Zone 3",
       'ibm_is_subnet.subnet["at-test-workload-vpe-zone-3"]',
       {
         ip_version: "ipv4",
@@ -576,7 +576,7 @@ tfx.plan("LandingZone VSI Pattern", () => {
       }
     ),
     tfx.resource(
-      "Workload Virtual Private Cloud Subnet VSI Zone 1",
+      "Virtual Private Cloud Workload Subnet VSI Zone 1",
       'ibm_is_subnet.subnet["at-test-workload-vsi-zone-1"]',
       {
         ip_version: "ipv4",
@@ -586,7 +586,7 @@ tfx.plan("LandingZone VSI Pattern", () => {
       }
     ),
     tfx.resource(
-      "Workload Virtual Private Cloud Subnet VSI Zone 2",
+      "Virtual Private Cloud Workload Subnet VSI Zone 2",
       'ibm_is_subnet.subnet["at-test-workload-vsi-zone-2"]',
       {
         ip_version: "ipv4",
@@ -596,7 +596,7 @@ tfx.plan("LandingZone VSI Pattern", () => {
       }
     ),
     tfx.resource(
-      "Workload Virtual Private Cloud Subnet VSI Zone 3",
+      "Virtual Private Cloud Workload Subnet VSI Zone 3",
       'ibm_is_subnet.subnet["at-test-workload-vsi-zone-3"]',
       {
         ip_version: "ipv4",
@@ -611,7 +611,7 @@ tfx.plan("LandingZone VSI Pattern", () => {
       name: "at-test-workload-vpc",
     }),
     tfx.resource(
-      "Workload Virtual Private Cloud Subnet Address Prefix VPE Zone 1",
+      "Virtual Private Cloud Workload Subnet Address Prefix VPE",
       'ibm_is_vpc_address_prefix.subnet_prefix["at-test-workload-vpe-zone-1"]',
       {
         cidr: "10.40.20.0/24",
@@ -621,7 +621,7 @@ tfx.plan("LandingZone VSI Pattern", () => {
       }
     ),
     tfx.resource(
-      "Workload Virtual Private Cloud Subnet Address Prefix VPE Zone 2",
+      "Virtual Private Cloud Workload Subnet Address Prefix VPE",
       'ibm_is_vpc_address_prefix.subnet_prefix["at-test-workload-vpe-zone-2"]',
       {
         cidr: "10.50.20.0/24",
@@ -631,7 +631,7 @@ tfx.plan("LandingZone VSI Pattern", () => {
       }
     ),
     tfx.resource(
-      "Workload Virtual Private Cloud Subnet Address Prefix VPE Zone 3",
+      "Virtual Private Cloud Workload Subnet Address Prefix VPE",
       'ibm_is_vpc_address_prefix.subnet_prefix["at-test-workload-vpe-zone-3"]',
       {
         cidr: "10.60.20.0/24",
@@ -641,7 +641,7 @@ tfx.plan("LandingZone VSI Pattern", () => {
       }
     ),
     tfx.resource(
-      "Workload Virtual Private Cloud Subnet Address Prefix VSI Zone 1",
+      "Virtual Private Cloud Workload Subnet Address Prefix VSI",
       'ibm_is_vpc_address_prefix.subnet_prefix["at-test-workload-vsi-zone-1"]',
       {
         cidr: "10.40.10.0/24",
@@ -651,7 +651,7 @@ tfx.plan("LandingZone VSI Pattern", () => {
       }
     ),
     tfx.resource(
-      "Workload Virtual Private Cloud Subnet Address Prefix VSI Zone 2",
+      "Virtual Private Cloud Workload Subnet Address Prefix VSI",
       'ibm_is_vpc_address_prefix.subnet_prefix["at-test-workload-vsi-zone-2"]',
       {
         cidr: "10.50.10.0/24",
@@ -661,7 +661,7 @@ tfx.plan("LandingZone VSI Pattern", () => {
       }
     ),
     tfx.resource(
-      "Workload Virtual Private Cloud Subnet Address Prefix VSI Zone 3",
+      "Virtual Private Cloud Workload Subnet Address Prefix VSI",
       'ibm_is_vpc_address_prefix.subnet_prefix["at-test-workload-vsi-zone-3"]',
       {
         cidr: "10.60.10.0/24",
@@ -672,11 +672,11 @@ tfx.plan("LandingZone VSI Pattern", () => {
     )
   );
   tfx.module(
-    "Management Virtual Server Instance",
+    "Virtual Server Instance",
     'module.acceptance_tests.module.landing-zone.module.vsi["at-test-management-server"]',
     [
       tfx.resource(
-        "Management Virtual Server Instance Server 1",
+        "Virtual Server Instance Management Server 1",
         'ibm_is_instance.vsi["at-test-management-server-1"]',
         {
           force_action: false,
@@ -688,7 +688,7 @@ tfx.plan("LandingZone VSI Pattern", () => {
         }
       ),
       tfx.resource(
-        "Management Virtual Server Instance Server 2",
+        "Virtual Server Instance Management Server 2",
         'ibm_is_instance.vsi["at-test-management-server-2"]',
         {
           force_action: false,
@@ -700,7 +700,7 @@ tfx.plan("LandingZone VSI Pattern", () => {
         }
       ),
       tfx.resource(
-        "Management Virtual Server Instance Server 3",
+        "Virtual Server Instance Management Server 3",
         'ibm_is_instance.vsi["at-test-management-server-3"]',
         {
           force_action: false,
@@ -712,14 +712,14 @@ tfx.plan("LandingZone VSI Pattern", () => {
         }
       ),
       tfx.resource(
-        "Management Virtual Server Instance Security Group",
+        "Virtual Server Instance Security Group",
         'ibm_is_security_group.security_group["management"]',
         {
           name: "management",
         }
       ),
       tfx.resource(
-        "Management Virtual Server Instance Security Group Rules Inbound",
+        "Virtual Server Instance Security Group Rules Inbound",
         'ibm_is_security_group_rule.security_group_rules["management-allow-ibm-inbound"]',
         {
           direction: "inbound",
@@ -731,7 +731,7 @@ tfx.plan("LandingZone VSI Pattern", () => {
         }
       ),
       tfx.resource(
-        "Management Virtual Server Instance Security Group Rules Inbound",
+        "Virtual Server Instance Security Group Rules Inbound",
         'ibm_is_security_group_rule.security_group_rules["management-allow-vpc-inbound"]',
         {
           direction: "inbound",
@@ -743,7 +743,7 @@ tfx.plan("LandingZone VSI Pattern", () => {
         }
       ),
       tfx.resource(
-        "Management Virtual Server Instance Security Group Rules Outbound",
+        "Virtual Server Instance Security Group Rules Outbound",
         'ibm_is_security_group_rule.security_group_rules["management-allow-ibm-tcp-443-outbound"]',
         {
           direction: "outbound",
@@ -760,7 +760,7 @@ tfx.plan("LandingZone VSI Pattern", () => {
         }
       ),
       tfx.resource(
-        "Management Virtual Server Instance Security Group Rules Outbound",
+        "Virtual Server Instance Security Group Rules Outbound",
         'ibm_is_security_group_rule.security_group_rules["management-allow-ibm-tcp-53-outbound"]',
         {
           direction: "outbound",
@@ -777,7 +777,7 @@ tfx.plan("LandingZone VSI Pattern", () => {
         }
       ),
       tfx.resource(
-        "Management Virtual Server Instance Security Group Rules Outbound",
+        "Virtual Server Instance Security Group Rules Outbound",
         'ibm_is_security_group_rule.security_group_rules["management-allow-ibm-tcp-80-outbound"]',
         {
           direction: "outbound",
@@ -794,7 +794,7 @@ tfx.plan("LandingZone VSI Pattern", () => {
         }
       ),
       tfx.resource(
-        "Management Virtual Server Instance Security Group Rules Outbound",
+        "Virtual Server Instance Security Group Rules Outbound",
         'ibm_is_security_group_rule.security_group_rules["management-allow-vpc-outbound"]',
         {
           direction: "outbound",
