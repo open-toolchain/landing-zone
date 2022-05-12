@@ -27,7 +27,7 @@ locals {
     [
       for connection in gateway.connections :
       merge({
-        gateway_name    = "${var.prefix}-${gateway.name}"
+        gateway_name    = gateway.name
         connection_name = "${gateway.name}-connection-${index(gateway.connections, connection) + 1}"
       }, connection)
     ]

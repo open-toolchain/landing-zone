@@ -13,7 +13,11 @@
             "kube_version": "default",
             "machine_type": "bx2.16x64",
             "name": "workload-cluster",
-            "resource_group": "Default",
+            "resource_group": "slz-workload-rg",
+            "kms_config": {
+                "crk_name": "slz-roks-key",
+                "private_endpoint": true
+            },
             "subnet_names": [
                 "vsi-zone-1",
                 "vsi-zone-2",
@@ -52,7 +56,8 @@
             "keys": [
                 {
                     "name": "cos-bind-key",
-                    "role": "Writer"
+                    "role": "Writer",
+                    "enable_HMAC": false
                 }
             ],
             "name": "atracker-cos",
@@ -100,6 +105,11 @@
             {
                 "key_ring": "slz-slz-ring",
                 "name": "slz-vsi-volume-key",
+                "root_key": true
+            },
+            {
+                "key_ring": "slz-slz-ring",
+                "name": "slz-roks-key",
                 "root_key": true
             }
         ],

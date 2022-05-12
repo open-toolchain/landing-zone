@@ -134,7 +134,7 @@ locals {
   assert_vpn_gateway_correct_vpc_id           = regex("1234", module.unit_tests.vpn_gateway_map["test-gateway"].vpc_id)
   assert_vpn_gateway_correct_subnet_id        = regex("vpn-id", module.unit_tests.vpn_gateway_map["test-gateway"].subnet_id)
   assert_vpn_connection_exists_in_list        = regex("test-gateway-connection-1", module.unit_tests.vpn_connection_list[0].connection_name)
-  assert_vpn_connection_correct_gateway_name  = regex("ut-test-gateway", module.unit_tests.vpn_connection_map["test-gateway-connection-1"].gateway_name)
+  assert_vpn_connection_correct_gateway_name  = regex("test-gateway", module.unit_tests.vpn_connection_map["test-gateway-connection-1"].gateway_name)
   assert_vpn_connection_correct_preshared_key = regex("preshared_key", module.unit_tests.vpn_connection_map["test-gateway-connection-1"].preshared_key)
 }
 

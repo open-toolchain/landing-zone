@@ -20,7 +20,8 @@
           "keys": [
               {
                   "name": "cos-bind-key",
-                  "role": "Writer"
+                  "role": "Writer",
+                  "enable_HMAC": false
               }
           ],
           "name": "atracker-cos",
