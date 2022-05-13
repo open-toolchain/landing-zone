@@ -18,6 +18,13 @@ locals {
     ? data.ibm_resource_instance.appid[0].id
     : ibm_resource_instance.appid[0].id
   )
+   appid_instance_guid = (
+    local.create_bastion_host == false
+    ? null
+    : local.create_appid == "data"
+    ? data.ibm_resource_instance.appid[0].guid
+    : ibm_resource_instance.appid[0].guid
+  )
   teleport_vsi_list = module.dynamic_values.appid_redirect_urls
 }
 
@@ -76,7 +83,7 @@ resource "ibm_resource_key" "appid_key" {
 
 resource "ibm_appid_redirect_urls" "urls" {
   count     = local.create_bastion_host == true ? 1 : 0
-  tenant_id = local.appid_instance_id
+  tenant_id = local.appid_instance_guid
   urls      = local.teleport_vsi_list
 }
 
