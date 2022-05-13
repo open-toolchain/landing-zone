@@ -18,7 +18,8 @@
 5. [Module Recommendations for Additional Features](#module-recommendations-for-additional-features)
 6. [Versions](#versions)
 7. [Upgrading](#upgrading)
-8. [Creating an issue](#creating-an-issue)
+8. [Sample Applications](#sample-applications)
+9. [Creating an issue](#creating-an-issue)
 
 ---
 
@@ -73,11 +74,12 @@ For Key Management services, user can optionally use Hyper Protect Crypto Servic
 To provision an instance of Hyper Protect Crypto Services IBM Cloud Console, complete the following steps:
 
 1. Log in to your [IBM Cloud account](https://cloud.ibm.com).
-2. Click Catalog to view the list of services that are available on IBM Cloud.
-3. From the Catalog navigation pane, click Services. And then, under Category, select Security.
-4. From the list of services displayed, click the Hyper Protect Crypto Services tile.
-5. On the service page, select the pricing plan of choice.
-6. Fill in the form with the details that are required.
+2. (Optional) [Create a resource group](https://cloud.ibm.com/docs/account?topic=account-rgs&interface=ui) for your HPCS instance 
+3. Click Catalog to view the list of services that are available on IBM Cloud.
+4. From the Catalog navigation pane, click Services. And then, under Category, select Security.
+5. From the list of services displayed, click the Hyper Protect Crypto Services tile.
+6. On the service page, select the pricing plan of choice.
+7. Fill in the form with the details that are required.
 
 ##### Initializing HPCS
 
@@ -241,6 +243,16 @@ git push --set-upstream origin <branch name from command git checkout above>
 ```      
 
 **This will only create a new branch within your source code repository.  You will need to create pull/merge request to push it into your main branch**
+
+---
+
+## Sample Applications
+
+Secure Landing Zone provides sample applications that can be used to deploy into your infrastructure.  These can be tied into your infrastructure provision pipeline via the application deploy task within. Please see [IBM Cloud Toolchain for Secure Landing Zone](../toolchain/toolchain.md) on the environment variables needed to deploy the sample application using the infrastructure pipeline.
+
+The following sample applications are currently available:
+
+1. [Private-only OpenShift Demo Application](.docs/sample-apps/apps.md#private-only-openshift-demo-application)
 
 ---
 
