@@ -67,7 +67,6 @@ variable "APPID_ISSUER_URL" {
 variable "TELEPORT_VERSION" {
   description = "Version of Teleport Enterprise to use"
   type        = string
-
 }
 
 variable "CLAIM_TO_ROLES" {

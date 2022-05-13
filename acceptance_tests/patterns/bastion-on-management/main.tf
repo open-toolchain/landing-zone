@@ -18,5 +18,16 @@ module "acceptance_tests" {
   vsi_image_name                   = "ibm-ubuntu-18-04-6-minimal-amd64-2"
   vsi_instance_profile             = "cx2-4x8"
   vsi_per_subnet                   = 1
+  teleport_license                 = "string"     # var.teleport_license
+  https_cert                       = "string"     # var.https_cert
+  https_key                        = "string"     # var.https_key
+  teleport_domain                  = "domain.com" # var.teleport_domain
+  cos_bucket_name                  = "bastion-bucket"
+  cos_key_name                     = "bastion-key"
+  teleport_version                 = "string" # var.teleport_version
+  message_of_the_day               = "string" # var.message_of_the_day
+  app_id_key_name                  = "slz-appid-key"
+  teleport_hostname                = "string" # var.teleport_hostname
+  teleport_admin_email             = "email@email.email"
   override                         = false
 }

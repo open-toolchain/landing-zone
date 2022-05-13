@@ -58,7 +58,7 @@ data "ibm_resource_instance" "appid" {
 ##############################################################################
 
 resource "ibm_resource_key" "appid_key" {
-  for_each = var.appid.keys == null ? {} : {
+  for_each = var.appid.keys == null || local.create_bastion_host == false ? {} : {
     for appid_key in var.appid.keys :
     (appid_key) => appid_key
   }

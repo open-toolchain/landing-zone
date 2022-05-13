@@ -41,6 +41,9 @@ module "landing-zone" {
   access_groups                  = local.env.access_groups
   f5_vsi                         = local.env.f5_vsi
   f5_template_data               = local.env.f5_template_data
+  appid                          = local.env.appid
+  teleport_config_data           = local.env.teleport_config
+  teleport_vsi                   = local.env.teleport_vsi
 }
 
 ##############################################################################

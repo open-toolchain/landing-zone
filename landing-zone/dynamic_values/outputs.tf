@@ -223,21 +223,10 @@ output "access_groups_with_invites" {
 # Bastion VSI Outputs
 ##############################################################################
 
-output "bastion_template_data_map" {
-  description = "Map of Bastion Host template data"
-  value       = local.bastion_template_data_map
-}
-
 output "bastion_vsi_map" {
   description = "Map of Bastion Host VSI deployments"
   value       = local.bastion_vsi_map
 }
-
-output "bastion_template_data_list" {
-  description = "Map of Bastion Host template data list"
-  value       = local.bastion_template_data_list
-}
-
 
 ##############################################################################
 

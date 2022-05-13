@@ -149,6 +149,10 @@ variable "appid_data" {
   description = "App ID data resource"
 }
 
+variable "teleport_domain" {
+  description = "Teleport instance domain"
+}
+
 ##############################################################################
 
 ##############################################################################

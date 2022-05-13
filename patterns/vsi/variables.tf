@@ -349,6 +349,89 @@ variable "enable_f5_external_fip" {
 
 
 ##############################################################################
+# Teleport VSI Variables
+##############################################################################
+
+variable "use_existing_appid" {
+  description = "Use an existing appid instance. If this is false, one will be automatically created."
+  type        = bool
+  default     = false
+}
+
+variable "appid_name" {
+  description = "Name of appid instance."
+  type        = string
+  default     = "appid"
+}
+
+variable "appid_resource_group" {
+  description = "Resource group for existing appid instance. This value is ignored if a new instance is created."
+  type        = string
+  default     = null
+}
+
+variable "teleport_instance_profile" {
+  description = "Machine type for Teleport VSI instances. Use the IBM Cloud CLI command `ibmcloud is instance-profiles` to see available image profiles."
+  type        = string
+  default     = "cx2-4x8"
+}
+
+variable "teleport_vsi_image_name" {
+  description = "Teleport VSI image name. Use the IBM Cloud CLI command `ibmcloud is images` to see availabled images."
+  type        = string
+  default     = "ibm-ubuntu-18-04-6-minimal-amd64-2"
+}
+
+variable "teleport_license" {
+  description = "The contents of the PEM license file"
+  type        = string
+  default     = null
+}
+
+variable "https_cert" {
+  description = "The https certificate used by bastion host for teleport"
+  type        = string
+  default     = null
+}
+
+variable "https_key" {
+  description = "The https private key used by bastion host for teleport"
+  type        = string
+  default     = null
+}
+variable "teleport_hostname" {
+  description = "The name of the instance or bastion host"
+  type        = string
+  default     = null
+}
+
+variable "teleport_domain" {
+  description = "The domain of the bastion host"
+  type        = string
+  default     = null
+}
+
+variable "teleport_version" {
+  description = "Version of Teleport Enterprise to use"
+  type        = string
+  default     = null
+}
+
+variable "message_of_the_day" {
+  description = "Banner message that is exposed to the user at authentication time"
+  type        = string
+  default     = null
+}
+
+variable "teleport_admin_email" {
+  description = "Email for teleport vsi admin."
+  type        = string
+  default     = null
+}
+
+##############################################################################
+
+##############################################################################
 # Override JSON
 ##############################################################################
 

@@ -142,19 +142,6 @@ locals {
 
 
 ##############################################################################
-# Bastion Host Unit Tests
-##############################################################################
-
-locals {
-  assert_bastion_return_correct_amount_of_subnets = regex("1", tostring(length(module.unit_tests.bastion_template_data_list)))
-  assert_bastion_return_correct_template_name     = regex("ut-teleport-ut-test-subnet-1", module.unit_tests.bastion_template_data_list[0].name)
-  assert_template_found_in_template_map           = lookup(module.unit_tests.bastion_template_data_map, "ut-teleport-ut-test-subnet-1")
-}
-
-##############################################################################
-
-
-##############################################################################
 # IAM Unit Tests
 ##############################################################################
 

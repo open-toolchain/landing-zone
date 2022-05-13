@@ -18,11 +18,13 @@ locals {
   # Reference to create an array containing value if not null
   # Future resource groups from data should use this as a template
   hs_crypto_rg = var.hs_crypto_resource_group == null ? [] : [var.hs_crypto_resource_group]
+  appid_rg     = var.appid_resource_group == null ? [] : [var.appid_resource_group]
 
   # List of resource groups used by default
   resource_group_list = flatten([
     ["Default", "service"],
-    local.hs_crypto_rg
+    local.hs_crypto_rg,
+    local.appid_rg
   ])
 
   # Create reference list
@@ -51,7 +53,10 @@ locals {
     ],
     ["bastion", "vpe"]
   ])
-  subnet_tiers = ["vsi", "vpe", "vpn"] # Subnet tiers
+  enable_bastion_host   = local.use_bastion && contains(local.bastion_tiers, "f5-bastion") # Use bastion host
+  bastion_zone_list     = flatten([local.use_bastion ? [1, 2, 3] : []])                    # Array for creation of bastion instances
+  bastion_resource_list = local.enable_bastion_host ? ["bastion"] : []                     # Array for creation of teleport resources
+  subnet_tiers          = ["vsi", "vpe", "vpn"]                                            # Subnet tiers
 
 
   ##############################################################################
@@ -93,17 +98,18 @@ locals {
         [
           for port in [22, 443] :
           {
-            name      = "allow-bastion-${zone}-inbound-${port}"
+            name      = "${zone}-inbound-${port}"
             direction = "inbound"
             source    = "10.${4 + zone}.${1 + index(local.bastion_tiers, "bastion")}0.0/24"
             tcp = {
               port_max = port
               port_min = port
             }
-          }
+          } if local.enable_bastion_host
         ]
       ])
     }
+
     f5-external = {
       name     = "f5-external-sg"
       vpc_name = local.vpc_list[0]
@@ -133,7 +139,7 @@ locals {
               port_max = 443
               port_min = 443
             }
-          } if contains(local.bastion_tiers, "f5-workload")
+          } if local.enable_bastion_host
         ]
       ])
     }
@@ -146,18 +152,61 @@ locals {
         [
           for ports in [[3023, 3025], [3080, 3080]] :
           {
-            name      = "allow-zone-${zone}-inbound-${ports[0]}"
+            name      = "${zone}-inbound-${ports[0]}"
             direction = "inbound"
             source    = "10.${4 + zone}.${1 + index(local.bastion_tiers, "bastion")}0.0/24"
             tcp = {
-              port_max = ports[0]
-              port_min = ports[1]
+              port_min = ports[0]
+              port_max = ports[1]
             }
           }
-        ] if contains(local.bastion_tiers, "f5-bastion")
+        ] if local.enable_bastion_host
       ])
     }
+
+    bastion-vsi = {
+      name     = "bastion-vsi-sg"
+      vpc_name = local.vpc_list[0]
+      rules    = local.default_vsi_sg_rules
+    }
   }
+
+  # Security group rules used for VSI
+  default_vsi_sg_rules = flatten([
+    # Create single array from dynamically generated and static arrays
+    [
+      {
+        name      = "allow-ibm-inbound"
+        source    = "161.26.0.0/16"
+        direction = "inbound"
+      }
+    ],
+    # Dynamically create rule to allow inbound and outbound network traffic
+    [
+      for direction in ["inbound", "outbound"] :
+      [
+        {
+          name      = "allow-vpc-${direction}"
+          source    = "10.0.0.0/8"
+          direction = direction
+        }
+
+      ]
+    ],
+    # For each port in the list, create an inbound rule to allow traffic out to IBM CIDR
+    [
+      for port in [53, 80, 443] :
+      {
+        name      = "allow-ibm-tcp-${port}-outbound"
+        source    = "161.26.0.0/16"
+        direction = "outbound"
+        tcp = {
+          port_min = port
+          port_max = port
+        }
+      }
+    ]
+  ])
 
   ##############################################################################
 

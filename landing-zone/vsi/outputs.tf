@@ -12,7 +12,7 @@ output "ids" {
 
 output "vsi_security_group" {
   description = "Security group for the VSI"
-  value       = ibm_is_security_group.security_group[var.security_group.name]
+  value       = var.security_group == null ? null : ibm_is_security_group.security_group[var.security_group.name]
 }
 
 output "list" {

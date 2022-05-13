@@ -28,6 +28,7 @@ module "unit_tests" {
   f5_vsi                    = local.mock_f5_vsi_list
   f5_template_data          = local.mock_f5_template
   bastion_vsi               = local.mock_bastion_vsi
+  teleport_domain           = "yes"
   appid                     = local.mock_appid
   access_groups             = local.mock_access_groups
 }
@@ -349,7 +350,6 @@ locals {
       https_cert         = "yes"
       https_key          = "yes"
       hostname           = "yes"
-      domain             = "yes"
       cos_bucket_name    = "yes"
       cos_key_name       = "yes"
       teleport_version   = "yes"

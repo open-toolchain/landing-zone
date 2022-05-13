@@ -134,12 +134,16 @@ variable "security_group" {
 
   validation {
     error_message = "Each security group rule must have a unique name."
-    condition     = length(distinct(var.security_group.rules.*.name)) == length(var.security_group.rules.*.name)
+    condition = (
+      var.security_group == null
+      ? true
+      : length(distinct(var.security_group.rules.*.name)) == length(var.security_group.rules.*.name)
+    )
   }
 
   validation {
     error_message = "Security group rules can only use one of the following blocks: `tcp`, `udp`, `icmp`."
-    condition = length(
+    condition = var.security_group == null ? true : length(
       distinct(
         flatten([
           for rule in var.security_group.rules :
@@ -156,7 +160,7 @@ variable "security_group" {
 
   validation {
     error_message = "Security group rule direction can only be `inbound` or `outbound`."
-    condition = length(
+    condition = var.security_group == null ? true : length(
       distinct(
         flatten([
           for rule in var.security_group.rules :

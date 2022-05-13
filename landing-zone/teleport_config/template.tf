@@ -6,21 +6,21 @@ locals {
   user_data = templatefile(
     "${path.module}/cloud-init.tpl",
     {
-      TELEPORT_LICENSE          = var.TELEPORT_LICENSE,
-      HTTPS_CERT                = var.HTTPS_CERT,
-      HTTPS_KEY                 = var.HTTPS_KEY,
-      HOSTNAME                  = var.HOSTNAME
-      DOMAIN                    = var.DOMAIN,
-      COS_BUCKET                = var.COS_BUCKET,
-      COS_BUCKET_ENDPOINT       = var.COS_BUCKET_ENDPOINT
-      HMAC_ACCESS_KEY_ID        = var.HMAC_ACCESS_KEY_ID,
-      HMAC_SECRET_ACCESS_KEY_ID = var.HMAC_SECRET_ACCESS_KEY_ID,
-      APPID_CLIENT_ID           = var.APPID_CLIENT_ID,
-      APPID_CLIENT_SECRET       = var.APPID_CLIENT_SECRET,
-      APPID_ISSUER_URL          = var.APPID_ISSUER_URL,
-      TELEPORT_VERSION          = var.TELEPORT_VERSION,
+      TELEPORT_LICENSE          = tostring(var.TELEPORT_LICENSE),
+      HTTPS_CERT                = tostring(var.HTTPS_CERT),
+      HTTPS_KEY                 = tostring(var.HTTPS_KEY),
+      HOSTNAME                  = tostring(var.HOSTNAME),
+      DOMAIN                    = tostring(var.DOMAIN),
+      COS_BUCKET                = tostring(var.COS_BUCKET),
+      COS_BUCKET_ENDPOINT       = tostring(var.COS_BUCKET_ENDPOINT)
+      HMAC_ACCESS_KEY_ID        = tostring(var.HMAC_ACCESS_KEY_ID),
+      HMAC_SECRET_ACCESS_KEY_ID = tostring(var.HMAC_SECRET_ACCESS_KEY_ID),
+      APPID_CLIENT_ID           = tostring(var.APPID_CLIENT_ID),
+      APPID_CLIENT_SECRET       = tostring(var.APPID_CLIENT_SECRET),
+      APPID_ISSUER_URL          = tostring(var.APPID_ISSUER_URL),
+      TELEPORT_VERSION          = tostring(var.TELEPORT_VERSION),
       CLAIM_TO_ROLES            = var.CLAIM_TO_ROLES,
-      MESSAGE_OF_THE_DAY        = var.MESSAGE_OF_THE_DAY
+      MESSAGE_OF_THE_DAY        = tostring(var.MESSAGE_OF_THE_DAY)
     }
   )
 }

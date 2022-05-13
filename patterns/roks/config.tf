@@ -169,7 +169,7 @@ locals {
         plan           = "standard"
         buckets = [
           # Create one flow log bucket for each VPC network
-          for network in local.vpc_list :
+          for network in concat(local.vpc_list, local.bastion_resource_list) :
           {
             name          = "${network}-bucket"
             storage_class = "standard"
@@ -178,7 +178,15 @@ locals {
             force_delete  = true
           }
         ]
-        keys = []
+        keys = [
+          # Create Bastion COS key
+          for key_name in local.bastion_resource_list :
+          {
+            name        = "${key_name}-key"
+            enable_HMAC = true
+            role        = "Writer"
+          }
+        ]
       }
     ]
     ##############################################################################
@@ -233,7 +241,7 @@ locals {
     ##############################################################################
     # Cluster Config
     ##############################################################################
-    clusters = [/**/
+    clusters = [
       # Dynamically create identical cluster in each VPC
       for network in var.vpcs :
       {
@@ -313,39 +321,7 @@ locals {
           name     = "f5-management-sg-${instance}"
           vpc_name = local.vpc_list[0]
           rules = flatten([
-            # Create single array from dynamically generated and static arrays
-            [
-              {
-                name      = "allow-ibm-inbound"
-                source    = "161.26.0.0/16"
-                direction = "inbound"
-              }
-            ],
-            # Dynamically create rule to allow inbound and outbound network traffic
-            [
-              for direction in ["inbound", "outbound"] :
-              [
-                {
-                  name      = "allow-vpc-${direction}"
-                  source    = "10.0.0.0/8"
-                  direction = direction
-                }
-
-              ]
-            ],
-            # For each port in the list, create an inbound rule to allow traffic out to IBM CIDR
-            [
-              for port in [53, 80, 443] :
-              {
-                name      = "allow-ibm-tcp-${port}-outbound"
-                source    = "161.26.0.0/16"
-                direction = "outbound"
-                tcp = {
-                  port_min = port
-                  port_max = port
-                }
-              }
-            ],
+            local.default_vsi_sg_rules,
             # Add management group rules
             [
               for rule in local.f5_security_groups.f5-management.rules :
@@ -405,11 +381,71 @@ locals {
     ##############################################################################
 
     security_groups = [
-      for tier in flatten([local.use_bastion ? local.vpn_firewall_types[var.vpn_firewall_type] : []]) :
+      for tier in flatten(
+        [
+          local.use_bastion
+          ? concat(local.vpn_firewall_types[var.vpn_firewall_type], ["bastion-vsi"])
+          : []
+        ]
+      ) :
       local.f5_security_groups[tier]
     ]
 
-    ##############################################################################    
+    ##############################################################################
+
+    ##############################################################################
+    # Appid config
+    ##############################################################################
+
+    appid = {
+      name           = var.appid_name
+      use_data       = var.use_existing_appid
+      resource_group = var.appid_resource_group == null ? "${var.prefix}-service-rg" : var.appid_resource_group
+      use_appid      = local.enable_bastion_host
+      keys           = ["slz-appid-key"]
+    }
+
+    ##############################################################################
+
+    ##############################################################################
+    # Teleport Config Data
+    ##############################################################################
+
+    teleport_config = {
+      teleport_license   = var.teleport_license
+      https_cert         = var.https_cert
+      https_key          = var.https_key
+      domain             = var.teleport_domain
+      cos_bucket_name    = "bastion-bucket"
+      cos_key_name       = "bastion-key"
+      teleport_version   = var.teleport_version
+      message_of_the_day = var.message_of_the_day
+      app_id_key_name    = "slz-appid-key"
+      hostname           = var.teleport_hostname
+      claims_to_roles = [
+        {
+          email = var.teleport_admin_email
+          roles = ["teleport-admin"]
+        }
+      ]
+    }
+
+    teleport_vsi = [
+      for instance in local.bastion_zone_list :
+      {
+        name                            = "bastion-${instance}"
+        vpc_name                        = local.vpc_list[0]
+        subnet_name                     = "f5-bastion-zone-${instance}"
+        resource_group                  = "${var.prefix}-${local.vpc_list[0]}-rg"
+        ssh_keys                        = ["ssh-key"]
+        image_name                      = var.teleport_vsi_image_name
+        machine_type                    = var.teleport_instance_profile
+        boot_volume_encryption_key_name = "${var.prefix}-vsi-volume-key"
+        security_groups                 = ["bastion-vsi-sg"]
+      }
+    ]
+
+    ############################################################################## 
   }
 
   ##############################################################################
@@ -420,10 +456,10 @@ locals {
     vpcs                           = lookup(local.override, "vpcs", local.config.vpcs)
     vpn_gateways                   = lookup(local.override, "vpn_gateways", local.config.vpn_gateways)
     enable_transit_gateway         = lookup(local.override, "enable_transit_gateway", local.config.enable_transit_gateway)
-    network_cidr                   = lookup(local.override, "network_cidr", var.network_cidr)
     transit_gateway_resource_group = lookup(local.override, "transit_gateway_resource_group", local.config.transit_gateway_resource_group)
     transit_gateway_connections    = lookup(local.override, "transit_gateway_connections", local.config.transit_gateway_connections)
-    ssh_keys                       = lookup(local.override, "ssh_keys", [])
+    ssh_keys                       = lookup(local.override, "ssh_keys", local.config.ssh_keys)
+    network_cidr                   = lookup(local.override, "network_cidr", var.network_cidr)
     vsi                            = lookup(local.override, "vsi", [])
     security_groups                = lookup(local.override, "security_groups", local.config.security_groups)
     virtual_private_endpoints      = lookup(local.override, "virtual_private_endpoints", local.config.virtual_private_endpoints)
@@ -435,6 +471,7 @@ locals {
     wait_till                      = lookup(local.override, "wait_till", "IngressReady")
     iam_account_settings           = lookup(local.override, "iam_account_settings", local.config.iam_account_settings)
     access_groups                  = lookup(local.override, "access_groups", local.config.access_groups)
+    appid                          = lookup(local.override, "appid", local.config.appid)
     f5_vsi                         = lookup(local.override, "f5_vsi", local.config.f5_deployments)
     f5_template_data = {
       tmos_admin_password     = lookup(local.override, "f5_template_data", null) == null ? var.tmos_admin_password : lookup(local.override.f5_template_data, "tmos_admin_password", var.tmos_admin_password)
@@ -457,6 +494,20 @@ locals {
       tgactive_url            = lookup(local.override, "f5_template_data", null) == null ? var.tgactive_url : lookup(local.override.f5_template_data, "tgactive_url", var.tgactive_url)
       tgstandby_url           = lookup(local.override, "f5_template_data", null) == null ? var.tgstandby_url : lookup(local.override.f5_template_data, "tgstandby_url", var.tgstandby_url)
       tgrefresh_url           = lookup(local.override, "f5_template_data", null) == null ? var.tgrefresh_url : lookup(local.override.f5_template_data, "tgrefresh_url", var.tgrefresh_url)
+    }
+    teleport_vsi = lookup(local.override, "teleport_vsi", local.config.teleport_vsi)
+    teleport_config = {
+      teleport_license   = lookup(local.override, "teleport_config", null) == null ? local.config.teleport_config.teleport_license : lookup(local.override.teleport_config, "teleport_license", local.config.teleport_config.teleport_license)
+      https_cert         = lookup(local.override, "teleport_config", null) == null ? local.config.teleport_config.https_cert : lookup(local.override.teleport_config, "https_cert", local.config.teleport_config.https_cert)
+      https_key          = lookup(local.override, "teleport_config", null) == null ? local.config.teleport_config.https_key : lookup(local.override.teleport_config, "https_key", local.config.teleport_config.https_key)
+      domain             = lookup(local.override, "teleport_config", null) == null ? local.config.teleport_config.domain : lookup(local.override.teleport_config, "domain", local.config.teleport_config.domain)
+      cos_bucket_name    = lookup(local.override, "teleport_config", null) == null ? local.config.teleport_config.cos_bucket_name : lookup(local.override.teleport_config, "cos_bucket_name", local.config.teleport_config.cos_bucket_name)
+      cos_key_name       = lookup(local.override, "teleport_config", null) == null ? local.config.teleport_config.cos_key_name : lookup(local.override.teleport_config, "cos_key_name", local.config.teleport_config.cos_key_name)
+      teleport_version   = lookup(local.override, "teleport_config", null) == null ? local.config.teleport_config.teleport_version : lookup(local.override.teleport_config, "teleport_version", local.config.teleport_config.teleport_version)
+      message_of_the_day = lookup(local.override, "teleport_config", null) == null ? local.config.teleport_config.message_of_the_day : lookup(local.override.teleport_config, "message_of_the_day", local.config.teleport_config.message_of_the_day)
+      app_id_key_name    = lookup(local.override, "teleport_config", null) == null ? local.config.teleport_config.app_id_key_name : lookup(local.override.teleport_config, "app_id_key_name", local.config.teleport_config.app_id_key_name)
+      hostname           = lookup(local.override, "teleport_config", null) == null ? local.config.teleport_config.hostname : lookup(local.override.teleport_config, "hostname", local.config.teleport_config.hostname)
+      claims_to_roles    = lookup(local.override, "teleport_config", null) == null ? local.config.teleport_config.claims_to_roles : lookup(local.override.teleport_config, "claims_to_roles", local.config.teleport_config.claims_to_roles)
     }
   }
   ##############################################################################

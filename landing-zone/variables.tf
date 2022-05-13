@@ -885,7 +885,6 @@ variable "appid" {
   validation {
     error_message = "Name must be included if use_appid is true."
     condition = (
-      lookup(var.appid, "name", null) == null &&
       lookup(var.appid, "use_appid") == false
       ) || (
       lookup(var.appid, "name", null) != null &&
@@ -914,6 +913,32 @@ variable "appid" {
 # Bastion Host Variables
 ##############################################################################
 
+variable "teleport_config_data" {
+  description = "Teleport config data. This is used to create a single template for all teleport instances to use. Creating a single template allows for values to remain sensitive"
+  type = object({
+    teleport_license   = optional(string)
+    https_cert         = optional(string)
+    https_key          = optional(string)
+    domain             = optional(string)
+    cos_bucket_name    = optional(string)
+    cos_key_name       = optional(string)
+    teleport_version   = optional(string)
+    message_of_the_day = optional(string)
+    hostname           = optional(string)
+    app_id_key_name    = optional(string)
+    claims_to_roles = optional(
+      list(
+        object({
+          email = string
+          roles = list(string)
+        })
+      )
+    )
+  })
+  sensitive = true
+  default   = null
+}
+
 variable "teleport_vsi" {
   description = "A list of teleport vsi deployments"
   type = list(
@@ -921,29 +946,13 @@ variable "teleport_vsi" {
       {
         name                            = string
         vpc_name                        = string
-        vsi_per_subnet                  = number
         resource_group                  = optional(string)
         subnet_name                     = string
         ssh_keys                        = list(string)
+        boot_volume_encryption_key_name = string
         image_name                      = string
         machine_type                    = string
-        teleport_license                = string
-        https_cert                      = string
-        https_key                       = string
-        domain                          = string
-        cos_bucket_name                 = string
-        cos_key_name                    = string
-        teleport_version                = string
-        message_of_the_day              = string
-        boot_volume_encryption_key_name = string
-        app_id_key_name                 = string
-        claims_to_roles = list(
-          object({
-            email = string
-            roles = list(string)
-          })
-        )
-        security_groups = optional(list(string))
+        security_groups                 = optional(list(string))
         security_group = optional(
           object({
             name = string
