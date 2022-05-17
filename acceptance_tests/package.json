@@ -10,6 +10,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "tfxjs": "^0.5.0"
+    "tfxjs": "^0.6.1"
   }
 }

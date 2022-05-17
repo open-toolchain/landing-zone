@@ -118,7 +118,7 @@ tfx.plan("LandingZone Mixed Pattern", () => {
       }
     ),
     tfx.resource(
-      "IAM Policy Atracker Object Storage to Key Managemnet",
+      "IAM Policy Atracker Object Storage to Key management",
       `ibm_iam_authorization_policy.policy[\"cos-cos-to-key-management\"]`,
       {
         description: "Allow COS instance to read from KMS instance",
@@ -128,7 +128,7 @@ tfx.plan("LandingZone Mixed Pattern", () => {
       }
     ),
     tfx.resource(
-      "IAM Policy Atracker Object Storage to Key Managemnet",
+      "IAM Policy Atracker Object Storage to Key management",
       `ibm_iam_authorization_policy.policy[\"cos-atracker-cos-to-key-management\"]`,
       {
         description: "Allow COS instance to read from KMS instance",

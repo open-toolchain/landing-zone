@@ -1,4 +1,49 @@
 ##############################################################################
+# Create Pattern Dynamic Variables
+# > Values are created inside the `dynamic_modules/` module to allow them to
+#   be tested
+##############################################################################
+
+module "dynamic_values" {
+  source                              = "./dynamic_values"
+  prefix                              = var.prefix
+  region                              = var.region
+  tags                                = var.tags
+  network_cidr                        = var.network_cidr
+  vpcs                                = var.vpcs
+  enable_transit_gateway              = var.enable_transit_gateway
+  add_atracker_route                  = var.add_atracker_route
+  hs_crypto_instance_name             = var.hs_crypto_instance_name
+  hs_crypto_resource_group            = var.hs_crypto_resource_group
+  cluster_zones                       = var.cluster_zones
+  kube_version                        = var.kube_version
+  flavor                              = var.flavor
+  workers_per_zone                    = var.workers_per_zone
+  entitlement                         = var.entitlement
+  wait_till                           = var.wait_till
+  update_all_workers                  = var.update_all_workers
+  add_edge_vpc                        = var.add_edge_vpc
+  create_f5_network_on_management_vpc = var.create_f5_network_on_management_vpc
+  provision_teleport_in_f5            = var.provision_teleport_in_f5
+  vpn_firewall_type                   = var.vpn_firewall_type
+  f5_image_name                       = var.f5_image_name
+  f5_instance_profile                 = var.f5_instance_profile
+  app_id                              = var.app_id
+  enable_f5_management_fip            = var.enable_f5_management_fip
+  enable_f5_external_fip              = var.enable_f5_external_fip
+  teleport_management_zones           = var.teleport_management_zones
+  use_existing_appid                  = var.use_existing_appid
+  appid_resource_group                = var.appid_resource_group
+  teleport_instance_profile           = var.teleport_instance_profile
+  teleport_vsi_image_name             = var.teleport_vsi_image_name
+  domain                              = var.domain
+  hostname                            = var.hostname
+}
+
+##############################################################################
+
+
+##############################################################################
 # Dynamically Create Default Configuration
 ##############################################################################
 
@@ -12,231 +57,6 @@ locals {
   ##############################################################################
 
   config = {
-
-    ##############################################################################
-    # Create a resource group for each group in the list, and for each VPC
-    # get default, Default and hs crypto if included. 
-    ##############################################################################
-
-    resource_groups = [
-      for group in distinct(concat(local.resource_group_list, local.vpc_list)) :
-      {
-        name   = contains(local.dynamic_rg_list, group) ? group : "${var.prefix}-${group}-rg"
-        create = contains(local.dynamic_rg_list, group) ? false : true
-      }
-    ]
-
-    ##############################################################################
-
-
-    ##############################################################################
-    # SSH Keys
-    # > Add ssh public key to config when provisioning F5
-    ##############################################################################
-
-    ssh_keys = local.use_bastion ? [
-      {
-        name       = "ssh-key"
-        public_key = var.ssh_public_key
-      }
-    ] : []
-
-    ##############################################################################
-
-    ##############################################################################
-    # Create one VPC for each name in VPC variable
-    ##############################################################################
-
-    vpcs = [
-      for network in local.vpc_list :
-      {
-        prefix                = network
-        resource_group        = "${var.prefix}-${network}-rg"
-        flow_logs_bucket_name = "${network}-bucket"
-        address_prefixes = {
-          # Address prefixes need to be set for edge vpc, otherwise will be empty array
-          zone-1 = local.vpc_use_edge_prefixes[network]["zone-1"]
-          zone-2 = local.vpc_use_edge_prefixes[network]["zone-2"]
-          zone-3 = local.vpc_use_edge_prefixes[network]["zone-3"]
-        }
-        default_security_group_rules = []
-        network_acls = [
-          {
-            name              = "${network}-acl"
-            add_cluster_rules = true
-            rules = [
-              {
-                name        = "allow-ibm-inbound"
-                action      = "allow"
-                direction   = "inbound"
-                destination = "10.0.0.0/8"
-                source      = "161.26.0.0/16"
-              },
-              {
-                name        = "allow-all-network-inbound"
-                action      = "allow"
-                direction   = "inbound"
-                destination = "10.0.0.0/8"
-                source      = "10.0.0.0/8"
-              },
-              {
-                name        = "allow-all-outbound"
-                action      = "allow"
-                direction   = "outbound"
-                destination = "0.0.0.0/0"
-                source      = "0.0.0.0/0"
-              }
-            ]
-          }
-        ]
-        use_public_gateways = {
-          zone-1 = false
-          zone-2 = false
-          zone-3 = false
-        }
-        ##############################################################################
-        # Dynamically create subnets for each VPC and each zone.
-        # > if the VPC is first in the list, it will create a VPN subnet tier in
-        #   zone 1
-        # > otherwise two VPC tiers are created `vsi` and `vpe`
-        # > subnet CIDRs are dynamically calculated based on the index of the VPC
-        #   network, the zone, and the tier
-        ##############################################################################
-        subnets = {
-          for zone in [1, 2, 3] :
-          "zone-${zone}" => [
-            for subnet in local.vpc_subnet_tiers[network]["zone-${zone}"] :
-            {
-              name = "${subnet}-zone-${zone}"
-              cidr = (
-                # If using bastion and is a bastion subnet in vpc 0
-                local.use_bastion && contains(local.bastion_tiers, subnet) && network == local.vpc_list[0]
-                # Create bastion CIDR
-                ? "10.${zone + 4}.${1 + index(local.bastion_tiers, subnet)}0.0/24"
-                # Otherwise create regular network CIDR
-                : "10.${zone + (index(var.vpcs, network) * 3)}0.${1 + index(["vsi", "vpe", "vpn"], subnet)}0.0/24"
-              )
-              public_gateway = false
-              acl_name       = "${network}-acl"
-            }
-          ]
-        }
-        ##############################################################################
-      }
-    ]
-
-    ##############################################################################
-
-    ##############################################################################
-    # Transit Gateway Variables
-    ##############################################################################
-    enable_transit_gateway         = true
-    transit_gateway_resource_group = "${var.prefix}-service-rg"
-    transit_gateway_connections    = local.vpc_list
-    ##############################################################################
-
-    ##############################################################################
-    # Object Storage Variables
-    ##############################################################################
-    object_storage = [
-      # Activity Tracker COS instance
-      {
-        name           = "atracker-cos"
-        use_data       = false
-        resource_group = "${var.prefix}-service-rg"
-        plan           = "standard"
-        buckets = [
-          {
-            name          = "atracker-bucket"
-            storage_class = "standard"
-            endpoint_type = "public"
-            kms_key       = "${var.prefix}-atracker-key"
-            force_delete  = true
-          }
-        ]
-        # Key is needed to initialize actibity tracker
-        keys = [{
-          name        = "cos-bind-key"
-          role        = "Writer"
-          enable_HMAC = false
-        }]
-      },
-      # COS instance for everything else
-      {
-        name           = "cos"
-        use_data       = false
-        resource_group = "${var.prefix}-service-rg"
-        plan           = "standard"
-        buckets = [
-          # Create one flow log bucket for each VPC network
-          for network in concat(local.vpc_list, local.bastion_resource_list) :
-          {
-            name          = "${network}-bucket"
-            storage_class = "standard"
-            kms_key       = "${var.prefix}-slz-key"
-            endpoint_type = "public"
-            force_delete  = true
-          }
-        ]
-        keys = [
-          # Create Bastion COS key
-          for key_name in local.bastion_resource_list :
-          {
-            name        = "${key_name}-key"
-            enable_HMAC = true
-            role        = "Writer"
-          }
-        ]
-      }
-    ]
-    ##############################################################################
-
-    ##############################################################################
-    # Key Management variables
-    ##############################################################################
-    key_management = {
-      name           = var.hs_crypto_instance_name == null ? "${var.prefix}-slz-kms" : var.hs_crypto_instance_name
-      resource_group = var.hs_crypto_resource_group == null ? "${var.prefix}-service-rg" : var.hs_crypto_resource_group
-      use_hs_crypto  = var.hs_crypto_instance_name == null ? false : true
-      keys = [
-        # Create encryption keys for landing zone, activity tracker, and vsi boot volume
-        for service in ["slz", "atracker", "vsi-volume", "roks"] :
-        {
-          name     = "${var.prefix}-${service}-key"
-          root_key = true
-          key_ring = "${var.prefix}-slz-ring"
-        }
-      ]
-    }
-    ##############################################################################
-
-    ##############################################################################
-    # Virtual Private endpoints
-    ##############################################################################
-    virtual_private_endpoints = [{
-      service_name = "cos"
-      service_type = "cloud-object-storage"
-      vpcs = [
-        # Create VPE for each VPC in VPE tier
-        for network in local.vpc_list :
-        {
-          name    = network
-          subnets = ["vpe-zone-1", "vpe-zone-2", "vpe-zone-3"]
-        }
-      ]
-    }]
-    ##############################################################################
-
-    ##############################################################################
-    # Activity Tracker Config
-    ##############################################################################
-    atracker = {
-      resource_group        = "${var.prefix}-service-rg"
-      receive_global_events = true
-      collector_bucket_name = "atracker-bucket"
-      add_route             = var.add_atracker_route
-    }
-    ##############################################################################
 
     ##############################################################################
     # Cluster Config
@@ -283,68 +103,61 @@ locals {
     ##############################################################################
 
     ##############################################################################
-    # VPN Gateway
-    # > Create a gateway in first vpc if bastion not enabled
+    # Activity tracker
+    ##############################################################################
+    atracker = {
+      resource_group        = "${var.prefix}-service-rg"
+      receive_global_events = true
+      collector_bucket_name = "atracker-bucket"
+      add_route             = var.add_atracker_route
+    }
     ##############################################################################
 
-    vpn_gateways = !local.use_bastion ? [
+    ##############################################################################
+    # Default SSH key
+    ##############################################################################
+    ssh_keys = var.teleport_management_zones > 0 || var.provision_teleport_in_f5 ? [
       {
-        name           = "${local.vpc_list[0]}-gateway"
-        vpc_name       = "${local.vpc_list[0]}"
-        subnet_name    = "vpn-zone-1"
-        resource_group = "${var.prefix}-${local.vpc_list[0]}-rg"
-        connections    = []
+        name       = "ssh-key"
+        public_key = var.ssh_public_key
       }
     ] : []
-
     ##############################################################################
 
     ##############################################################################
-    # F5 Deployment Instances
+    # VPE
+    ##############################################################################
+    virtual_private_endpoints = [{
+      service_name = "cos"
+      service_type = "cloud-object-storage"
+      vpcs = [
+        # Create VPE for each VPC in VPE tier
+        for network in module.dynamic_values.vpc_list :
+        {
+          name    = network
+          subnets = ["vpe-zone-1", "vpe-zone-2", "vpe-zone-3"]
+        }
+      ]
+    }]
     ##############################################################################
 
-    f5_deployments = [
-      for instance in flatten([local.use_bastion ? [1, 2, 3] : []]) :
-      {
-        name                          = "f5-zone-${instance}"
-        vpc_name                      = local.vpc_list[0]
-        primary_subnet_name           = "f5-management-zone-${instance}"
-        f5_image_name                 = var.f5_image_name
-        machine_type                  = var.f5_instance_profile
-        resource_group                = "${var.prefix}-${local.vpc_list[0]}-rg"
-        domain                        = var.domain
-        hostname                      = var.hostname
-        ssh_keys                      = ["ssh-key"]
-        enable_management_floating_ip = var.enable_f5_management_fip
-        enable_external_floating_ip   = var.enable_f5_external_fip
-        security_group = {
-          name     = "f5-management-sg-${instance}"
-          vpc_name = local.vpc_list[0]
-          rules = flatten([
-            local.default_vsi_sg_rules,
-            # Add management group rules
-            [
-              for rule in local.f5_security_groups.f5-management.rules :
-              rule
-            ]
-          ])
-        },
-        secondary_subnet_names = [
-          for subnet in local.vpn_firewall_types[var.vpn_firewall_type] :
-          "${subnet}-zone-${instance}" if subnet != "f5-management"
-        ]
-        secondary_subnet_security_group_names = [
-          for subnet in local.vpn_firewall_types[var.vpn_firewall_type] :
-          {
-            group_name     = "${subnet}-sg"
-            interface_name = "${var.prefix}-${local.vpc_list[0]}-${subnet}-zone-${instance}"
-          } if subnet != "f5-management"
-        ]
-      }
-    ]
-
+    ##############################################################################
+    # Deployment Configuration From Dynamic Values
     ##############################################################################
 
+    resource_groups                = module.dynamic_values.resource_groups
+    vpcs                           = module.dynamic_values.vpcs
+    enable_transit_gateway         = true
+    transit_gateway_resource_group = "${var.prefix}-service-rg"
+    transit_gateway_connections    = module.dynamic_values.vpc_list
+    object_storage                 = module.dynamic_values.object_storage
+    key_management                 = module.dynamic_values.key_management
+    vpn_gateways                   = module.dynamic_values.vpn_gateways
+    f5_deployments                 = module.dynamic_values.f5_deployments
+    security_groups                = module.dynamic_values.security_groups
+    vsi                            = []
+
+    ##############################################################################
 
     ##############################################################################
     # IAM Account Settings
@@ -377,23 +190,6 @@ locals {
     ##############################################################################
 
     ##############################################################################
-    # F5 Security Groups
-    ##############################################################################
-
-    security_groups = [
-      for tier in flatten(
-        [
-          local.use_bastion
-          ? concat(local.vpn_firewall_types[var.vpn_firewall_type], ["bastion-vsi"])
-          : []
-        ]
-      ) :
-      local.f5_security_groups[tier]
-    ]
-
-    ##############################################################################
-
-    ##############################################################################
     # Appid config
     ##############################################################################
 
@@ -401,7 +197,7 @@ locals {
       name           = var.appid_name
       use_data       = var.use_existing_appid
       resource_group = var.appid_resource_group == null ? "${var.prefix}-service-rg" : var.appid_resource_group
-      use_appid      = local.enable_bastion_host
+      use_appid      = var.teleport_management_zones > 0 || var.provision_teleport_in_f5
       keys           = ["slz-appid-key"]
     }
 
@@ -430,22 +226,10 @@ locals {
       ]
     }
 
-    teleport_vsi = [
-      for instance in local.bastion_zone_list :
-      {
-        name                            = "bastion-${instance}"
-        vpc_name                        = local.vpc_list[0]
-        subnet_name                     = "f5-bastion-zone-${instance}"
-        resource_group                  = "${var.prefix}-${local.vpc_list[0]}-rg"
-        ssh_keys                        = ["ssh-key"]
-        image_name                      = var.teleport_vsi_image_name
-        machine_type                    = var.teleport_instance_profile
-        boot_volume_encryption_key_name = "${var.prefix}-vsi-volume-key"
-        security_groups                 = ["bastion-vsi-sg"]
-      }
-    ]
+    teleport_vsi = module.dynamic_values.teleport_vsi
 
-    ############################################################################## 
+    ##############################################################################
+
   }
 
   ##############################################################################
@@ -460,7 +244,7 @@ locals {
     transit_gateway_connections    = lookup(local.override, "transit_gateway_connections", local.config.transit_gateway_connections)
     ssh_keys                       = lookup(local.override, "ssh_keys", local.config.ssh_keys)
     network_cidr                   = lookup(local.override, "network_cidr", var.network_cidr)
-    vsi                            = lookup(local.override, "vsi", [])
+    vsi                            = lookup(local.override, "vsi", local.config.vsi)
     security_groups                = lookup(local.override, "security_groups", local.config.security_groups)
     virtual_private_endpoints      = lookup(local.override, "virtual_private_endpoints", local.config.virtual_private_endpoints)
     cos                            = lookup(local.override, "cos", local.config.object_storage)
@@ -523,6 +307,37 @@ locals {
 
 data "external" "format_output" {
   program = ["python3", "${path.module}/scripts/output.py", local.string]
+}
+
+##############################################################################
+
+
+##############################################################################
+# Conflicting Variable Failure States
+##############################################################################
+
+locals {
+  # Prevent users from inputting conflicting variables by checking regex
+  # causeing plan to fail when true. 
+  # > if both are false will pass
+  # > if only one is true will pass
+  fail_with_conflicting_bastion = regex("false", tostring(
+    var.add_edge_vpc == false && var.create_f5_network_on_management_vpc == false
+    ? false
+    : var.add_edge_vpc == var.create_f5_network_on_management_vpc
+  ))
+
+  # Prevent users from provisioning bastion subnets without a tier selected
+  fail_with_no_vpn_firewall_type = regex("false", tostring(
+    var.vpn_firewall_type == null && var.provision_teleport_in_f5
+  ))
+
+  # Prevent users from provisioning using both external and management fip
+  # VSI can only have one floating IP per device
+  fail_with_both_f5_fip = regex("false", tostring(
+    var.enable_f5_management_fip == true && var.enable_f5_external_fip == true
+  ))
+
 }
 
 ##############################################################################

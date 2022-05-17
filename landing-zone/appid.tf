@@ -18,7 +18,7 @@ locals {
     ? data.ibm_resource_instance.appid[0].id
     : ibm_resource_instance.appid[0].id
   )
-   appid_instance_guid = (
+  appid_instance_guid = (
     local.create_bastion_host == false
     ? null
     : local.create_appid == "data"

@@ -1,0 +1,1608 @@
+tfxPlan:
+  template-path: "./patterns/bastion-on-management"
+  template-name: "tfx Generated Plan"
+  tfvars: {}
+
+Landing Zone:
+  address: module.acceptance_tests.module.landing-zone
+  resources:
+    - Urls 0:
+        address: ibm_appid_redirect_urls.urls[0]
+        values:
+          - urls:
+              - https://at-test-bastion-1.domain.com:3080/v1/webapi/oidc/callback
+              - https://at-test-bastion-2.domain.com:3080/v1/webapi/oidc/callback
+              - https://at-test-bastion-3.domain.com:3080/v1/webapi/oidc/callback
+    - Atracker Route 0:
+        address: ibm_atracker_route.atracker_route[0]
+        values:
+          - name: at-test-atracker-route
+          - receive_global_events: true
+          - rules:
+              - {}
+    - Atracker Target:
+        address: ibm_atracker_target.atracker_target
+        values:
+          - cos_endpoint:
+              - bucket: at-test-atracker-bucket
+                endpoint: s3.private.us-south.cloud-object-storage.appdomain.cloud
+          - name: at-test-atracker
+          - target_type: cloud_object_storage
+    - Buckets Atracker Bucket:
+        address: ibm_cos_bucket.buckets["atracker-bucket"]
+        values:
+          - abort_incomplete_multipart_upload_days: []
+          - activity_tracking: []
+          - archive_rule: []
+          - bucket_name: at-test-atracker-bucket
+          - endpoint_type: public
+          - expire_rule: []
+          - force_delete: true
+          - metrics_monitoring: []
+          - noncurrent_version_expiration: []
+          - object_versioning: []
+          - region_location: us-south
+          - retention_rule: []
+          - storage_class: standard
+    - Buckets Bastion Bucket:
+        address: ibm_cos_bucket.buckets["bastion-bucket"]
+        values:
+          - abort_incomplete_multipart_upload_days: []
+          - activity_tracking: []
+          - archive_rule: []
+          - bucket_name: at-test-bastion-bucket
+          - endpoint_type: public
+          - expire_rule: []
+          - force_delete: true
+          - metrics_monitoring: []
+          - noncurrent_version_expiration: []
+          - object_versioning: []
+          - region_location: us-south
+          - retention_rule: []
+          - storage_class: standard
+    - Buckets Management Bucket:
+        address: ibm_cos_bucket.buckets["management-bucket"]
+        values:
+          - abort_incomplete_multipart_upload_days: []
+          - activity_tracking: []
+          - archive_rule: []
+          - bucket_name: at-test-management-bucket
+          - endpoint_type: public
+          - expire_rule: []
+          - force_delete: true
+          - metrics_monitoring: []
+          - noncurrent_version_expiration: []
+          - object_versioning: []
+          - region_location: us-south
+          - retention_rule: []
+          - storage_class: standard
+    - Buckets Workload Bucket:
+        address: ibm_cos_bucket.buckets["workload-bucket"]
+        values:
+          - abort_incomplete_multipart_upload_days: []
+          - activity_tracking: []
+          - archive_rule: []
+          - bucket_name: at-test-workload-bucket
+          - endpoint_type: public
+          - expire_rule: []
+          - force_delete: true
+          - metrics_monitoring: []
+          - noncurrent_version_expiration: []
+          - object_versioning: []
+          - region_location: us-south
+          - retention_rule: []
+          - storage_class: standard
+    - Policy Block Storage:
+        address: ibm_iam_authorization_policy.policy["block-storage"]
+        values:
+          - description: Allow block storage volumes to be encrypted by KMS instance
+          - roles:
+              - Reader
+          - source_service_name: server-protect
+          - target_service_name: kms
+    - Policy Cos Atracker Cos To Key Management:
+        address: ibm_iam_authorization_policy.policy["cos-atracker-cos-to-key-management"]
+        values:
+          - description: Allow COS instance to read from KMS instance
+          - roles:
+              - Reader
+          - source_service_name: cloud-object-storage
+          - target_service_name: kms
+    - Policy Cos Cos To Key Management:
+        address: ibm_iam_authorization_policy.policy["cos-cos-to-key-management"]
+        values:
+          - description: Allow COS instance to read from KMS instance
+          - roles:
+              - Reader
+          - source_service_name: cloud-object-storage
+          - target_service_name: kms
+    - Policy Flow Logs Atracker Cos Cos:
+        address: ibm_iam_authorization_policy.policy["flow-logs-atracker-cos-cos"]
+        values:
+          - description: Allow flow logs write access cloud object storage instance
+          - roles:
+              - Writer
+          - source_resource_type: flow-log-collector
+          - source_service_name: is
+          - target_service_name: cloud-object-storage
+    - Policy Flow Logs Cos Cos:
+        address: ibm_iam_authorization_policy.policy["flow-logs-cos-cos"]
+        values:
+          - description: Allow flow logs write access cloud object storage instance
+          - roles:
+              - Writer
+          - source_resource_type: flow-log-collector
+          - source_service_name: is
+          - target_service_name: cloud-object-storage
+    - Flow Logs Management:
+        address: ibm_is_flow_log.flow_logs["management"]
+        values:
+          - active: true
+          - name: management-logs
+          - storage_bucket: at-test-management-bucket
+    - Flow Logs Workload:
+        address: ibm_is_flow_log.flow_logs["workload"]
+        values:
+          - active: true
+          - name: workload-logs
+          - storage_bucket: at-test-workload-bucket
+    - Security Group Bastion Vsi Sg:
+        address: ibm_is_security_group.security_group["bastion-vsi-sg"]
+        values:
+          - name: bastion-vsi-sg
+          - tags:
+              - acceptance-test
+              - landing-zone
+    - Security Group F5 Bastion Sg:
+        address: ibm_is_security_group.security_group["f5-bastion-sg"]
+        values:
+          - name: f5-bastion-sg
+          - tags:
+              - acceptance-test
+              - landing-zone
+    - Security Group F5 External Sg:
+        address: ibm_is_security_group.security_group["f5-external-sg"]
+        values:
+          - name: f5-external-sg
+          - tags:
+              - acceptance-test
+              - landing-zone
+    - Security Group F5 Management Sg:
+        address: ibm_is_security_group.security_group["f5-management-sg"]
+        values:
+          - name: f5-management-sg
+          - tags:
+              - acceptance-test
+              - landing-zone
+    - Security Group F5 Workload Sg:
+        address: ibm_is_security_group.security_group["f5-workload-sg"]
+        values:
+          - name: f5-workload-sg
+          - tags:
+              - acceptance-test
+              - landing-zone
+    - Security Group Rules Bastion Vsi Sg Allow Ibm Inbound:
+        address: ibm_is_security_group_rule.security_group_rules["bastion-vsi-sg-allow-ibm-inbound"]
+        values:
+          - direction: inbound
+          - icmp: []
+          - ip_version: ipv4
+          - remote: 161.26.0.0/16
+          - tcp:
+              - port_max: 65535
+                port_min: 1
+          - udp: []
+    - Security Group Rules Bastion Vsi Sg Allow Ibm Tcp 443 Outbound:
+        address: ibm_is_security_group_rule.security_group_rules["bastion-vsi-sg-allow-ibm-tcp-443-outbound"]
+        values:
+          - direction: outbound
+          - icmp: []
+          - ip_version: ipv4
+          - remote: 161.26.0.0/16
+          - tcp:
+              - port_max: 65535
+                port_min: 1
+          - udp: []
+    - Security Group Rules Bastion Vsi Sg Allow Ibm Tcp 53 Outbound:
+        address: ibm_is_security_group_rule.security_group_rules["bastion-vsi-sg-allow-ibm-tcp-53-outbound"]
+        values:
+          - direction: outbound
+          - icmp: []
+          - ip_version: ipv4
+          - remote: 161.26.0.0/16
+          - tcp:
+              - port_max: 65535
+                port_min: 1
+          - udp: []
+    - Security Group Rules Bastion Vsi Sg Allow Ibm Tcp 80 Outbound:
+        address: ibm_is_security_group_rule.security_group_rules["bastion-vsi-sg-allow-ibm-tcp-80-outbound"]
+        values:
+          - direction: outbound
+          - icmp: []
+          - ip_version: ipv4
+          - remote: 161.26.0.0/16
+          - tcp:
+              - port_max: 65535
+                port_min: 1
+          - udp: []
+    - Security Group Rules Bastion Vsi Sg Allow Vpc Inbound:
+        address: ibm_is_security_group_rule.security_group_rules["bastion-vsi-sg-allow-vpc-inbound"]
+        values:
+          - direction: inbound
+          - icmp: []
+          - ip_version: ipv4
+          - remote: 10.0.0.0/8
+          - tcp:
+              - port_max: 65535
+                port_min: 1
+          - udp: []
+    - Security Group Rules Bastion Vsi Sg Allow Vpc Outbound:
+        address: ibm_is_security_group_rule.security_group_rules["bastion-vsi-sg-allow-vpc-outbound"]
+        values:
+          - direction: outbound
+          - icmp: []
+          - ip_version: ipv4
+          - remote: 10.0.0.0/8
+          - tcp:
+              - port_max: 65535
+                port_min: 1
+          - udp: []
+    - Security Group Rules F5 Bastion Sg 1 Inbound 3023:
+        address: ibm_is_security_group_rule.security_group_rules["f5-bastion-sg-1-inbound-3023"]
+        values:
+          - direction: inbound
+          - icmp: []
+          - ip_version: ipv4
+          - remote: 10.5.70.0/24
+          - tcp:
+              - port_max: 3025
+                port_min: 3023
+          - udp: []
+    - Security Group Rules F5 Bastion Sg 1 Inbound 3080:
+        address: ibm_is_security_group_rule.security_group_rules["f5-bastion-sg-1-inbound-3080"]
+        values:
+          - direction: inbound
+          - icmp: []
+          - ip_version: ipv4
+          - remote: 10.5.70.0/24
+          - tcp:
+              - port_max: 3080
+                port_min: 3080
+          - udp: []
+    - Security Group Rules F5 Bastion Sg 2 Inbound 3023:
+        address: ibm_is_security_group_rule.security_group_rules["f5-bastion-sg-2-inbound-3023"]
+        values:
+          - direction: inbound
+          - icmp: []
+          - ip_version: ipv4
+          - remote: 10.6.70.0/24
+          - tcp:
+              - port_max: 3025
+                port_min: 3023
+          - udp: []
+    - Security Group Rules F5 Bastion Sg 2 Inbound 3080:
+        address: ibm_is_security_group_rule.security_group_rules["f5-bastion-sg-2-inbound-3080"]
+        values:
+          - direction: inbound
+          - icmp: []
+          - ip_version: ipv4
+          - remote: 10.6.70.0/24
+          - tcp:
+              - port_max: 3080
+                port_min: 3080
+          - udp: []
+    - Security Group Rules F5 Bastion Sg 3 Inbound 3023:
+        address: ibm_is_security_group_rule.security_group_rules["f5-bastion-sg-3-inbound-3023"]
+        values:
+          - direction: inbound
+          - icmp: []
+          - ip_version: ipv4
+          - remote: 10.7.70.0/24
+          - tcp:
+              - port_max: 3025
+                port_min: 3023
+          - udp: []
+    - Security Group Rules F5 Bastion Sg 3 Inbound 3080:
+        address: ibm_is_security_group_rule.security_group_rules["f5-bastion-sg-3-inbound-3080"]
+        values:
+          - direction: inbound
+          - icmp: []
+          - ip_version: ipv4
+          - remote: 10.7.70.0/24
+          - tcp:
+              - port_max: 3080
+                port_min: 3080
+          - udp: []
+    - Security Group Rules F5 External Sg Allow Inbound 443:
+        address: ibm_is_security_group_rule.security_group_rules["f5-external-sg-allow-inbound-443"]
+        values:
+          - direction: inbound
+          - icmp: []
+          - ip_version: ipv4
+          - remote: 0.0.0.0/0
+          - tcp:
+              - port_max: 443
+                port_min: 443
+          - udp: []
+    - Security Group Rules F5 Management Sg 1 Inbound 22:
+        address: ibm_is_security_group_rule.security_group_rules["f5-management-sg-1-inbound-22"]
+        values:
+          - direction: inbound
+          - icmp: []
+          - ip_version: ipv4
+          - remote: 10.5.70.0/24
+          - tcp:
+              - port_max: 22
+                port_min: 22
+          - udp: []
+    - Security Group Rules F5 Management Sg 1 Inbound 443:
+        address: ibm_is_security_group_rule.security_group_rules["f5-management-sg-1-inbound-443"]
+        values:
+          - direction: inbound
+          - icmp: []
+          - ip_version: ipv4
+          - remote: 10.5.70.0/24
+          - tcp:
+              - port_max: 443
+                port_min: 443
+          - udp: []
+    - Security Group Rules F5 Management Sg 2 Inbound 22:
+        address: ibm_is_security_group_rule.security_group_rules["f5-management-sg-2-inbound-22"]
+        values:
+          - direction: inbound
+          - icmp: []
+          - ip_version: ipv4
+          - remote: 10.6.70.0/24
+          - tcp:
+              - port_max: 22
+                port_min: 22
+          - udp: []
+    - Security Group Rules F5 Management Sg 2 Inbound 443:
+        address: ibm_is_security_group_rule.security_group_rules["f5-management-sg-2-inbound-443"]
+        values:
+          - direction: inbound
+          - icmp: []
+          - ip_version: ipv4
+          - remote: 10.6.70.0/24
+          - tcp:
+              - port_max: 443
+                port_min: 443
+          - udp: []
+    - Security Group Rules F5 Management Sg 3 Inbound 22:
+        address: ibm_is_security_group_rule.security_group_rules["f5-management-sg-3-inbound-22"]
+        values:
+          - direction: inbound
+          - icmp: []
+          - ip_version: ipv4
+          - remote: 10.7.70.0/24
+          - tcp:
+              - port_max: 22
+                port_min: 22
+          - udp: []
+    - Security Group Rules F5 Management Sg 3 Inbound 443:
+        address: ibm_is_security_group_rule.security_group_rules["f5-management-sg-3-inbound-443"]
+        values:
+          - direction: inbound
+          - icmp: []
+          - ip_version: ipv4
+          - remote: 10.7.70.0/24
+          - tcp:
+              - port_max: 443
+                port_min: 443
+          - udp: []
+    - Security Group Rules F5 Management Sg Allow Ibm Inbound:
+        address: ibm_is_security_group_rule.security_group_rules["f5-management-sg-allow-ibm-inbound"]
+        values:
+          - direction: inbound
+          - icmp: []
+          - ip_version: ipv4
+          - remote: 161.26.0.0/16
+          - tcp:
+              - port_max: 65535
+                port_min: 1
+          - udp: []
+    - Security Group Rules F5 Management Sg Allow Ibm Tcp 443 Outbound:
+        address: ibm_is_security_group_rule.security_group_rules["f5-management-sg-allow-ibm-tcp-443-outbound"]
+        values:
+          - direction: outbound
+          - icmp: []
+          - ip_version: ipv4
+          - remote: 161.26.0.0/16
+          - tcp:
+              - port_max: 65535
+                port_min: 1
+          - udp: []
+    - Security Group Rules F5 Management Sg Allow Ibm Tcp 53 Outbound:
+        address: ibm_is_security_group_rule.security_group_rules["f5-management-sg-allow-ibm-tcp-53-outbound"]
+        values:
+          - direction: outbound
+          - icmp: []
+          - ip_version: ipv4
+          - remote: 161.26.0.0/16
+          - tcp:
+              - port_max: 65535
+                port_min: 1
+          - udp: []
+    - Security Group Rules F5 Management Sg Allow Ibm Tcp 80 Outbound:
+        address: ibm_is_security_group_rule.security_group_rules["f5-management-sg-allow-ibm-tcp-80-outbound"]
+        values:
+          - direction: outbound
+          - icmp: []
+          - ip_version: ipv4
+          - remote: 161.26.0.0/16
+          - tcp:
+              - port_max: 65535
+                port_min: 1
+          - udp: []
+    - Security Group Rules F5 Management Sg Allow Vpc Inbound:
+        address: ibm_is_security_group_rule.security_group_rules["f5-management-sg-allow-vpc-inbound"]
+        values:
+          - direction: inbound
+          - icmp: []
+          - ip_version: ipv4
+          - remote: 10.0.0.0/8
+          - tcp:
+              - port_max: 65535
+                port_min: 1
+          - udp: []
+    - Security Group Rules F5 Management Sg Allow Vpc Outbound:
+        address: ibm_is_security_group_rule.security_group_rules["f5-management-sg-allow-vpc-outbound"]
+        values:
+          - direction: outbound
+          - icmp: []
+          - ip_version: ipv4
+          - remote: 10.0.0.0/8
+          - tcp:
+              - port_max: 65535
+                port_min: 1
+          - udp: []
+    - Security Group Rules F5 Workload Sg Allow Ibm Inbound:
+        address: ibm_is_security_group_rule.security_group_rules["f5-workload-sg-allow-ibm-inbound"]
+        values:
+          - direction: inbound
+          - icmp: []
+          - ip_version: ipv4
+          - remote: 161.26.0.0/16
+          - tcp:
+              - port_max: 65535
+                port_min: 1
+          - udp: []
+    - Security Group Rules F5 Workload Sg Allow Ibm Tcp 443 Outbound:
+        address: ibm_is_security_group_rule.security_group_rules["f5-workload-sg-allow-ibm-tcp-443-outbound"]
+        values:
+          - direction: outbound
+          - icmp: []
+          - ip_version: ipv4
+          - remote: 161.26.0.0/16
+          - tcp:
+              - port_max: 65535
+                port_min: 1
+          - udp: []
+    - Security Group Rules F5 Workload Sg Allow Ibm Tcp 53 Outbound:
+        address: ibm_is_security_group_rule.security_group_rules["f5-workload-sg-allow-ibm-tcp-53-outbound"]
+        values:
+          - direction: outbound
+          - icmp: []
+          - ip_version: ipv4
+          - remote: 161.26.0.0/16
+          - tcp:
+              - port_max: 65535
+                port_min: 1
+          - udp: []
+    - Security Group Rules F5 Workload Sg Allow Ibm Tcp 80 Outbound:
+        address: ibm_is_security_group_rule.security_group_rules["f5-workload-sg-allow-ibm-tcp-80-outbound"]
+        values:
+          - direction: outbound
+          - icmp: []
+          - ip_version: ipv4
+          - remote: 161.26.0.0/16
+          - tcp:
+              - port_max: 65535
+                port_min: 1
+          - udp: []
+    - Security Group Rules F5 Workload Sg Allow Vpc Inbound:
+        address: ibm_is_security_group_rule.security_group_rules["f5-workload-sg-allow-vpc-inbound"]
+        values:
+          - direction: inbound
+          - icmp: []
+          - ip_version: ipv4
+          - remote: 10.0.0.0/8
+          - tcp:
+              - port_max: 65535
+                port_min: 1
+          - udp: []
+    - Security Group Rules F5 Workload Sg Allow Vpc Outbound:
+        address: ibm_is_security_group_rule.security_group_rules["f5-workload-sg-allow-vpc-outbound"]
+        values:
+          - direction: outbound
+          - icmp: []
+          - ip_version: ipv4
+          - remote: 10.0.0.0/8
+          - tcp:
+              - port_max: 65535
+                port_min: 1
+          - udp: []
+    - Security Group Rules F5 Workload Sg Allow Workload Subnet 1:
+        address: ibm_is_security_group_rule.security_group_rules["f5-workload-sg-allow-workload-subnet-1"]
+        values:
+          - direction: inbound
+          - icmp: []
+          - ip_version: ipv4
+          - remote: 10.10.10.0/24
+          - tcp:
+              - port_max: 443
+                port_min: 443
+          - udp: []
+    - Security Group Rules F5 Workload Sg Allow Workload Subnet 2:
+        address: ibm_is_security_group_rule.security_group_rules["f5-workload-sg-allow-workload-subnet-2"]
+        values:
+          - direction: inbound
+          - icmp: []
+          - ip_version: ipv4
+          - remote: 10.20.10.0/24
+          - tcp:
+              - port_max: 443
+                port_min: 443
+          - udp: []
+    - Security Group Rules F5 Workload Sg Allow Workload Subnet 3:
+        address: ibm_is_security_group_rule.security_group_rules["f5-workload-sg-allow-workload-subnet-3"]
+        values:
+          - direction: inbound
+          - icmp: []
+          - ip_version: ipv4
+          - remote: 10.30.10.0/24
+          - tcp:
+              - port_max: 443
+                port_min: 443
+          - udp: []
+    - Security Group Rules F5 Workload Sg Allow Workload Subnet 4:
+        address: ibm_is_security_group_rule.security_group_rules["f5-workload-sg-allow-workload-subnet-4"]
+        values:
+          - direction: inbound
+          - icmp: []
+          - ip_version: ipv4
+          - remote: 10.40.10.0/24
+          - tcp:
+              - port_max: 443
+                port_min: 443
+          - udp: []
+    - Security Group Rules F5 Workload Sg Allow Workload Subnet 5:
+        address: ibm_is_security_group_rule.security_group_rules["f5-workload-sg-allow-workload-subnet-5"]
+        values:
+          - direction: inbound
+          - icmp: []
+          - ip_version: ipv4
+          - remote: 10.50.10.0/24
+          - tcp:
+              - port_max: 443
+                port_min: 443
+          - udp: []
+    - Security Group Rules F5 Workload Sg Allow Workload Subnet 6:
+        address: ibm_is_security_group_rule.security_group_rules["f5-workload-sg-allow-workload-subnet-6"]
+        values:
+          - direction: inbound
+          - icmp: []
+          - ip_version: ipv4
+          - remote: 10.60.10.0/24
+          - tcp:
+              - port_max: 443
+                port_min: 443
+          - udp: []
+    - Ip Management Cos Gateway Vpe Zone 1 Ip:
+        address: ibm_is_subnet_reserved_ip.ip["management-cos-gateway-vpe-zone-1-ip"]
+        values: []
+    - Ip Management Cos Gateway Vpe Zone 2 Ip:
+        address: ibm_is_subnet_reserved_ip.ip["management-cos-gateway-vpe-zone-2-ip"]
+        values: []
+    - Ip Management Cos Gateway Vpe Zone 3 Ip:
+        address: ibm_is_subnet_reserved_ip.ip["management-cos-gateway-vpe-zone-3-ip"]
+        values: []
+    - Ip Workload Cos Gateway Vpe Zone 1 Ip:
+        address: ibm_is_subnet_reserved_ip.ip["workload-cos-gateway-vpe-zone-1-ip"]
+        values: []
+    - Ip Workload Cos Gateway Vpe Zone 2 Ip:
+        address: ibm_is_subnet_reserved_ip.ip["workload-cos-gateway-vpe-zone-2-ip"]
+        values: []
+    - Ip Workload Cos Gateway Vpe Zone 3 Ip:
+        address: ibm_is_subnet_reserved_ip.ip["workload-cos-gateway-vpe-zone-3-ip"]
+        values: []
+    - Endpoint Gateway Management Cos:
+        address: ibm_is_virtual_endpoint_gateway.endpoint_gateway["management-cos"]
+        values:
+          - name: at-test-management-cos
+          - target:
+              - crn: crn:v1:bluemix:public:cloud-object-storage:global:::endpoint:s3.direct.us-south.cloud-object-storage.appdomain.cloud
+                name: null
+                resource_type: provider_cloud_service
+    - Endpoint Gateway Workload Cos:
+        address: ibm_is_virtual_endpoint_gateway.endpoint_gateway["workload-cos"]
+        values:
+          - name: at-test-workload-cos
+          - target:
+              - crn: crn:v1:bluemix:public:cloud-object-storage:global:::endpoint:s3.direct.us-south.cloud-object-storage.appdomain.cloud
+                name: null
+                resource_type: provider_cloud_service
+    - Endpoint Gateway Ip Management Cos Gateway Vpe Zone 1 Ip:
+        address: ibm_is_virtual_endpoint_gateway_ip.endpoint_gateway_ip["management-cos-gateway-vpe-zone-1-ip"]
+        values: []
+    - Endpoint Gateway Ip Management Cos Gateway Vpe Zone 2 Ip:
+        address: ibm_is_virtual_endpoint_gateway_ip.endpoint_gateway_ip["management-cos-gateway-vpe-zone-2-ip"]
+        values: []
+    - Endpoint Gateway Ip Management Cos Gateway Vpe Zone 3 Ip:
+        address: ibm_is_virtual_endpoint_gateway_ip.endpoint_gateway_ip["management-cos-gateway-vpe-zone-3-ip"]
+        values: []
+    - Endpoint Gateway Ip Workload Cos Gateway Vpe Zone 1 Ip:
+        address: ibm_is_virtual_endpoint_gateway_ip.endpoint_gateway_ip["workload-cos-gateway-vpe-zone-1-ip"]
+        values: []
+    - Endpoint Gateway Ip Workload Cos Gateway Vpe Zone 2 Ip:
+        address: ibm_is_virtual_endpoint_gateway_ip.endpoint_gateway_ip["workload-cos-gateway-vpe-zone-2-ip"]
+        values: []
+    - Endpoint Gateway Ip Workload Cos Gateway Vpe Zone 3 Ip:
+        address: ibm_is_virtual_endpoint_gateway_ip.endpoint_gateway_ip["workload-cos-gateway-vpe-zone-3-ip"]
+        values: []
+    - Gateway Management Gateway:
+        address: ibm_is_vpn_gateway.gateway["management-gateway"]
+        values:
+          - mode: route
+          - name: at-test-management-gateway
+          - tags:
+              - acceptance-test
+              - landing-zone
+          - timeouts:
+              delete: 1h
+    - Resource Groups At Test Management Rg:
+        address: ibm_resource_group.resource_groups["at-test-management-rg"]
+        values:
+          - name: at-test-management-rg
+    - Resource Groups At Test Service Rg:
+        address: ibm_resource_group.resource_groups["at-test-service-rg"]
+        values:
+          - name: at-test-service-rg
+    - Resource Groups At Test Workload Rg:
+        address: ibm_resource_group.resource_groups["at-test-workload-rg"]
+        values:
+          - name: at-test-workload-rg
+    - Appid 0:
+        address: ibm_resource_instance.appid[0]
+        values:
+          - location: us-south
+          - name: at-test-appid
+          - plan: graduated-tier
+          - service: appid
+    - Cos Atracker Cos:
+        address: ibm_resource_instance.cos["atracker-cos"]
+        values:
+          - location: global
+          - name: at-test-atracker-cos
+          - plan: standard
+          - service: cloud-object-storage
+          - tags:
+              - acceptance-test
+              - landing-zone
+    - Cos Cos:
+        address: ibm_resource_instance.cos["cos"]
+        values:
+          - location: global
+          - name: at-test-cos
+          - plan: standard
+          - service: cloud-object-storage
+          - tags:
+              - acceptance-test
+              - landing-zone
+    - Appid Key Slz Appid Key:
+        address: ibm_resource_key.appid_key["slz-appid-key"]
+        values:
+          - name: at-test-slz-appid-key-app-id-key
+          - role: Writer
+    - Key Bastion Key:
+        address: ibm_resource_key.key["bastion-key"]
+        values:
+          - name: at-test-bastion-key
+          - parameters:
+              HMAC: true
+          - role: Writer
+          - tags:
+              - acceptance-test
+              - landing-zone
+    - Key Cos Bind Key:
+        address: ibm_resource_key.key["cos-bind-key"]
+        values:
+          - name: at-test-cos-bind-key
+          - role: Writer
+          - tags:
+              - acceptance-test
+              - landing-zone
+    - Connection Management:
+        address: ibm_tg_connection.connection["management"]
+        values:
+          - name: at-test-management-hub-connection
+          - network_type: vpc
+          - timeouts:
+              create: 30m
+              delete: 30m
+    - Connection Workload:
+        address: ibm_tg_connection.connection["workload"]
+        values:
+          - name: at-test-workload-hub-connection
+          - network_type: vpc
+          - timeouts:
+              create: 30m
+              delete: 30m
+    - Transit Gateway 0:
+        address: ibm_tg_gateway.transit_gateway[0]
+        values:
+          - global: false
+          - location: us-south
+          - name: at-test-transit-gateway
+          - timeouts:
+              create: 30m
+              delete: 30m
+Vpc Workload:
+  address: module.acceptance_tests.module.landing-zone.module.vpc["workload"]
+  resources:
+    - Network Acl Workload Acl:
+        address: ibm_is_network_acl.network_acl["workload-acl"]
+        values:
+          - name: at-test-workload-workload-acl
+          - rules:
+              - action: allow
+                destination: 10.0.0.0/8
+                direction: inbound
+                icmp: []
+                name: allow-ibm-inbound
+                source: 161.26.0.0/16
+                tcp: []
+                udp: []
+              - action: allow
+                destination: 10.0.0.0/8
+                direction: inbound
+                icmp: []
+                name: allow-all-network-inbound
+                source: 10.0.0.0/8
+                tcp: []
+                udp: []
+              - action: allow
+                destination: 0.0.0.0/0
+                direction: outbound
+                icmp: []
+                name: allow-all-outbound
+                source: 0.0.0.0/0
+                tcp: []
+                udp: []
+    - Subnet At Test Workload Vpe Zone 1:
+        address: ibm_is_subnet.subnet["at-test-workload-vpe-zone-1"]
+        values:
+          - ip_version: ipv4
+          - ipv4_cidr_block: 10.40.20.0/24
+          - name: at-test-workload-vpe-zone-1
+          - zone: us-south-1
+    - Subnet At Test Workload Vpe Zone 2:
+        address: ibm_is_subnet.subnet["at-test-workload-vpe-zone-2"]
+        values:
+          - ip_version: ipv4
+          - ipv4_cidr_block: 10.50.20.0/24
+          - name: at-test-workload-vpe-zone-2
+          - zone: us-south-2
+    - Subnet At Test Workload Vpe Zone 3:
+        address: ibm_is_subnet.subnet["at-test-workload-vpe-zone-3"]
+        values:
+          - ip_version: ipv4
+          - ipv4_cidr_block: 10.60.20.0/24
+          - name: at-test-workload-vpe-zone-3
+          - zone: us-south-3
+    - Subnet At Test Workload Vsi Zone 1:
+        address: ibm_is_subnet.subnet["at-test-workload-vsi-zone-1"]
+        values:
+          - ip_version: ipv4
+          - ipv4_cidr_block: 10.40.10.0/24
+          - name: at-test-workload-vsi-zone-1
+          - zone: us-south-1
+    - Subnet At Test Workload Vsi Zone 2:
+        address: ibm_is_subnet.subnet["at-test-workload-vsi-zone-2"]
+        values:
+          - ip_version: ipv4
+          - ipv4_cidr_block: 10.50.10.0/24
+          - name: at-test-workload-vsi-zone-2
+          - zone: us-south-2
+    - Subnet At Test Workload Vsi Zone 3:
+        address: ibm_is_subnet.subnet["at-test-workload-vsi-zone-3"]
+        values:
+          - ip_version: ipv4
+          - ipv4_cidr_block: 10.60.10.0/24
+          - name: at-test-workload-vsi-zone-3
+          - zone: us-south-3
+    - Vpc:
+        address: ibm_is_vpc.vpc
+        values:
+          - address_prefix_management: manual
+          - classic_access: false
+          - name: at-test-workload-vpc
+    - Subnet Prefix At Test Workload Vpe Zone 1:
+        address: ibm_is_vpc_address_prefix.subnet_prefix["at-test-workload-vpe-zone-1"]
+        values:
+          - cidr: 10.40.20.0/24
+          - is_default: false
+          - name: at-test-workload-vpe-zone-1
+          - zone: us-south-1
+    - Subnet Prefix At Test Workload Vpe Zone 2:
+        address: ibm_is_vpc_address_prefix.subnet_prefix["at-test-workload-vpe-zone-2"]
+        values:
+          - cidr: 10.50.20.0/24
+          - is_default: false
+          - name: at-test-workload-vpe-zone-2
+          - zone: us-south-2
+    - Subnet Prefix At Test Workload Vpe Zone 3:
+        address: ibm_is_vpc_address_prefix.subnet_prefix["at-test-workload-vpe-zone-3"]
+        values:
+          - cidr: 10.60.20.0/24
+          - is_default: false
+          - name: at-test-workload-vpe-zone-3
+          - zone: us-south-3
+    - Subnet Prefix At Test Workload Vsi Zone 1:
+        address: ibm_is_vpc_address_prefix.subnet_prefix["at-test-workload-vsi-zone-1"]
+        values:
+          - cidr: 10.40.10.0/24
+          - is_default: false
+          - name: at-test-workload-vsi-zone-1
+          - zone: us-south-1
+    - Subnet Prefix At Test Workload Vsi Zone 2:
+        address: ibm_is_vpc_address_prefix.subnet_prefix["at-test-workload-vsi-zone-2"]
+        values:
+          - cidr: 10.50.10.0/24
+          - is_default: false
+          - name: at-test-workload-vsi-zone-2
+          - zone: us-south-2
+    - Subnet Prefix At Test Workload Vsi Zone 3:
+        address: ibm_is_vpc_address_prefix.subnet_prefix["at-test-workload-vsi-zone-3"]
+        values:
+          - cidr: 10.60.10.0/24
+          - is_default: false
+          - name: at-test-workload-vsi-zone-3
+          - zone: us-south-3
+Vpc Management:
+  address: module.acceptance_tests.module.landing-zone.module.vpc["management"]
+  resources:
+    - Network Acl Management Acl:
+        address: ibm_is_network_acl.network_acl["management-acl"]
+        values:
+          - name: at-test-management-management-acl
+          - rules:
+              - action: allow
+                destination: 10.0.0.0/8
+                direction: inbound
+                icmp: []
+                name: allow-ibm-inbound
+                source: 161.26.0.0/16
+                tcp: []
+                udp: []
+              - action: allow
+                destination: 10.0.0.0/8
+                direction: inbound
+                icmp: []
+                name: allow-all-network-inbound
+                source: 10.0.0.0/8
+                tcp: []
+                udp: []
+              - action: allow
+                destination: 0.0.0.0/0
+                direction: outbound
+                icmp: []
+                name: allow-all-outbound
+                source: 0.0.0.0/0
+                tcp: []
+                udp: []
+    - Gateway Zone 1:
+        address: ibm_is_public_gateway.gateway["zone-1"]
+        values:
+          - name: at-test-management-public-gateway-zone-1
+          - zone: us-south-1
+    - Gateway Zone 2:
+        address: ibm_is_public_gateway.gateway["zone-2"]
+        values:
+          - name: at-test-management-public-gateway-zone-2
+          - zone: us-south-2
+    - Gateway Zone 3:
+        address: ibm_is_public_gateway.gateway["zone-3"]
+        values:
+          - name: at-test-management-public-gateway-zone-3
+          - zone: us-south-3
+    - Subnet At Test Management Bastion Zone 1:
+        address: ibm_is_subnet.subnet["at-test-management-bastion-zone-1"]
+        values:
+          - ip_version: ipv4
+          - ipv4_cidr_block: 10.5.70.0/24
+          - name: at-test-management-bastion-zone-1
+          - zone: us-south-1
+    - Subnet At Test Management Bastion Zone 2:
+        address: ibm_is_subnet.subnet["at-test-management-bastion-zone-2"]
+        values:
+          - ip_version: ipv4
+          - ipv4_cidr_block: 10.6.70.0/24
+          - name: at-test-management-bastion-zone-2
+          - zone: us-south-2
+    - Subnet At Test Management Bastion Zone 3:
+        address: ibm_is_subnet.subnet["at-test-management-bastion-zone-3"]
+        values:
+          - ip_version: ipv4
+          - ipv4_cidr_block: 10.7.70.0/24
+          - name: at-test-management-bastion-zone-3
+          - zone: us-south-3
+    - Subnet At Test Management F5 Bastion Zone 1:
+        address: ibm_is_subnet.subnet["at-test-management-f5-bastion-zone-1"]
+        values:
+          - ip_version: ipv4
+          - ipv4_cidr_block: 10.5.60.0/24
+          - name: at-test-management-f5-bastion-zone-1
+          - zone: us-south-1
+    - Subnet At Test Management F5 Bastion Zone 2:
+        address: ibm_is_subnet.subnet["at-test-management-f5-bastion-zone-2"]
+        values:
+          - ip_version: ipv4
+          - ipv4_cidr_block: 10.6.60.0/24
+          - name: at-test-management-f5-bastion-zone-2
+          - zone: us-south-2
+    - Subnet At Test Management F5 Bastion Zone 3:
+        address: ibm_is_subnet.subnet["at-test-management-f5-bastion-zone-3"]
+        values:
+          - ip_version: ipv4
+          - ipv4_cidr_block: 10.7.60.0/24
+          - name: at-test-management-f5-bastion-zone-3
+          - zone: us-south-3
+    - Subnet At Test Management F5 External Zone 1:
+        address: ibm_is_subnet.subnet["at-test-management-f5-external-zone-1"]
+        values:
+          - ip_version: ipv4
+          - ipv4_cidr_block: 10.5.40.0/24
+          - name: at-test-management-f5-external-zone-1
+          - zone: us-south-1
+    - Subnet At Test Management F5 External Zone 2:
+        address: ibm_is_subnet.subnet["at-test-management-f5-external-zone-2"]
+        values:
+          - ip_version: ipv4
+          - ipv4_cidr_block: 10.6.40.0/24
+          - name: at-test-management-f5-external-zone-2
+          - zone: us-south-2
+    - Subnet At Test Management F5 External Zone 3:
+        address: ibm_is_subnet.subnet["at-test-management-f5-external-zone-3"]
+        values:
+          - ip_version: ipv4
+          - ipv4_cidr_block: 10.7.40.0/24
+          - name: at-test-management-f5-external-zone-3
+          - zone: us-south-3
+    - Subnet At Test Management F5 Management Zone 1:
+        address: ibm_is_subnet.subnet["at-test-management-f5-management-zone-1"]
+        values:
+          - ip_version: ipv4
+          - ipv4_cidr_block: 10.5.30.0/24
+          - name: at-test-management-f5-management-zone-1
+          - zone: us-south-1
+    - Subnet At Test Management F5 Management Zone 2:
+        address: ibm_is_subnet.subnet["at-test-management-f5-management-zone-2"]
+        values:
+          - ip_version: ipv4
+          - ipv4_cidr_block: 10.6.30.0/24
+          - name: at-test-management-f5-management-zone-2
+          - zone: us-south-2
+    - Subnet At Test Management F5 Management Zone 3:
+        address: ibm_is_subnet.subnet["at-test-management-f5-management-zone-3"]
+        values:
+          - ip_version: ipv4
+          - ipv4_cidr_block: 10.7.30.0/24
+          - name: at-test-management-f5-management-zone-3
+          - zone: us-south-3
+    - Subnet At Test Management F5 Workload Zone 1:
+        address: ibm_is_subnet.subnet["at-test-management-f5-workload-zone-1"]
+        values:
+          - ip_version: ipv4
+          - ipv4_cidr_block: 10.5.50.0/24
+          - name: at-test-management-f5-workload-zone-1
+          - zone: us-south-1
+    - Subnet At Test Management F5 Workload Zone 2:
+        address: ibm_is_subnet.subnet["at-test-management-f5-workload-zone-2"]
+        values:
+          - ip_version: ipv4
+          - ipv4_cidr_block: 10.6.50.0/24
+          - name: at-test-management-f5-workload-zone-2
+          - zone: us-south-2
+    - Subnet At Test Management F5 Workload Zone 3:
+        address: ibm_is_subnet.subnet["at-test-management-f5-workload-zone-3"]
+        values:
+          - ip_version: ipv4
+          - ipv4_cidr_block: 10.7.50.0/24
+          - name: at-test-management-f5-workload-zone-3
+          - zone: us-south-3
+    - Subnet At Test Management Vpe Zone 1:
+        address: ibm_is_subnet.subnet["at-test-management-vpe-zone-1"]
+        values:
+          - ip_version: ipv4
+          - ipv4_cidr_block: 10.5.80.0/24
+          - name: at-test-management-vpe-zone-1
+          - zone: us-south-1
+    - Subnet At Test Management Vpe Zone 2:
+        address: ibm_is_subnet.subnet["at-test-management-vpe-zone-2"]
+        values:
+          - ip_version: ipv4
+          - ipv4_cidr_block: 10.6.80.0/24
+          - name: at-test-management-vpe-zone-2
+          - zone: us-south-2
+    - Subnet At Test Management Vpe Zone 3:
+        address: ibm_is_subnet.subnet["at-test-management-vpe-zone-3"]
+        values:
+          - ip_version: ipv4
+          - ipv4_cidr_block: 10.7.80.0/24
+          - name: at-test-management-vpe-zone-3
+          - zone: us-south-3
+    - Subnet At Test Management Vpn 1 Zone 1:
+        address: ibm_is_subnet.subnet["at-test-management-vpn-1-zone-1"]
+        values:
+          - ip_version: ipv4
+          - ipv4_cidr_block: 10.5.10.0/24
+          - name: at-test-management-vpn-1-zone-1
+          - zone: us-south-1
+    - Subnet At Test Management Vpn 1 Zone 2:
+        address: ibm_is_subnet.subnet["at-test-management-vpn-1-zone-2"]
+        values:
+          - ip_version: ipv4
+          - ipv4_cidr_block: 10.6.10.0/24
+          - name: at-test-management-vpn-1-zone-2
+          - zone: us-south-2
+    - Subnet At Test Management Vpn 1 Zone 3:
+        address: ibm_is_subnet.subnet["at-test-management-vpn-1-zone-3"]
+        values:
+          - ip_version: ipv4
+          - ipv4_cidr_block: 10.7.10.0/24
+          - name: at-test-management-vpn-1-zone-3
+          - zone: us-south-3
+    - Subnet At Test Management Vpn 2 Zone 1:
+        address: ibm_is_subnet.subnet["at-test-management-vpn-2-zone-1"]
+        values:
+          - ip_version: ipv4
+          - ipv4_cidr_block: 10.5.20.0/24
+          - name: at-test-management-vpn-2-zone-1
+          - zone: us-south-1
+    - Subnet At Test Management Vpn 2 Zone 2:
+        address: ibm_is_subnet.subnet["at-test-management-vpn-2-zone-2"]
+        values:
+          - ip_version: ipv4
+          - ipv4_cidr_block: 10.6.20.0/24
+          - name: at-test-management-vpn-2-zone-2
+          - zone: us-south-2
+    - Subnet At Test Management Vpn 2 Zone 3:
+        address: ibm_is_subnet.subnet["at-test-management-vpn-2-zone-3"]
+        values:
+          - ip_version: ipv4
+          - ipv4_cidr_block: 10.7.20.0/24
+          - name: at-test-management-vpn-2-zone-3
+          - zone: us-south-3
+    - Subnet At Test Management Vpn Zone 1:
+        address: ibm_is_subnet.subnet["at-test-management-vpn-zone-1"]
+        values:
+          - ip_version: ipv4
+          - ipv4_cidr_block: 10.10.30.0/24
+          - name: at-test-management-vpn-zone-1
+          - zone: us-south-1
+    - Subnet At Test Management Vsi Zone 1:
+        address: ibm_is_subnet.subnet["at-test-management-vsi-zone-1"]
+        values:
+          - ip_version: ipv4
+          - ipv4_cidr_block: 10.10.10.0/24
+          - name: at-test-management-vsi-zone-1
+          - zone: us-south-1
+    - Subnet At Test Management Vsi Zone 2:
+        address: ibm_is_subnet.subnet["at-test-management-vsi-zone-2"]
+        values:
+          - ip_version: ipv4
+          - ipv4_cidr_block: 10.20.10.0/24
+          - name: at-test-management-vsi-zone-2
+          - zone: us-south-2
+    - Subnet At Test Management Vsi Zone 3:
+        address: ibm_is_subnet.subnet["at-test-management-vsi-zone-3"]
+        values:
+          - ip_version: ipv4
+          - ipv4_cidr_block: 10.30.10.0/24
+          - name: at-test-management-vsi-zone-3
+          - zone: us-south-3
+    - Vpc:
+        address: ibm_is_vpc.vpc
+        values:
+          - address_prefix_management: manual
+          - classic_access: false
+          - name: at-test-management-vpc
+    - Address Prefixes At Test Management Zone 1 1:
+        address: ibm_is_vpc_address_prefix.address_prefixes["at-test-management-zone-1-1"]
+        values:
+          - cidr: 10.5.0.0/16
+          - is_default: false
+          - name: at-test-management-zone-1-1
+          - zone: us-south-1
+    - Address Prefixes At Test Management Zone 1 2:
+        address: ibm_is_vpc_address_prefix.address_prefixes["at-test-management-zone-1-2"]
+        values:
+          - cidr: 10.10.10.0/24
+          - is_default: false
+          - name: at-test-management-zone-1-2
+          - zone: us-south-1
+    - Address Prefixes At Test Management Zone 2 1:
+        address: ibm_is_vpc_address_prefix.address_prefixes["at-test-management-zone-2-1"]
+        values:
+          - cidr: 10.6.0.0/16
+          - is_default: false
+          - name: at-test-management-zone-2-1
+          - zone: us-south-2
+    - Address Prefixes At Test Management Zone 2 2:
+        address: ibm_is_vpc_address_prefix.address_prefixes["at-test-management-zone-2-2"]
+        values:
+          - cidr: 10.20.10.0/24
+          - is_default: false
+          - name: at-test-management-zone-2-2
+          - zone: us-south-2
+    - Address Prefixes At Test Management Zone 3 1:
+        address: ibm_is_vpc_address_prefix.address_prefixes["at-test-management-zone-3-1"]
+        values:
+          - cidr: 10.7.0.0/16
+          - is_default: false
+          - name: at-test-management-zone-3-1
+          - zone: us-south-3
+    - Address Prefixes At Test Management Zone 3 2:
+        address: ibm_is_vpc_address_prefix.address_prefixes["at-test-management-zone-3-2"]
+        values:
+          - cidr: 10.30.10.0/24
+          - is_default: false
+          - name: at-test-management-zone-3-2
+          - zone: us-south-3
+Ssh Keys:
+  address: module.acceptance_tests.module.landing-zone.module.ssh_keys
+  resources:
+    - Ssh Key Ssh Key:
+        address: ibm_is_ssh_key.ssh_key["ssh-key"]
+        values:
+          - name: at-test-ssh-key
+          - public_key: "<user defined>"
+          - tags:
+              - acceptance-test
+              - landing-zone
+Key Management:
+  address: module.acceptance_tests.module.landing-zone.module.key_management
+  resources:
+    - Key At Test Atracker Key:
+        address: ibm_kms_key.key["at-test-atracker-key"]
+        values:
+          - force_delete: true
+          - key_name: at-test-atracker-key
+          - key_ring_id: at-test-slz-ring
+          - standard_key: false
+    - Key At Test Slz Key:
+        address: ibm_kms_key.key["at-test-slz-key"]
+        values:
+          - force_delete: true
+          - key_name: at-test-slz-key
+          - key_ring_id: at-test-slz-ring
+          - standard_key: false
+    - Key At Test Vsi Volume Key:
+        address: ibm_kms_key.key["at-test-vsi-volume-key"]
+        values:
+          - force_delete: true
+          - key_name: at-test-vsi-volume-key
+          - key_ring_id: at-test-slz-ring
+          - standard_key: false
+    - Rings At Test Slz Ring:
+        address: ibm_kms_key_rings.rings["at-test-slz-ring"]
+        values:
+          - key_ring_id: at-test-slz-ring
+    - Kms 0:
+        address: ibm_resource_instance.kms[0]
+        values:
+          - location: us-south
+          - name: at-test-slz-kms
+          - plan: tiered-pricing
+          - service: kms
+Teleport Config[0]:
+  address: module.acceptance_tests.module.landing-zone.module.teleport_config[0]
+  resources:
+    - Cloud Init:
+        address: template_cloudinit_config.cloud_init
+        values:
+          - base64_encode: false
+          - gzip: false
+          - part:
+              - content_type: null
+                filename: null
+                merge_type: null
+F5 Cloud Init At Test F5 Zone 3:
+  address: module.acceptance_tests.module.landing-zone.module.dynamic_values.module.f5_cloud_init["at-test-f5-zone-3"]
+  resources:
+    - User Data:
+        address: template_file.user_data
+        values:
+          - template: "#cloud-config\nchpasswd:\n  expire: false\n  list: |\n    admin:${tmos_admin_password}\ntmos_dhcpv4_tmm:\n  enabled: true\n  rd_enabled: false\n  icontrollx_trusted_sources: false\n  inject_routes: true\n  configsync_interface: ${configsync_interface}\n  default_route_interface: ${default_route_interface}\n  dhcp_timeout: 120\n  dhcpv4_options:\n    mgmt:\n      host-name: ${hostname}\n      domain-name: ${domain}\n    '${default_route_interface}':\n      routers: ${default_route_gateway}\n  do_enabled: true \n  do_declaration: ${do_local_declaration}\n  do_declaration_url: ${do_declaration_url}\n  do_declaration_url_headers:\n    PRIVATE-TOKEN: x6VpQuWhiT_KgT3mzyTe\n  do_template_variables:\n    primary_dns: 8.8.8.8\n    secondary_dns: 1.1.1.1\n    timezone: Europe/Paris\n    primary_ntp: 132.163.96.5\n    secondary_ntp: 132.163.97.5\n    primary_radius: 10.20.22.20\n    primary_radius_secret: testing123\n    secondary_radius: 10.20.23.20\n    secondary_radius_secret: testing123\n  as3_enabled: true\n  as3_declaration_url: ${as3_declaration_url}\n  as3_declaration_url_headers:\n    PRIVATE-TOKEN: x6VpQuWhiT_KgT3mzyTe\n  as3_template_variables:\n    selfip_snat_address: 10.20.40.40\n  ts_enabled: true\n  ts_declaration_url: ${ts_declaration_url}\n  ts_declaration_url_headers:\n    PRIVATE-TOKEN: x6VpQuWhiT_KgT3mzyTe\n  ts_template_variables:\n    splunk_log_ingest: 10.20.23.30\n    splunk_password: 0f29e5dc-bee8-4898-9054-9b66574a3e14\n  phone_home_url: ${phone_home_url}\n  phone_home_url_verify_tls: false\n  phone_home_url_metadata:\n    template_source: ${template_source}\n    template_version: ${template_version}\n    zone: ${zone}\n    vpc: ${vpc}\n    app_id: ${app_id}\n  tgactive_url: ${tgactive_url}\n  tgstandby_url: ${tgstandby_url}\n  tgrefresh_url: ${tgrefresh_url}\n  "
+          - vars:
+              app_id: null
+              as3_declaration_url: null
+              configsync_interface: 1.1
+              default_route_gateway: 10.7.50.1
+              default_route_interface: 1.3
+              do_declaration_url: null
+              do_local_declaration: null
+              domain: f5-ve-01
+              hostname: f5-ve-01
+              phone_home_url: null
+              template_source: f5devcentral/ibmcloud_schematics_bigip_multinic_declared
+              template_version: 20210201
+              tgactive_url: ""
+              tgrefresh_url: null
+              tgstandby_url: null
+              tmos_admin_password: null
+              ts_declaration_url: null
+              zone: us-south-3
+F5 Cloud Init At Test F5 Zone 2:
+  address: module.acceptance_tests.module.landing-zone.module.dynamic_values.module.f5_cloud_init["at-test-f5-zone-2"]
+  resources:
+    - User Data:
+        address: template_file.user_data
+        values:
+          - template: "#cloud-config\nchpasswd:\n  expire: false\n  list: |\n    admin:${tmos_admin_password}\ntmos_dhcpv4_tmm:\n  enabled: true\n  rd_enabled: false\n  icontrollx_trusted_sources: false\n  inject_routes: true\n  configsync_interface: ${configsync_interface}\n  default_route_interface: ${default_route_interface}\n  dhcp_timeout: 120\n  dhcpv4_options:\n    mgmt:\n      host-name: ${hostname}\n      domain-name: ${domain}\n    '${default_route_interface}':\n      routers: ${default_route_gateway}\n  do_enabled: true \n  do_declaration: ${do_local_declaration}\n  do_declaration_url: ${do_declaration_url}\n  do_declaration_url_headers:\n    PRIVATE-TOKEN: x6VpQuWhiT_KgT3mzyTe\n  do_template_variables:\n    primary_dns: 8.8.8.8\n    secondary_dns: 1.1.1.1\n    timezone: Europe/Paris\n    primary_ntp: 132.163.96.5\n    secondary_ntp: 132.163.97.5\n    primary_radius: 10.20.22.20\n    primary_radius_secret: testing123\n    secondary_radius: 10.20.23.20\n    secondary_radius_secret: testing123\n  as3_enabled: true\n  as3_declaration_url: ${as3_declaration_url}\n  as3_declaration_url_headers:\n    PRIVATE-TOKEN: x6VpQuWhiT_KgT3mzyTe\n  as3_template_variables:\n    selfip_snat_address: 10.20.40.40\n  ts_enabled: true\n  ts_declaration_url: ${ts_declaration_url}\n  ts_declaration_url_headers:\n    PRIVATE-TOKEN: x6VpQuWhiT_KgT3mzyTe\n  ts_template_variables:\n    splunk_log_ingest: 10.20.23.30\n    splunk_password: 0f29e5dc-bee8-4898-9054-9b66574a3e14\n  phone_home_url: ${phone_home_url}\n  phone_home_url_verify_tls: false\n  phone_home_url_metadata:\n    template_source: ${template_source}\n    template_version: ${template_version}\n    zone: ${zone}\n    vpc: ${vpc}\n    app_id: ${app_id}\n  tgactive_url: ${tgactive_url}\n  tgstandby_url: ${tgstandby_url}\n  tgrefresh_url: ${tgrefresh_url}\n  "
+          - vars:
+              app_id: null
+              as3_declaration_url: null
+              configsync_interface: 1.1
+              default_route_gateway: 10.6.50.1
+              default_route_interface: 1.3
+              do_declaration_url: null
+              do_local_declaration: null
+              domain: f5-ve-01
+              hostname: f5-ve-01
+              phone_home_url: null
+              template_source: f5devcentral/ibmcloud_schematics_bigip_multinic_declared
+              template_version: 20210201
+              tgactive_url: ""
+              tgrefresh_url: null
+              tgstandby_url: null
+              tmos_admin_password: null
+              ts_declaration_url: null
+              zone: us-south-2
+F5 Cloud Init At Test F5 Zone 1:
+  address: module.acceptance_tests.module.landing-zone.module.dynamic_values.module.f5_cloud_init["at-test-f5-zone-1"]
+  resources:
+    - User Data:
+        address: template_file.user_data
+        values:
+          - template: "#cloud-config\nchpasswd:\n  expire: false\n  list: |\n    admin:${tmos_admin_password}\ntmos_dhcpv4_tmm:\n  enabled: true\n  rd_enabled: false\n  icontrollx_trusted_sources: false\n  inject_routes: true\n  configsync_interface: ${configsync_interface}\n  default_route_interface: ${default_route_interface}\n  dhcp_timeout: 120\n  dhcpv4_options:\n    mgmt:\n      host-name: ${hostname}\n      domain-name: ${domain}\n    '${default_route_interface}':\n      routers: ${default_route_gateway}\n  do_enabled: true \n  do_declaration: ${do_local_declaration}\n  do_declaration_url: ${do_declaration_url}\n  do_declaration_url_headers:\n    PRIVATE-TOKEN: x6VpQuWhiT_KgT3mzyTe\n  do_template_variables:\n    primary_dns: 8.8.8.8\n    secondary_dns: 1.1.1.1\n    timezone: Europe/Paris\n    primary_ntp: 132.163.96.5\n    secondary_ntp: 132.163.97.5\n    primary_radius: 10.20.22.20\n    primary_radius_secret: testing123\n    secondary_radius: 10.20.23.20\n    secondary_radius_secret: testing123\n  as3_enabled: true\n  as3_declaration_url: ${as3_declaration_url}\n  as3_declaration_url_headers:\n    PRIVATE-TOKEN: x6VpQuWhiT_KgT3mzyTe\n  as3_template_variables:\n    selfip_snat_address: 10.20.40.40\n  ts_enabled: true\n  ts_declaration_url: ${ts_declaration_url}\n  ts_declaration_url_headers:\n    PRIVATE-TOKEN: x6VpQuWhiT_KgT3mzyTe\n  ts_template_variables:\n    splunk_log_ingest: 10.20.23.30\n    splunk_password: 0f29e5dc-bee8-4898-9054-9b66574a3e14\n  phone_home_url: ${phone_home_url}\n  phone_home_url_verify_tls: false\n  phone_home_url_metadata:\n    template_source: ${template_source}\n    template_version: ${template_version}\n    zone: ${zone}\n    vpc: ${vpc}\n    app_id: ${app_id}\n  tgactive_url: ${tgactive_url}\n  tgstandby_url: ${tgstandby_url}\n  tgrefresh_url: ${tgrefresh_url}\n  "
+          - vars:
+              app_id: null
+              as3_declaration_url: null
+              configsync_interface: 1.1
+              default_route_gateway: 10.5.50.1
+              default_route_interface: 1.3
+              do_declaration_url: null
+              do_local_declaration: null
+              domain: f5-ve-01
+              hostname: f5-ve-01
+              phone_home_url: null
+              template_source: f5devcentral/ibmcloud_schematics_bigip_multinic_declared
+              template_version: 20210201
+              tgactive_url: ""
+              tgrefresh_url: null
+              tgstandby_url: null
+              tmos_admin_password: null
+              ts_declaration_url: null
+              zone: us-south-1
+Vsi At Test Management Server:
+  address: module.acceptance_tests.module.landing-zone.module.vsi["at-test-management-server"]
+  resources:
+    - Vsi At Test Management Server 1:
+        address: ibm_is_instance.vsi["at-test-management-server-1"]
+        values:
+          - boot_volume:
+              - snapshot: null
+          - force_action: false
+          - image: r006-35668c13-c034-43b2-b0a1-2994b9044cec
+          - name: at-test-management-server-1
+          - primary_network_interface:
+              - allow_ip_spoofing: false
+          - profile: cx2-4x8
+          - wait_before_delete: true
+          - zone: us-south-1
+    - Vsi At Test Management Server 2:
+        address: ibm_is_instance.vsi["at-test-management-server-2"]
+        values:
+          - boot_volume:
+              - snapshot: null
+          - force_action: false
+          - image: r006-35668c13-c034-43b2-b0a1-2994b9044cec
+          - name: at-test-management-server-2
+          - primary_network_interface:
+              - allow_ip_spoofing: false
+          - profile: cx2-4x8
+          - wait_before_delete: true
+          - zone: us-south-2
+    - Vsi At Test Management Server 3:
+        address: ibm_is_instance.vsi["at-test-management-server-3"]
+        values:
+          - boot_volume:
+              - snapshot: null
+          - force_action: false
+          - image: r006-35668c13-c034-43b2-b0a1-2994b9044cec
+          - name: at-test-management-server-3
+          - primary_network_interface:
+              - allow_ip_spoofing: false
+          - profile: cx2-4x8
+          - wait_before_delete: true
+          - zone: us-south-3
+    - Security Group Management:
+        address: ibm_is_security_group.security_group["management"]
+        values:
+          - name: management
+    - Security Group Rules Management Allow Ibm Inbound:
+        address: ibm_is_security_group_rule.security_group_rules["management-allow-ibm-inbound"]
+        values:
+          - direction: inbound
+          - icmp: []
+          - ip_version: ipv4
+          - remote: 161.26.0.0/16
+          - tcp: []
+          - udp: []
+    - Security Group Rules Management Allow Ibm Tcp 443 Outbound:
+        address: ibm_is_security_group_rule.security_group_rules["management-allow-ibm-tcp-443-outbound"]
+        values:
+          - direction: outbound
+          - icmp: []
+          - ip_version: ipv4
+          - remote: 161.26.0.0/16
+          - tcp:
+              - port_max: 443
+                port_min: 443
+          - udp: []
+    - Security Group Rules Management Allow Ibm Tcp 53 Outbound:
+        address: ibm_is_security_group_rule.security_group_rules["management-allow-ibm-tcp-53-outbound"]
+        values:
+          - direction: outbound
+          - icmp: []
+          - ip_version: ipv4
+          - remote: 161.26.0.0/16
+          - tcp:
+              - port_max: 53
+                port_min: 53
+          - udp: []
+    - Security Group Rules Management Allow Ibm Tcp 80 Outbound:
+        address: ibm_is_security_group_rule.security_group_rules["management-allow-ibm-tcp-80-outbound"]
+        values:
+          - direction: outbound
+          - icmp: []
+          - ip_version: ipv4
+          - remote: 161.26.0.0/16
+          - tcp:
+              - port_max: 80
+                port_min: 80
+          - udp: []
+    - Security Group Rules Management Allow Vpc Inbound:
+        address: ibm_is_security_group_rule.security_group_rules["management-allow-vpc-inbound"]
+        values:
+          - direction: inbound
+          - icmp: []
+          - ip_version: ipv4
+          - remote: 10.0.0.0/8
+          - tcp: []
+          - udp: []
+    - Security Group Rules Management Allow Vpc Outbound:
+        address: ibm_is_security_group_rule.security_group_rules["management-allow-vpc-outbound"]
+        values:
+          - direction: outbound
+          - icmp: []
+          - ip_version: ipv4
+          - remote: 10.0.0.0/8
+          - tcp: []
+          - udp: []
+Bastion Host At Test Bastion 1:
+  address: module.acceptance_tests.module.landing-zone.module.bastion_host["at-test-bastion-1"]
+  resources:
+    - Vsi At Test Bastion 1 1:
+        address: ibm_is_instance.vsi["at-test-bastion-1-1"]
+        values:
+          - boot_volume:
+              - snapshot: null
+          - force_action: false
+          - image: r006-35668c13-c034-43b2-b0a1-2994b9044cec
+          - name: at-test-bastion-1-1
+          - primary_network_interface:
+              - allow_ip_spoofing: false
+          - profile: cx2-4x8
+          - wait_before_delete: true
+          - zone: us-south-1
+Bastion Host At Test Bastion 2:
+  address: module.acceptance_tests.module.landing-zone.module.bastion_host["at-test-bastion-2"]
+  resources:
+    - Vsi At Test Bastion 2 1:
+        address: ibm_is_instance.vsi["at-test-bastion-2-1"]
+        values:
+          - boot_volume:
+              - snapshot: null
+          - force_action: false
+          - image: r006-35668c13-c034-43b2-b0a1-2994b9044cec
+          - name: at-test-bastion-2-1
+          - primary_network_interface:
+              - allow_ip_spoofing: false
+          - profile: cx2-4x8
+          - wait_before_delete: true
+          - zone: us-south-2
+Vsi At Test Workload Server:
+  address: module.acceptance_tests.module.landing-zone.module.vsi["at-test-workload-server"]
+  resources:
+    - Vsi At Test Workload Server 1:
+        address: ibm_is_instance.vsi["at-test-workload-server-1"]
+        values:
+          - boot_volume:
+              - snapshot: null
+          - force_action: false
+          - image: r006-35668c13-c034-43b2-b0a1-2994b9044cec
+          - name: at-test-workload-server-1
+          - primary_network_interface:
+              - allow_ip_spoofing: false
+          - profile: cx2-4x8
+          - wait_before_delete: true
+          - zone: us-south-1
+    - Vsi At Test Workload Server 2:
+        address: ibm_is_instance.vsi["at-test-workload-server-2"]
+        values:
+          - boot_volume:
+              - snapshot: null
+          - force_action: false
+          - image: r006-35668c13-c034-43b2-b0a1-2994b9044cec
+          - name: at-test-workload-server-2
+          - primary_network_interface:
+              - allow_ip_spoofing: false
+          - profile: cx2-4x8
+          - wait_before_delete: true
+          - zone: us-south-2
+    - Vsi At Test Workload Server 3:
+        address: ibm_is_instance.vsi["at-test-workload-server-3"]
+        values:
+          - boot_volume:
+              - snapshot: null
+          - force_action: false
+          - image: r006-35668c13-c034-43b2-b0a1-2994b9044cec
+          - name: at-test-workload-server-3
+          - primary_network_interface:
+              - allow_ip_spoofing: false
+          - profile: cx2-4x8
+          - wait_before_delete: true
+          - zone: us-south-3
+    - Security Group Management:
+        address: ibm_is_security_group.security_group["management"]
+        values:
+          - name: management
+    - Security Group Rules Management Allow Ibm Inbound:
+        address: ibm_is_security_group_rule.security_group_rules["management-allow-ibm-inbound"]
+        values:
+          - direction: inbound
+          - icmp: []
+          - ip_version: ipv4
+          - remote: 161.26.0.0/16
+          - tcp: []
+          - udp: []
+    - Security Group Rules Management Allow Ibm Tcp 443 Outbound:
+        address: ibm_is_security_group_rule.security_group_rules["management-allow-ibm-tcp-443-outbound"]
+        values:
+          - direction: outbound
+          - icmp: []
+          - ip_version: ipv4
+          - remote: 161.26.0.0/16
+          - tcp:
+              - port_max: 443
+                port_min: 443
+          - udp: []
+    - Security Group Rules Management Allow Ibm Tcp 53 Outbound:
+        address: ibm_is_security_group_rule.security_group_rules["management-allow-ibm-tcp-53-outbound"]
+        values:
+          - direction: outbound
+          - icmp: []
+          - ip_version: ipv4
+          - remote: 161.26.0.0/16
+          - tcp:
+              - port_max: 53
+                port_min: 53
+          - udp: []
+    - Security Group Rules Management Allow Ibm Tcp 80 Outbound:
+        address: ibm_is_security_group_rule.security_group_rules["management-allow-ibm-tcp-80-outbound"]
+        values:
+          - direction: outbound
+          - icmp: []
+          - ip_version: ipv4
+          - remote: 161.26.0.0/16
+          - tcp:
+              - port_max: 80
+                port_min: 80
+          - udp: []
+    - Security Group Rules Management Allow Vpc Inbound:
+        address: ibm_is_security_group_rule.security_group_rules["management-allow-vpc-inbound"]
+        values:
+          - direction: inbound
+          - icmp: []
+          - ip_version: ipv4
+          - remote: 10.0.0.0/8
+          - tcp: []
+          - udp: []
+    - Security Group Rules Management Allow Vpc Outbound:
+        address: ibm_is_security_group_rule.security_group_rules["management-allow-vpc-outbound"]
+        values:
+          - direction: outbound
+          - icmp: []
+          - ip_version: ipv4
+          - remote: 10.0.0.0/8
+          - tcp: []
+          - udp: []
+Bastion Host At Test Bastion 3:
+  address: module.acceptance_tests.module.landing-zone.module.bastion_host["at-test-bastion-3"]
+  resources:
+    - Vsi At Test Bastion 3 1:
+        address: ibm_is_instance.vsi["at-test-bastion-3-1"]
+        values:
+          - boot_volume:
+              - snapshot: null
+          - force_action: false
+          - image: r006-35668c13-c034-43b2-b0a1-2994b9044cec
+          - name: at-test-bastion-3-1
+          - primary_network_interface:
+              - allow_ip_spoofing: false
+          - profile: cx2-4x8
+          - wait_before_delete: true
+          - zone: us-south-3
+F5 Vsi At Test F5 Zone 1:
+  address: module.acceptance_tests.module.landing-zone.module.f5_vsi["at-test-f5-zone-1"]
+  resources:
+    - Vsi At Test F5 Zone 1 1:
+        address: ibm_is_instance.vsi["at-test-f5-zone-1-1"]
+        values:
+          - boot_volume:
+              - snapshot: null
+          - force_action: false
+          - image: r006-96eff507-273e-48af-8790-74c74cf4cebd
+          - name: at-test-f5-zone-1-1
+          - network_interfaces:
+              - allow_ip_spoofing: true
+              - allow_ip_spoofing: true
+              - allow_ip_spoofing: true
+          - primary_network_interface:
+              - allow_ip_spoofing: false
+          - profile: cx2-4x8
+          - wait_before_delete: true
+          - zone: us-south-1
+F5 Vsi At Test F5 Zone 3:
+  address: module.acceptance_tests.module.landing-zone.module.f5_vsi["at-test-f5-zone-3"]
+  resources:
+    - Vsi At Test F5 Zone 3 1:
+        address: ibm_is_instance.vsi["at-test-f5-zone-3-1"]
+        values:
+          - boot_volume:
+              - snapshot: null
+          - force_action: false
+          - image: r006-96eff507-273e-48af-8790-74c74cf4cebd
+          - name: at-test-f5-zone-3-1
+          - network_interfaces:
+              - allow_ip_spoofing: true
+              - allow_ip_spoofing: true
+              - allow_ip_spoofing: true
+          - primary_network_interface:
+              - allow_ip_spoofing: false
+          - profile: cx2-4x8
+          - wait_before_delete: true
+          - zone: us-south-3
+F5 Vsi At Test F5 Zone 2:
+  address: module.acceptance_tests.module.landing-zone.module.f5_vsi["at-test-f5-zone-2"]
+  resources:
+    - Vsi At Test F5 Zone 2 1:
+        address: ibm_is_instance.vsi["at-test-f5-zone-2-1"]
+        values:
+          - boot_volume:
+              - snapshot: null
+          - force_action: false
+          - image: r006-96eff507-273e-48af-8790-74c74cf4cebd
+          - name: at-test-f5-zone-2-1
+          - network_interfaces:
+              - allow_ip_spoofing: true
+              - allow_ip_spoofing: true
+              - allow_ip_spoofing: true
+          - primary_network_interface:
+              - allow_ip_spoofing: false
+          - profile: cx2-4x8
+          - wait_before_delete: true
+          - zone: us-south-2

@@ -51,7 +51,7 @@ variable "network_cidr" {
 variable "vpcs" {
   description = "List of VPCs to create. The first VPC in this list will always be considered the `management` VPC, and will be where the VPN Gateway is connected. VPCs names can only be a maximum of 16 characters and can only contain letters, numbers, and - characters. VPC names must begin with a letter.. The first VPC in this list will always be considered the `management` VPC, and will be where the VPN Gateway is connected. VPCs names can only be a maximum of 16 characters and can only contain letters, numbers, and - characters. VPC names must begin with a letter."
   type        = list(string)
-  default     = ["managemnet", "workload"]
+  default     = ["management", "workload"]
 
   validation {
     error_message = "VPCs names can only be a maximum of 16 characters and can only contain letters, numbers, and - characters. Names must also begin with a letter and end with a letter or number."
@@ -164,13 +164,19 @@ variable "entitlement" {
 ##############################################################################
 
 variable "add_edge_vpc" {
-  description = "Create an edge VPC. This VPC will be dynamically added to the list of VPCs in `var.vpcs`. Conflicts with `create_bastion_on_management_vpc` to prevent overlapping subnet CIDR blocks."
+  description = "Create an edge VPC. This VPC will be dynamically added to the list of VPCs in `var.vpcs`. Conflicts with `create_f5_network_on_management_vpc` to prevent overlapping subnet CIDR blocks."
   type        = bool
   default     = false
 }
 
-variable "create_bastion_on_management_vpc" {
+variable "create_f5_network_on_management_vpc" {
   description = "Set up bastion on management VPC. This value conflicts with `add_edge_vpc` to prevent overlapping subnet CIDR blocks."
+  type        = bool
+  default     = false
+}
+
+variable "provision_teleport_in_f5" {
+  description = "Provision teleport VSI in `bastion` subnet tier of F5 network if able."
   type        = bool
   default     = false
 }
@@ -388,6 +394,17 @@ variable "enable_f5_external_fip" {
 ##############################################################################
 # Teleport VSI Variables
 ##############################################################################
+
+variable "teleport_management_zones" {
+  description = "Number of zones to create teleport VSI on Management VPC if not using F5. If you are using F5, ignore this value."
+  type        = number
+  default     = 0
+
+  validation {
+    error_message = "Teleport Management Zones can only be 0, 1, 2, or 3."
+    condition     = var.teleport_management_zones >= 0 && var.teleport_management_zones < 4
+  }
+}
 
 variable "use_existing_appid" {
   description = "Use an existing appid instance. If this is false, one will be automatically created."
