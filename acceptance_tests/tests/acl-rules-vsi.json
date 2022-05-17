@@ -43,14 +43,14 @@
       "udp": []
     },
     {
-      "action": "allow",
-      "destination": "10.0.0.0/8",
-      "direction": "inbound",
-      "icmp": [],
-      "name": "allow-all-network-inbound",
-      "source": "10.0.0.0/8",
-      "tcp": [],
-      "udp": []
+     "action": "allow",
+     "destination": "10.0.0.0/8",
+     "direction": "inbound",
+     "icmp": [],
+     "name": "allow-all-network-inbound",
+     "source": "10.0.0.0/8",
+     "tcp": [],
+     "udp": []
     },
     {
       "action": "allow",
