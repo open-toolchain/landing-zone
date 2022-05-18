@@ -38,14 +38,17 @@ locals {
     )
   }
 
+  # Set bastion VPC to be either management if zones provided or edge otherwise
+  bastion_vpc = var.teleport_management_zones > 0 ? var.vpcs[0] : local.vpc_list[0]
+
   # Teleport Instances
   teleport_vsi = [
     for instance in local.bastion_zone_list :
     {
       name                            = "bastion-${instance}"
-      vpc_name                        = local.vpc_list[0]
+      vpc_name                        = local.bastion_vpc
       subnet_name                     = "bastion-zone-${instance}"
-      resource_group                  = "${var.prefix}-${local.vpc_list[0]}-rg"
+      resource_group                  = "${var.prefix}-${local.bastion_vpc}-rg"
       ssh_keys                        = ["ssh-key"]
       image_name                      = var.teleport_vsi_image_name
       machine_type                    = var.teleport_instance_profile

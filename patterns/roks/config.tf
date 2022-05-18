@@ -338,6 +338,11 @@ locals {
     var.enable_f5_management_fip == true && var.enable_f5_external_fip == true
   ))
 
+  # Prevent users from provisioning bastion on edge and management
+  fail_with_both_bastion_host_types = regex("false", tostring(
+    var.provision_teleport_in_f5 && var.teleport_management_zones > 0
+  ))
+
 }
 
 ##############################################################################
