@@ -93,7 +93,8 @@ locals {
       default_security_group_rules = []
       network_acls = [
         {
-          name = "${network}-acl"
+          name              = "${network}-acl"
+          add_cluster_rules = true
           rules = [
             {
               name        = "allow-ibm-inbound"

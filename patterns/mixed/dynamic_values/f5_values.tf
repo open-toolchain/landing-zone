@@ -22,8 +22,8 @@ locals {
   ##############################################################################
   f5_security_groups = {
     f5-management = {
-      name     = "f5-management-sg"
-      vpc_name = local.vpc_list[0]
+      name           = "f5-management-sg"
+      vpc_name       = local.vpc_list[0]
       resource_group = "${var.prefix}-${local.vpc_list[0]}-rg"
       rules = flatten([
         [
@@ -54,8 +54,8 @@ locals {
     }
 
     f5-external = {
-      name     = "f5-external-sg"
-      vpc_name = local.vpc_list[0]
+      name           = "f5-external-sg"
+      vpc_name       = local.vpc_list[0]
       resource_group = "${var.prefix}-${local.vpc_list[0]}-rg"
       rules = [
         {
@@ -70,8 +70,8 @@ locals {
       ]
     }
     f5-workload = {
-      name     = "f5-workload-sg"
-      vpc_name = local.vpc_list[0]
+      name           = "f5-workload-sg"
+      vpc_name       = local.vpc_list[0]
       resource_group = "${var.prefix}-${local.vpc_list[0]}-rg"
       rules = flatten([
         [
@@ -99,8 +99,8 @@ locals {
     }
 
     f5-bastion = {
-      name     = "f5-bastion-sg"
-      vpc_name = local.vpc_list[0]
+      name           = "f5-bastion-sg"
+      vpc_name       = local.vpc_list[0]
       resource_group = "${var.prefix}-${local.vpc_list[0]}-rg"
       rules = flatten([
         for zone in(var.teleport_management_zones <= 0 && local.use_f5 ? [1, 2, 3] : []) :
@@ -120,9 +120,9 @@ locals {
     }
 
     bastion-vsi = {
-      name     = "bastion-vsi-sg"
+      name = "bastion-vsi-sg"
       // if teleport on management, management, otherwise edge
-      vpc_name = var.teleport_management_zones > 0 ? var.vpcs[0] : local.vpc_list[0]
+      vpc_name       = var.teleport_management_zones > 0 ? var.vpcs[0] : local.vpc_list[0]
       resource_group = "${var.prefix}-${var.teleport_management_zones > 0 ? var.vpcs[0] : local.vpc_list[0]}-rg"
       rules = [
         for rule in local.default_vsi_sg_rules :
