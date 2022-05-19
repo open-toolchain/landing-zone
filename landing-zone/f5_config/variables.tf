@@ -77,7 +77,7 @@ variable "tmos_admin_password" {
 ##################################################################################
 
 variable "license_type" {
-  description = "How to license, may be 'none','byol','regkeypool','utilitypool'"
+  description = "License, may be 'none','byol','regkeypool','utilitypool'"
   type        = string
   default     = "none"
 
