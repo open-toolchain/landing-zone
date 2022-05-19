@@ -60,7 +60,6 @@ https_cert                          = null
 https_key                           = null
 teleport_hostname                   = null
 teleport_domain                     = null
-teleport_version                    = null
 message_of_the_day                  = null
 teleport_admin_email                = null
 teleport_management_zones           = 0

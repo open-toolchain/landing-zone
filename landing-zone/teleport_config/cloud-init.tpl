@@ -8,24 +8,21 @@ write_files:
     # writing teleport license
   - path: /root/license.pem
     permissions: "0644"
-    encoding: base64
     content: ${TELEPORT_LICENSE}
 
     # writing https cert
   - path: /root/ca.crt
-    permission: "0644"
-    encoding: base64
+    permissions: "0644"
     content: ${HTTPS_CERT}
 
     # writing https key
   - path: /root/ca.key
-    permission: "0644"
-    encoding: base64
+    permissions: "0644"
     content: ${HTTPS_KEY}
 
     # writing teleport roles
   - path: /root/roles.yaml
-    permission: "0644"
+    permissions: "0644"
     content: |
       # Example role
       # Add any additional ones to the end
@@ -56,7 +53,7 @@ write_files:
 
     # writing oidc file to use App ID for authentication
   - path: /root/oidc.yaml
-    permission: "0644"
+    permissions: "0644"
     content: |
       #oidc connector
       kind: oidc
@@ -77,7 +74,7 @@ write_files:
 
     # writing configuration for teleport
   - path: /etc/teleport.yaml
-    permission: "0644"
+    permissions: "0644"
     content: |
       #teleport.yaml
       teleport:
@@ -202,4 +199,11 @@ write_files:
 
 runcmd:
     # running the script to install teleport on bastion host
-  - /root/install.sh
+  - |
+    set -x
+    (
+      while [ ! -f /root/install.sh ]; do
+        sleep 10
+      done
+      /root/install.sh
+    ) &

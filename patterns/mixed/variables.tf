@@ -494,7 +494,7 @@ variable "teleport_domain" {
 variable "teleport_version" {
   description = "Version of Teleport Enterprise to use"
   type        = string
-  default     = null
+  default     = "7.1.0"
 }
 
 variable "message_of_the_day" {
