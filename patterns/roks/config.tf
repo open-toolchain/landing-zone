@@ -130,6 +130,7 @@ locals {
     virtual_private_endpoints = [{
       service_name = "cos"
       service_type = "cloud-object-storage"
+      resource_group = "${var.prefix}-service-rg"
       vpcs = [
         # Create VPE for each VPC in VPE tier
         for network in module.dynamic_values.vpc_list :

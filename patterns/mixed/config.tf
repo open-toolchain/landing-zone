@@ -75,7 +75,7 @@ locals {
         resource_group                  = "${var.prefix}-${var.vpcs[0]}-rg"
         boot_volume_encryption_key_name = "${var.prefix}-vsi-volume-key"
         security_group = {
-          name     = var.vpcs[0]
+          name     = "${var.prefix}-${var.vpcs[0]}"
           vpc_name = var.vpcs[0]
           rules    = module.dynamic_values.default_vsi_sg_rules
         },
@@ -154,6 +154,7 @@ locals {
     virtual_private_endpoints = [{
       service_name = "cos"
       service_type = "cloud-object-storage"
+      resource_group = "${var.prefix}-service-rg"
       vpcs = [
         # Create VPE for each VPC in VPE tier
         for network in module.dynamic_values.vpc_list :

@@ -152,6 +152,7 @@
         {
             "service_name": "cos",
             "service_type": "cloud-object-storage",
+            "resource_group": "slz-service-rg",
             "vpcs": [
                 {
                     "name": "management",
