@@ -117,6 +117,11 @@ output "service_authorization_flow_logs_to_cos" {
   value       = local.service_authorization_flow_logs_to_cos
 }
 
+output "service_authorization_secrets_manager_to_key_management" {
+  description = "Service authorization to allow secrets manager to read from kms"
+  value       = local.service_authorization_secrets_manager_to_key_management
+}
+
 ##############################################################################
 
 ##############################################################################

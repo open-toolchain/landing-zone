@@ -230,6 +230,18 @@ locals {
 
     ##############################################################################
 
+    ##############################################################################
+    # Secrets Manager Config
+    ##############################################################################
+
+    secrets_manager = {
+      use_secrets_manager = var.create_secrets_manager
+      name                = var.create_secrets_manager ? "${var.prefix}-secrets-manager" : null
+      resource_group      = var.create_secrets_manager ? "${var.prefix}-service-rg" : null
+      kms_key_name        = var.create_secrets_manager ? "${var.prefix}-slz-key" : null
+    }
+
+    ##############################################################################
   }
 
   ##############################################################################
@@ -256,6 +268,7 @@ locals {
     iam_account_settings           = lookup(local.override, "iam_account_settings", local.config.iam_account_settings)
     access_groups                  = lookup(local.override, "access_groups", local.config.access_groups)
     appid                          = lookup(local.override, "appid", local.config.appid)
+    secrets_manager                = lookup(local.override, "secrets_manager", local.config.secrets_manager)
     f5_vsi                         = lookup(local.override, "f5_vsi", local.config.f5_deployments)
     f5_template_data = {
       tmos_admin_password     = lookup(local.override, "f5_template_data", null) == null ? var.tmos_admin_password : lookup(local.override.f5_template_data, "tmos_admin_password", var.tmos_admin_password)

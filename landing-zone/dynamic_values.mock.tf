@@ -31,6 +31,7 @@ module "unit_tests" {
   teleport_domain           = "yes"
   appid                     = local.mock_appid
   access_groups             = local.mock_access_groups
+  secrets_manager           = local.unit_test_config.secrets_manager
 }
 
 ##############################################################################
@@ -41,6 +42,12 @@ module "unit_tests" {
 
 locals {
   unit_test_config = {
+    secrets_manager = {
+      use_secrets_manager  = true
+      secrets_manager_name = "manager"
+      kms_key_name         = "key"
+      resource_group       = "rg"
+    }
     # Cluster List
     clusters = local.mock_cluster_map.cluster_list
     # Mock VPCs Variable

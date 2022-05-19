@@ -117,7 +117,8 @@ locals {
 
     bastion-vsi = {
       name     = "bastion-vsi-sg"
-      vpc_name = local.vpc_list[0]
+      // if teleport on management, management, otherwise edge
+      vpc_name = var.teleport_management_zones > 0 ? var.vpcs[0] : local.vpc_list[0]
       rules = [
         for rule in local.default_vsi_sg_rules :
         merge(rule, {

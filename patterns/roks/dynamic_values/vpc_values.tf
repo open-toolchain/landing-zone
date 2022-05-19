@@ -122,7 +122,8 @@ locals {
 
       # Use Public Gateways
       use_public_gateways = (
-        network == local.vpc_list[0] && local.use_teleport
+        # If network is edge, use teleport and no teleport zones OR teleport zones is greater than 0 && management
+        (network == local.vpc_list[0] && local.use_teleport && var.teleport_management_zones == 0) || (var.teleport_management_zones > 0 && network == var.vpcs[0])
         ? local.bastion_gateways
         : local.vpc_gateways
       )

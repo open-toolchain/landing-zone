@@ -1418,3 +1418,22 @@ variable "f5_template_data" {
 }
 
 ##############################################################################
+
+##############################################################################
+# Secrets Manager Variables
+##############################################################################
+
+variable "secrets_manager" {
+  description = "Map describing an optional secrets manager deployment"
+  type = object({
+    use_secrets_manager = bool
+    name                = optional(string)
+    kms_key_name        = optional(string)
+    resource_group      = optional(string)
+  })
+  default = {
+    use_secrets_manager = false
+  }
+}
+
+##############################################################################

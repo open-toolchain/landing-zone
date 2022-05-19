@@ -29,6 +29,7 @@ module "dynamic_values" {
   teleport_domain           = tostring(var.teleport_config_data.domain)
   f5_vsi                    = var.f5_vsi
   f5_template_data          = var.f5_template_data
+  secrets_manager           = var.secrets_manager
 }
 
 ##############################################################################

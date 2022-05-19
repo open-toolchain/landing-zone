@@ -44,6 +44,7 @@ module "landing-zone" {
   appid                          = local.env.appid
   teleport_config_data           = local.env.teleport_config
   teleport_vsi                   = local.env.teleport_vsi
+  secrets_manager                = local.env.secrets_manager
 }
 
 ##############################################################################
