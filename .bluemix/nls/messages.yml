@@ -29,6 +29,10 @@ wizard.schematics.apikey.title: "API Key"
 wizard.schematics.apikey.description: "API Key"
 wizard.schematics.apikey.placeholder: "API Key"
 
+wizard.step.security.title: "Security and Compliance"
+wizard.security.title: "Security Configuration"
+wizard.security.longDescription: "Security configuration for the toolchain"
+
 wizard.step.kmsService.title: "Key Management"
 wizard.kmsService.title: "Key Management Service"
 wizard.kmsService.longDescription: "Select from one of the Key Management Service to use for enryption keys in the deployment."

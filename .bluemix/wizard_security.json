@@ -3,7 +3,11 @@
   "messages": {
     "$i18n": "locales.yml"
   },
-  "title": "Security Configuration",
-  "longDescription": "Security configuration for the toolchain",
+  "title": {
+    "$ref": "#/messages/wizard.security.title"
+  },
+  "longDescription": {
+    "$ref": "#/messages/wizard.security.longDescription"
+  },
   "type": "object"
 }

@@ -21,7 +21,8 @@ steps:
       $ref: conditions.yml#/infrastructureRepo_conditions
 
   - name: security
-    title: Security and Compliance
+    title:
+      $ref: "#/messages/wizard.step.security.title"
     form: wizard_security
 
   - name: schematics
