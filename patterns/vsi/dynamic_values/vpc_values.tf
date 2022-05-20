@@ -144,7 +144,7 @@ locals {
             name = "${subnet}-zone-${zone}"
             cidr = (
               # if f5 is being used, network is f5 network, and network is in f5 tiers
-              var.vpn_firewall_type != null && network == local.vpc_list[0] && contains(local.f5_tiers, subnet)
+              var.vpn_firewall_type != null && network == local.vpc_list[0] && contains(local.f5_tiers, subnet) && local.use_f5
               ? "10.${zone + 4}.${1 + index(local.f5_tiers, subnet)}0.0/24"
               # Otherwise create regular network CIDR
               : "10.${zone + (index(var.vpcs, network) * 3)}0.${1 + index(["vsi", "vpe", "vpn", "bastion"], subnet)}0.0/24"

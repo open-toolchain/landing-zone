@@ -320,6 +320,10 @@ locals {
     var.vpn_firewall_type == null && var.provision_teleport_in_f5
   ))
 
+  # Prevent users from setting firewall type without f5
+  fail_with_no_f5_and_vpn_firewall_type = regex("false", tostring(
+  var.vpn_firewall_type != null && (var.add_edge_vpc == false && var.create_f5_network_on_management_vpc == false)))
+
   # Prevent users from provisioning using both external and management fip
   # VSI can only have one floating IP per device
   fail_with_both_f5_fip = regex("false", tostring(

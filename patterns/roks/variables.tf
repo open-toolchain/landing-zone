@@ -200,9 +200,13 @@ variable "vpn_firewall_type" {
 }
 
 variable "ssh_public_key" {
-  description = "Public SSH Key for VSI creation. Use only if creating F5 in this template."
+  description = "Public SSH Key for VSI creation. Must be a valid SSH key that does not already exist in the deployment region. Use only if provisioning F5 or Bastion Host."
   type        = string
   default     = null
+  validation {
+    error_message = "Public SSH Key must be a vlid ssh rsa public key."
+    condition     = can(regex("ssh-rsa AAAA[0-9A-Za-z+/]+[=]{0,3} ([^@]+@[^@]+)", var.ssh_public_key))
+  }
 }
 
 variable "f5_image_name" {
