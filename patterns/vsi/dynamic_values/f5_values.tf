@@ -21,6 +21,7 @@ locals {
   # Static groups for each F5 interface
   ##############################################################################
   f5_security_groups = {
+
     f5-management = {
       name           = "f5-management-sg"
       vpc_name       = local.vpc_list[0]
@@ -69,6 +70,7 @@ locals {
         }
       ]
     }
+
     f5-workload = {
       name           = "f5-workload-sg"
       vpc_name       = local.vpc_list[0]
@@ -99,8 +101,9 @@ locals {
     }
 
     f5-bastion = {
-      name     = "f5-bastion-sg"
-      vpc_name = local.vpc_list[0]
+      name           = "f5-bastion-sg"
+      vpc_name       = local.vpc_list[0]
+      resource_group = "${var.prefix}-${local.vpc_list[0]}-rg"
       rules = flatten([
         for zone in(var.teleport_management_zones <= 0 && local.use_f5 ? [1, 2, 3] : []) :
         [
@@ -120,20 +123,41 @@ locals {
 
     bastion-vsi = {
       name = "bastion-vsi-sg"
-      // if teleport on management, management, otherwise edge
+      # if teleport on management, management, otherwise edge
       vpc_name       = var.teleport_management_zones > 0 ? var.vpcs[0] : local.vpc_list[0]
       resource_group = "${var.prefix}-${var.teleport_management_zones > 0 ? var.vpcs[0] : local.vpc_list[0]}-rg"
-      rules = [
-        for rule in local.default_vsi_sg_rules :
-        merge(rule, {
-          tcp = {
-            port_min = null
-            port_max = null
+      rules = flatten([
+        [
+          for rule in local.default_vsi_sg_rules :
+          merge(rule, {
+            tcp = {
+              port_min = null
+              port_max = null
+            }
+          })
+        ],
+        [
+          {
+            name      = "allow-inbound-443"
+            direction = "inbound"
+            source    = "0.0.0.0/0"
+            tcp = {
+              port_max = 443
+              port_min = 443
+            }
+          },
+          {
+            name      = "allow-all-outbound"
+            direction = "outbound"
+            source    = "0.0.0.0/0"
+            tcp = {
+              port_max = null
+              port_min = null
+            }
           }
-        })
-      ]
+        ]
+      ])
     }
-
   }
 
   ##############################################################################

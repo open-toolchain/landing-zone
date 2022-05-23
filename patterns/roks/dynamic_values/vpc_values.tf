@@ -92,16 +92,27 @@ locals {
       }
       default_security_group_rules = []
       network_acls = [
+        for network_acl in flatten(
+          [
+            # Flatten array of network name
+            [network],
+            # if using teleport and network is where bastion is provisioned, add bastion acl
+            local.use_teleport && network == local.bastion_vpc ? ["bastion"] : []
+          ]
+        ) :
         {
-          name              = "${network}-acl"
-          add_cluster_rules = true
-          rules = [
+          name = "${network_acl}-acl"
+          rules = flatten([
             {
               name        = "allow-ibm-inbound"
               action      = "allow"
               direction   = "inbound"
               destination = "10.0.0.0/8"
               source      = "161.26.0.0/16"
+              tcp = {
+                port_min = null
+                port_max = null
+              }
             },
             {
               name        = "allow-all-network-inbound"
@@ -109,6 +120,10 @@ locals {
               direction   = "inbound"
               destination = "10.0.0.0/8"
               source      = "10.0.0.0/8"
+              tcp = {
+                port_min = null
+                port_max = null
+              }
             },
             {
               name        = "allow-all-outbound"
@@ -116,11 +131,29 @@ locals {
               direction   = "outbound"
               destination = "0.0.0.0/0"
               source      = "0.0.0.0/0"
-            }
-          ]
+              tcp = {
+                port_min = null
+                port_max = null
+              }
+            },
+            [
+              # If this is bastion vpc and teleport is enabled, add 443 inbound rule to bastion vsi acl
+              for bastion_rule in(local.use_teleport && network == local.bastion_vpc ? ["bastion"] : []) :
+              {
+                name        = "allow-bastion-443-inbound"
+                action      = "allow"
+                direction   = "inbound"
+                destination = "10.0.0.0/8"
+                source      = "0.0.0.0/0"
+                tcp = {
+                  port_min = 443
+                  port_max = 443
+                }
+              }
+            ]
+          ])
         }
       ]
-
       # Use Public Gateways
       use_public_gateways = (
         # If network is edge, use teleport and no teleport zones OR teleport zones is greater than 0 && management
@@ -151,7 +184,7 @@ locals {
               : "10.${zone + (index(var.vpcs, network) * 3)}0.${1 + index(["vsi", "vpe", "vpn", "bastion"], subnet)}0.0/24"
             )
             public_gateway = subnet == "bastion" ? true : null
-            acl_name       = "${network}-acl"
+            acl_name       = subnet == "bastion" ? "bastion-acl" : "${network}-acl"
           }
         ]
       }
