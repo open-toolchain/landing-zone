@@ -210,13 +210,13 @@ variable "ssh_public_key" {
 }
 
 variable "f5_image_name" {
-  description = "Image name for f5 deployments. Must be null or one of `f5-bigip-15-1-2-1-0-0-10-all-1slot-1`,`f5-bigip-15-1-2-1-0-0-10-ltm-1slot-1`, `f5-bigip-16-0-1-1-0-0-6-ltm-1slot-1`,`f5-bigip-16-0-1-1-0-0-6-all-1slot-1`]."
+  description = "Image name for f5 deployments. Must be null or one of `f5-bigip-15-1-5-1-0-0-14-all-1slot`,`f5-bigip-15-1-5-1-0-0-14-ltm-1slot`, `f5-bigip-16-1-2-2-0-0-28-ltm-1slot`,`f5-bigip-16-1-2-2-0-0-28-all-1slot`]."
   type        = string
-  default     = "f5-bigip-15-1-2-1-0-0-10-all-1slot-1"
+  default     = "f5-bigip-15-1-5-1-0-0-14-all-1slot"
 
   validation {
-    error_message = "Invalid F5 image name. Must be null or one of `f5-bigip-15-1-2-1-0-0-10-all-1slot-1`,`f5-bigip-15-1-2-1-0-0-10-ltm-1slot-1`, `f5-bigip-16-0-1-1-0-0-6-ltm-1slot-1`,`f5-bigip-16-0-1-1-0-0-6-all-1slot-1`]."
-    condition     = var.f5_image_name == null ? true : contains(["f5-bigip-15-1-2-1-0-0-10-all-1slot-1", "f5-bigip-15-1-2-1-0-0-10-ltm-1slot-1", "f5-bigip-16-0-1-1-0-0-6-ltm-1slot-1", "f5-bigip-16-0-1-1-0-0-6-all-1slot-1"], var.f5_image_name)
+    error_message = "Invalid F5 image name. Must be null or one of `f5-bigip-15-1-5-1-0-0-14-all-1slot`,`f5-bigip-15-1-5-1-0-0-14-ltm-1slot`, `f5-bigip-16-1-2-2-0-0-28-ltm-1slot`,`f5-bigip-16-1-2-2-0-0-28-all-1slot`]."
+    condition     = var.f5_image_name == null ? true : contains(["f5-bigip-15-1-5-1-0-0-14-all-1slot", "f5-bigip-15-1-5-1-0-0-14-ltm-1slot", "f5-bigip-16-1-2-2-0-0-28-ltm-1slot", "f5-bigip-16-1-2-2-0-0-28-all-1slot"], var.f5_image_name)
   }
 }
 

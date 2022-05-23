@@ -17,45 +17,49 @@ locals {
   # List of public images found in F5 schematics documentation
   # (https://github.com/f5devcentral/ibmcloud_schematics_bigip_multinic_public_images)
   public_image_map = {
-    f5-bigip-15-1-2-1-0-0-10-all-1slot-1 = {
-      "us-south" = "r006-96eff507-273e-48af-8790-74c74cf4cebd"
-      "us-east"  = "r014-fb2140e2-97dd-4cfa-a480-49c36023169a"
-      "eu-gb"    = "r018-797c97bd-a1b9-4e83-ba22-e557a8938cab"
-      "eu-de"    = "r010-759f402f-da71-4719-bf9c-dec955610032"
-      "jp-tok"   = "r022-16b8c452-3fa2-40b0-8ae9-8f1a3b1b9459"
-      "au-syd"   = "r026-99c64581-ce8c-48a3-ae3a-7aba1e651344"
-      "jp-osa"   = "r034-d8385b38-870f-453a-b33e-8b40ceec0450"
-      "ca-tor"   = "r038-ef27dfd1-1564-48ff-af2a-d9092dd4ffb9"
+    f5-bigip-15-1-5-1-0-0-14-all-1slot = {
+      "eu-de"    = "r010-b14deae9-43fd-4850-b89d-5d6485d61acb"
+      "jp-tok"   = "r022-cfdb6280-c200-4261-af3a-a8d44bbd18ba"
+      "br-sao"   = "r042-3915f0e3-aadc-4fc9-95a8-840f8cb163de"
+      "au-syd"   = "r026-ed57accf-b3d4-4ca9-a6a6-e0a63ee1aba4"
+      "us-south" = "r006-c9f07041-bb56-4492-b25c-5f407ebea358"
+      "eu-gb"    = "r018-6dce329f-a6eb-4146-ba3e-5560afc84aa1"
+      "jp-osa"   = "r034-4ecc10ff-3dc7-42fb-9cae-189fb559dd61"
+      "us-east"  = "r014-87371e4c-3645-4579-857c-7e02fe5e9ff4"
+      "ca-tor"   = "r038-0840034f-5d05-4a6d-bdae-123628f1d323"
     }
-    f5-bigip-15-1-2-1-0-0-10-ltm-1slot-1 = {
-      "us-south" = "r006-17a5e435-cfd6-44b5-9c52-1eabe26445af"
-      "us-east"  = "r014-29af1cf4-9436-4934-a2c4-c7330d1f88cf"
-      "eu-gb"    = "r018-d1add662-3591-40da-b80c-f62a191cb60a"
-      "eu-de"    = "r010-5dc287cb-b9d5-4889-9a43-ca3a38c5b457"
-      "jp-tok"   = "r022-76a7fcf7-df8d-452a-9e96-4c17ded591ae"
-      "au-syd"   = "r026-6ae75968-955f-4b9b-9f2a-d5dcbccadd63"
-      "jp-osa"   = "r034-7721a3b3-a5ec-4c7e-9420-c945ba56cbfe"
-      "ca-tor"   = "r038-9da83b4a-eaeb-47d1-90c4-81b02c856bed"
+    f5-bigip-15-1-5-1-0-0-14-ltm-1slot = {
+      "eu-de"    = "r010-efad005b-4deb-45a8-b1c5-5b3cea55e7e3"
+      "jp-tok"   = "r022-35126a90-aec2-4934-a628-d1ce90bcf68a"
+      "br-sao"   = "r042-978cecaf-7f2a-44bc-bffd-ddcf6ce56b11"
+      "au-syd"   = "r026-429369e1-d917-4d9c-8a8c-3a8606e26a72"
+      "us-south" = "r006-afe3c555-e8ba-4448-9983-151a14edf868"
+      "eu-gb"    = "r018-f2083d86-6f25-42d6-b66a-d5ed2a0108d2"
+      "jp-osa"   = "r034-edd01010-b7ee-411c-9158-d41960bf9def"
+      "us-east"  = "r014-41db5a03-ab7f-4bf7-95c2-8edbeea0e3af"
+      "ca-tor"   = "r038-f5d750b1-61dc-4fa5-98d3-a790417f07dd"
     }
-    f5-bigip-16-0-1-1-0-0-6-ltm-1slot-1 = {
-      "us-south" = "r006-bc5a723a-752c-4fdb-b6c9-a8fd3c587bd3"
-      "us-east"  = "r014-74c06b64-0b4a-4ad1-840b-16f67f566ad5"
-      "eu-gb"    = "r018-446eb09c-a047-4644-8731-bc032bfb6f37"
-      "eu-de"    = "r010-718b1266-a407-4d5b-8b08-93fd05fc1db6"
-      "jp-tok"   = "r022-ff687ace-0325-4dd7-81d7-eaf0e5a378a5"
-      "au-syd"   = "r026-4102137d-6abf-40e9-9d77-69c6f4cc5cc2"
-      "jp-osa"   = "r034-ab405ea1-68a4-437c-b180-f2834ab14b16"
-      "ca-tor"   = "r038-2d523ada-b257-4add-97fd-d084bc92ea42"
+    f5-bigip-16-1-2-2-0-0-28-ltm-1slot = {
+      "eu-de"    = "r010-c90f3597-d03e-4ce6-8efa-870c782952cd"
+      "jp-tok"   = "r022-0da3fc1b-c243-4702-87cc-b5a7f5e1f035"
+      "br-sao"   = "r042-0649e2fc-0d27-4950-99a8-1d968bc72dd5"
+      "au-syd"   = "r026-9de34b46-fc95-4940-a074-e45ac986c761"
+      "us-south" = "r006-863f431b-f4e2-4d8c-a358-07746a146ea1"
+      "eu-gb"    = "r018-a88026c2-89b4-43d6-8688-f28ac259627d"
+      "jp-osa"   = "r034-585692ec-9508-4a41-bcc3-3a94b31ad161"
+      "us-east"  = "r014-b675ae9f-109d-4499-9639-2fbc7b1d55e9"
+      "ca-tor"   = "r038-56cc321b-1920-443e-a400-c58905c8f46c"
     }
-    f5-bigip-16-0-1-1-0-0-6-all-1slot-1 = {
-      "us-south" = "r006-fe9e266b-5f74-4809-a348-f779e70353cb"
-      "us-east"  = "r014-84ed1e28-5bc0-4d3f-8de6-68d8a28327bb"
-      "eu-gb"    = "r018-387d2b15-6958-424a-ab74-d6561dccef9f"
-      "eu-de"    = "r010-50c6a70c-3222-4cd9-8cb9-5dc3bdef019c"
-      "jp-tok"   = "r022-16f09456-9409-487e-b7ec-34f72a7db826"
-      "au-syd"   = "r026-4c50432b-28c5-41ef-8031-b3104c46de77"
-      "jp-osa"   = "r034-a3450582-5dd2-475c-a423-c18e1141df36"
-      "ca-tor"   = "r038-c6ab2957-3937-4c63-a842-9c8aac9d502b"
+    f5-bigip-16-1-2-2-0-0-28-all-1slot = {
+      "eu-de"    = "r010-af6fa90b-ea18-48af-bfb9-a3605d60224d"
+      "jp-tok"   = "r022-d2bffe3c-084e-43ae-b331-ec82b15af705"
+      "br-sao"   = "r042-2dcd1226-5dd9-4b8d-89c5-5ba4f162b966"
+      "au-syd"   = "r026-1f8b30f1-af86-433d-861c-7ff36d69176b"
+      "us-south" = "r006-1c0242c4-a99c-4d27-ad2c-4003a7fea131"
+      "eu-gb"    = "r018-d33e87cb-0342-41e2-8e29-2b0db4a5881f"
+      "jp-osa"   = "r034-1b04698d-9935-4477-8f72-958c7f08c85f"
+      "us-east"  = "r014-015d6b06-611e-4e1a-9284-551ed3832182"
+      "ca-tor"   = "r038-b7a44268-e95f-425b-99ac-6ec5fc2c4cdc"
     }
   }
 }

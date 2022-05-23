@@ -25,7 +25,7 @@ module "acceptance_tests" {
   create_f5_network_on_management_vpc = false
   provision_teleport_in_f5            = true
   vpn_firewall_type                   = "vpn-and-waf"
-  f5_image_name                       = "f5-bigip-15-1-2-1-0-0-10-all-1slot-1"
+  f5_image_name                       = "f5-bigip-15-1-5-1-0-0-14-all-1slot"
   f5_instance_profile                 = "cx2-4x8"
   hostname                            = "f5-ve-01"
   domain                              = "local"

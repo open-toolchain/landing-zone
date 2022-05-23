@@ -2313,7 +2313,7 @@ tfx.plan("tfx Generated Plan", () => {
           },
         ],
         force_action: false,
-        image: "r006-96eff507-273e-48af-8790-74c74cf4cebd",
+        image: "r006-c9f07041-bb56-4492-b25c-5f407ebea358",
         name: "at-test-f5-zone-1-1",
         network_interfaces: [
           {
@@ -2351,7 +2351,7 @@ tfx.plan("tfx Generated Plan", () => {
           },
         ],
         force_action: false,
-        image: "r006-96eff507-273e-48af-8790-74c74cf4cebd",
+        image: "r006-c9f07041-bb56-4492-b25c-5f407ebea358",
         name: "at-test-f5-zone-2-1",
         network_interfaces: [
           {
@@ -2389,7 +2389,7 @@ tfx.plan("tfx Generated Plan", () => {
           },
         ],
         force_action: false,
-        image: "r006-96eff507-273e-48af-8790-74c74cf4cebd",
+        image: "r006-c9f07041-bb56-4492-b25c-5f407ebea358d",
         name: "at-test-f5-zone-3-1",
         network_interfaces: [
           {
