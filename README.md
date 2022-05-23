@@ -114,8 +114,8 @@ Each pattern will create an identical deployment on the VPC
 
 To read more detailed documentation about the default configuration, read the pattern defaults [here](.docs/pattern-defaults.md).
 
-| Virtual Server Pattern | Red Hat Openshift Pattern | Mixed Pattern |
-| ------- | ----------- | ------- |
+| Virtual Server Pattern           | Red Hat Openshift Pattern        | Mixed Pattern                      |
+| -------------------------------- | -------------------------------- | ---------------------------------- |
 | ![vsi](./.docs/images/vsi.png)   | ![roks](./.docs/images/roks.png) | ![mixed](./.docs/images/mixed.png) |
 
 ### Select your Provision Method 
