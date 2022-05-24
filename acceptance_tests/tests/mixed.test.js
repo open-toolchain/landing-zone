@@ -420,7 +420,7 @@ tfx.plan("LandingZone Mixed Pattern", () => {
     "module.acceptance_tests.module.landing-zone.module.ssh_keys",
     tfx.resource("Landing Zone SSH Key", 'ibm_is_ssh_key.ssh_key["ssh-key"]', {
       name: "at-test-ssh-key",
-      public_key: "<user defined>",
+      public_key: "ssh-rsa AAAAthisisatesthihello==",
       tags: tags,
     })
   );
@@ -760,14 +760,14 @@ tfx.plan("LandingZone Mixed Pattern", () => {
       ),
       tfx.resource(
         "Management Virtual Server Instance Security Group",
-        'ibm_is_security_group.security_group["management"]',
+        'ibm_is_security_group.security_group["at-test-management"]',
         {
-          name: "management",
+          name: "at-test-management",
         }
       ),
       tfx.resource(
         "Management Virtual Server Instance Security Group Rules Inbound",
-        'ibm_is_security_group_rule.security_group_rules["management-allow-ibm-inbound"]',
+        'ibm_is_security_group_rule.security_group_rules["at-test-management-allow-ibm-inbound"]',
         {
           direction: "inbound",
           icmp: [],
@@ -779,7 +779,7 @@ tfx.plan("LandingZone Mixed Pattern", () => {
       ),
       tfx.resource(
         "Management Virtual Server Instance Security Group Rules Inbound",
-        'ibm_is_security_group_rule.security_group_rules["management-allow-vpc-inbound"]',
+        'ibm_is_security_group_rule.security_group_rules["at-test-management-allow-vpc-inbound"]',
         {
           direction: "inbound",
           icmp: [],
@@ -791,7 +791,7 @@ tfx.plan("LandingZone Mixed Pattern", () => {
       ),
       tfx.resource(
         "Management Virtual Server Instance Security Group Rules Outbound",
-        'ibm_is_security_group_rule.security_group_rules["management-allow-ibm-tcp-443-outbound"]',
+        'ibm_is_security_group_rule.security_group_rules["at-test-management-allow-ibm-tcp-443-outbound"]',
         {
           direction: "outbound",
           icmp: [],
@@ -808,7 +808,7 @@ tfx.plan("LandingZone Mixed Pattern", () => {
       ),
       tfx.resource(
         "Management Virtual Server Instance Security Group Rules Outbound",
-        'ibm_is_security_group_rule.security_group_rules["management-allow-ibm-tcp-53-outbound"]',
+        'ibm_is_security_group_rule.security_group_rules["at-test-management-allow-ibm-tcp-53-outbound"]',
         {
           direction: "outbound",
           icmp: [],
@@ -825,7 +825,7 @@ tfx.plan("LandingZone Mixed Pattern", () => {
       ),
       tfx.resource(
         "Management Virtual Server Instance Security Group Rules Outbound",
-        'ibm_is_security_group_rule.security_group_rules["management-allow-ibm-tcp-80-outbound"]',
+        'ibm_is_security_group_rule.security_group_rules["at-test-management-allow-ibm-tcp-80-outbound"]',
         {
           direction: "outbound",
           icmp: [],
@@ -842,7 +842,7 @@ tfx.plan("LandingZone Mixed Pattern", () => {
       ),
       tfx.resource(
         "Management Virtual Server Instance Security Group Rules Outbound",
-        'ibm_is_security_group_rule.security_group_rules["management-allow-vpc-outbound"]',
+        'ibm_is_security_group_rule.security_group_rules["at-test-management-allow-vpc-outbound"]',
         {
           direction: "outbound",
           icmp: [],

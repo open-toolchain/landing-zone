@@ -59,30 +59,3 @@ locals {
 }
 
 ##############################################################################
-
-
-##############################################################################
-# Bastion / Teleport Outputs
-##############################################################################
-
-output "bastion_zone_list" {
-  description = "List of zones where teleport will be provisoned"
-  value       = local.bastion_zone_list
-}
-
-output "bastion_resource_list" {
-  description = "Returns an empty array or an array of \"bastion\" when bastion resources are created"
-  value       = local.bastion_resource_list
-}
-
-output "bastion_gateways" {
-  description = "List of public gateways to use in bastion vpc."
-  value       = local.bastion_gateways
-}
-
-output "teleport_vsi" {
-  description = "List of teleport VSI to create using landing zone module"
-  value       = local.teleport_vsi
-}
-
-##############################################################################

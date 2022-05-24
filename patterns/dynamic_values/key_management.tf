@@ -9,7 +9,11 @@ locals {
     use_hs_crypto  = var.hs_crypto_instance_name == null ? false : true
     keys = [
       # Create encryption keys for landing zone, activity tracker, and vsi boot volume
-      for service in ["slz", "atracker", "vsi-volume", "roks"] :
+      for service in flatten([
+        ["slz", "atracker"],
+        var.add_cluster_encryption_key == true ? ["roks"] : [],
+        var.add_vsi_volume_encryption_key == true ? ["vsi-volume"] : []
+      ]) :
       {
         name     = "${var.prefix}-${service}-key"
         root_key = true

@@ -384,16 +384,6 @@ tfx.plan("LandingZone Roks Pattern", () => {
       }
     ),
     tfx.resource(
-      "Landing Zone Key Management VSI Volume",
-      'ibm_kms_key.key["at-test-vsi-volume-key"]',
-      {
-        force_delete: true,
-        key_name: "at-test-vsi-volume-key",
-        key_ring_id: "at-test-slz-ring",
-        standard_key: false,
-      }
-    ),
-    tfx.resource(
       "Landing Zone Key Management Ring",
       'ibm_kms_key_rings.rings["at-test-slz-ring"]',
       {

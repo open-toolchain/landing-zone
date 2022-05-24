@@ -3,7 +3,7 @@ module "acceptance_tests" {
   ibmcloud_api_key                    = var.ibmcloud_api_key
   TF_VERSION                          = "1.0"
   prefix                              = "at-test"
-  ssh_public_key                      = "<user defined>"
+  ssh_public_key                      = "ssh-rsa AAAAthisisatesthihello=== test@test.test"
   region                              = "us-south"
   tags                                = ["acceptance-test", "landing-zone"]
   network_cidr                        = "10.0.0.0/8"

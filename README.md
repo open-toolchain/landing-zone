@@ -177,7 +177,11 @@ Provisioned [VPC components](./landing-zone/vpc)
 
 ### Using override.json
 
-The second route is to use the `override.json` to create a fully customized environment based on the starting template. By default, each pattern's `override.json` is set to contain the default environment configuration. Users can use the `override.json` in the respective pattern directory by setting the template `override` variable to `true`.
+The second route is to use the `override.json` to create a fully customized environment based on the starting template. By default, each pattern's `override.json` is set to contain the default environment configuration. Users can use the `override.json` in the respective pattern directory by setting the template `override` variable to `true`. Each value in `override.json` corresponds directly to a variable value from the [Landing Zone Module](./landing-zone/) which each pattern uses to create your environment.
+
+#### Supported Variables
+
+The `override.json` allows users to pass any variable or supported optional variable attributes from the [Landing Zone Module](./landing-zone/), which each pattern uses to provision infrastructure. For a complete list of supported variables and attributes see the [Landing Zone Module variables file](./landing-zone/variables.tf).
 
 #### Overriding Variables
 

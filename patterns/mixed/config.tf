@@ -5,26 +5,12 @@
 ##############################################################################
 
 module "dynamic_values" {
-  source                              = "./dynamic_values"
+  source                              = "../dynamic_values"
   prefix                              = var.prefix
   region                              = var.region
-  tags                                = var.tags
-  network_cidr                        = var.network_cidr
   vpcs                                = var.vpcs
-  enable_transit_gateway              = var.enable_transit_gateway
-  add_atracker_route                  = var.add_atracker_route
   hs_crypto_instance_name             = var.hs_crypto_instance_name
   hs_crypto_resource_group            = var.hs_crypto_resource_group
-  vsi_image_name                      = var.vsi_image_name
-  vsi_instance_profile                = var.vsi_instance_profile
-  vsi_per_subnet                      = var.vsi_per_subnet
-  cluster_zones                       = var.cluster_zones
-  kube_version                        = var.kube_version
-  flavor                              = var.flavor
-  workers_per_zone                    = var.workers_per_zone
-  entitlement                         = var.entitlement
-  wait_till                           = var.wait_till
-  update_all_workers                  = var.update_all_workers
   add_edge_vpc                        = var.add_edge_vpc
   create_f5_network_on_management_vpc = var.create_f5_network_on_management_vpc
   provision_teleport_in_f5            = var.provision_teleport_in_f5
@@ -35,7 +21,6 @@ module "dynamic_values" {
   enable_f5_management_fip            = var.enable_f5_management_fip
   enable_f5_external_fip              = var.enable_f5_external_fip
   teleport_management_zones           = var.teleport_management_zones
-  use_existing_appid                  = var.use_existing_appid
   appid_resource_group                = var.appid_resource_group
   teleport_instance_profile           = var.teleport_instance_profile
   teleport_vsi_image_name             = var.teleport_vsi_image_name

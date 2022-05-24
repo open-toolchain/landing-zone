@@ -194,31 +194,10 @@ locals {
           interface_name = "${var.prefix}-${local.vpc_list[0]}-${subnet}-zone-${instance}"
         } if subnet != "f5-management"
       ]
-    } if var.add_edge_vpc || var.create_f5_network_on_management_vpc
+    } if local.use_f5
   ]
 
   ##############################################################################
-}
-
-##############################################################################
-
-##############################################################################
-# F5 Outputs
-##############################################################################
-
-output "f5_tiers" {
-  description = "List of subnet to provision in VPC where F5 is enabled"
-  value       = local.f5_tiers
-}
-
-output "f5_security_groups" {
-  description = "Map of security groups and rules for each F5 interface"
-  value       = local.f5_security_groups
-}
-
-output "f5_deployments" {
-  description = "List of F5 deployments for landing-zone module"
-  value       = local.f5_deployments
 }
 
 ##############################################################################

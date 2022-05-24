@@ -45,9 +45,17 @@ resource "ibm_is_security_group_rule" "security_group_rules" {
     # Otherwise the list will be empty        
 
     for_each = (
-      each.value.icmp != null
-      ? [each.value]
-      : []
+      # Only allow creation of icmp rules if all of the keys are not null.
+      # This allows the use of the optional variable in landing zone patterns
+      # to convert to a single typed list by adding `null` as the value.
+      each.value.icmp == null
+      ? []
+      : length([
+        for value in ["type", "code"] :
+        true if lookup(each.value["icmp"], value, null) == null
+      ]) == 2
+      ? [] # if all values null empty array
+      : [each.value]
     )
     # Conditianally add content if sg has icmp
     content {
@@ -82,9 +90,19 @@ resource "ibm_is_security_group_rule" "security_group_rules" {
     # Otherwise the list will be empty     
 
     for_each = (
-      each.value.tcp != null
-      ? [each.value]
-      : []
+      # Only allow creation of tcp rules if all of the keys are not null.
+      # This allows the use of the optional variable in landing zone patterns
+      # to convert to a single typed list by adding `null` as the value.
+      # the default behavior will be to set `null` `port_min` values to 1 if null
+      # and `port_max` to 65535 if null
+      each.value.tcp == null
+      ? []
+      : length([
+        for value in ["port_min", "port_max"] :
+        true if lookup(each.value["tcp"], value, null) == null
+      ]) == 2
+      ? [] # if all values null empty array
+      : [each.value]
     )
 
     # Conditionally adds content if sg has tcp
@@ -121,9 +139,19 @@ resource "ibm_is_security_group_rule" "security_group_rules" {
     # Otherwise the list will be empty     
 
     for_each = (
-      each.value.udp != null
-      ? [each.value]
-      : []
+      # Only allow creation of udp rules if all of the keys are not null.
+      # This allows the use of the optional variable in landing zone patterns
+      # to convert to a single typed list by adding `null` as the value.
+      # the default behavior will be to set `null` `port_min` values to 1 if null
+      # and `port_max` to 65535 if null
+      each.value.udp == null
+      ? []
+      : length([
+        for value in ["port_min", "port_max"] :
+        true if lookup(each.value["udp"], value, null) == null
+      ]) == 2
+      ? [] # if all values null empty array
+      : [each.value]
     )
 
     # Conditionally adds content if sg has tcp

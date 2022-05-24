@@ -101,7 +101,8 @@ locals {
           ]
         ) :
         {
-          name = "${network_acl}-acl"
+          name              = "${network_acl}-acl"
+          add_cluster_rules = var.add_cluster_encryption_key
           rules = flatten([
             {
               name        = "allow-ibm-inbound"
@@ -154,7 +155,6 @@ locals {
           ])
         }
       ]
-
       # Use Public Gateways
       use_public_gateways = (
         # If network is edge, use teleport and no teleport zones OR teleport zones is greater than 0 && management
@@ -218,38 +218,6 @@ locals {
   ]
 
   ##############################################################################
-}
-
-##############################################################################
-
-
-##############################################################################
-# VPC Value Outputs
-##############################################################################
-
-output "vpc_list" {
-  description = "List of VPCs, used for adding Edge VPC"
-  value       = local.vpc_list
-}
-
-output "vpc_use_edge_prefixes" {
-  description = "Map of vpc network and zones with needed address prefixes."
-  value       = local.vpc_use_edge_prefixes
-}
-
-output "vpc_subnet_tiers" {
-  description = "map of vpcs and zone with list of expected subnet tiers in each zone"
-  value       = local.vpc_subnet_tiers
-}
-
-output "vpcs" {
-  description = "List of VPCs with needed information to be created by landing zone module"
-  value       = local.vpcs
-}
-
-output "security_groups" {
-  description = "List of additional security groups to be created by landing-zone module"
-  value       = local.security_groups
 }
 
 ##############################################################################

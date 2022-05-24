@@ -205,7 +205,7 @@ variable "ssh_public_key" {
   default     = null
   validation {
     error_message = "Public SSH Key must be a vlid ssh rsa public key."
-    condition     = can(regex("ssh-rsa AAAA[0-9A-Za-z+/]+[=]{0,3} ([^@]+@[^@]+)", var.ssh_public_key))
+    condition     = var.ssh_public_key == null || can(regex("ssh-rsa AAAA[0-9A-Za-z+/]+[=]{0,3} ([^@]+@[^@]+)", var.ssh_public_key))
   }
 }
 

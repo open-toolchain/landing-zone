@@ -16,24 +16,12 @@ variable "region" {
   type        = string
 }
 
-variable "tags" {
-  description = "List of tags to apply to resources created by this module."
-  type        = list(string)
-  default     = []
-}
-
 ##############################################################################
 
 
 ##############################################################################
 # VPC Variables
 ##############################################################################
-
-variable "network_cidr" {
-  description = "Network CIDR for the VPC. This is used to manage network ACL rules for cluster provisioning."
-  type        = string
-  default     = "10.0.0.0/8"
-}
 
 variable "vpcs" {
   description = "List of VPCs to create. The first VPC in this list will always be considered the `management` VPC, and will be where the VPN Gateway is connected. VPCs names can only be a maximum of 16 characters and can only contain letters, numbers, and - characters. VPC names must begin with a letter.. The first VPC in this list will always be considered the `management` VPC, and will be where the VPN Gateway is connected. VPCs names can only be a maximum of 16 characters and can only contain letters, numbers, and - characters. VPC names must begin with a letter."
@@ -47,18 +35,6 @@ variable "vpcs" {
       name if length(name) > 16 || !can(regex("^([A-z]|[a-z][-a-z0-9]*[a-z0-9])$", name))
     ]) == 0
   }
-}
-
-variable "enable_transit_gateway" {
-  description = "Create transit gateway"
-  type        = bool
-  default     = true
-}
-
-variable "add_atracker_route" {
-  description = "Atracker can only have one route per zone. use this value to disable or enable the creation of atracker route"
-  type        = bool
-  default     = true
 }
 
 ##############################################################################
@@ -87,22 +63,10 @@ variable "hs_crypto_resource_group" {
 # Virtual Server Variables
 ##############################################################################
 
-variable "vsi_image_name" {
-  description = "VSI image name. Use the IBM Cloud CLI command `ibmcloud is images` to see availabled images."
-  type        = string
-  default     = "ibm-ubuntu-18-04-6-minimal-amd64-2"
-}
-
-variable "vsi_instance_profile" {
-  description = "VSI image profile. Use the IBM Cloud CLI command `ibmcloud is instance-profiles` to see available image profiles."
-  type        = string
-  default     = "cx2-4x8"
-}
-
-variable "vsi_per_subnet" {
-  description = "Number of Virtual Servers to create on each VSI subnet."
-  type        = number
-  default     = 1
+variable "add_vsi_volume_encryption_key" {
+  description = "Add encryption key for VSI creation"
+  type        = bool
+  default     = true
 }
 
 ##############################################################################
@@ -112,63 +76,11 @@ variable "vsi_per_subnet" {
 # Cluster Variables
 ##############################################################################
 
-variable "cluster_zones" {
-  description = "Number of zones to provision clusters for each VPC. At least one zone is required. Can be 1, 2, or 3 zones."
-  type        = number
-  default     = 3
-
-  validation {
-    error_message = "Cluster can be provisioned only across 1, 2, or 3 zones."
-    condition     = var.cluster_zones > 0 && var.cluster_zones < 4
-  }
-}
-
-variable "kube_version" {
-  description = "Kubernetes version to use for cluster. To get available versions, use the IBM Cloud CLI command `ibmcloud ks versions`. To use the default version, leave as default. Updates to the default versions may force this to change."
-  type        = string
-  default     = "default"
-}
-
-variable "flavor" {
-  description = "Machine type for cluster. Use the IBM Cloud CLI command `ibmcloud ks flavors` to find valid machine types"
-  type        = string
-  default     = "bx2.16x64"
-}
-
-variable "workers_per_zone" {
-  description = "Number of workers in each zone of the cluster. OpenShift requires at least 2 workers."
-  type        = number
-  default     = 2
-}
-
-
-variable "entitlement" {
-  description = "If you do not have an entitlement, leave as null. Entitlement reduces additional OCP Licence cost in OpenShift clusters. Use Cloud Pak with OCP Licence entitlement to create the OpenShift cluster. Note It is set only when the first time creation of the cluster, further modifications are not impacted Set this argument to cloud_pak only if you use the cluster with a Cloud Pak that has an OpenShift entitlement."
-  type        = string
-  default     = null
-}
-
-variable "wait_till" {
-  description = "To avoid long wait times when you run your Terraform code, you can specify the stage when you want Terraform to mark the cluster resource creation as completed. Depending on what stage you choose, the cluster creation might not be fully completed and continues to run in the background. However, your Terraform code can continue to run without waiting for the cluster to be fully created. Supported args are `MasterNodeReady`, `OneWorkerNodeReady`, and `IngressReady`"
-  type        = string
-  default     = "IngressReady"
-
-  validation {
-    error_message = "`wait_till` value must be one of `MasterNodeReady`, `OneWorkerNodeReady`, or `IngressReady`."
-    condition = contains([
-      "MasterNodeReady",
-      "OneWorkerNodeReady",
-      "IngressReady"
-    ], var.wait_till)
-  }
-}
-
-variable "update_all_workers" {
-  description = "Update all workers to new kube version"
+variable "add_cluster_encryption_key" {
+  description = "Add encryption key for ROKS cluster."
   type        = bool
-  default     = false
+  default     = true
 }
-
 
 ##############################################################################
 
@@ -276,12 +188,6 @@ variable "teleport_management_zones" {
     error_message = "Teleport Management Zones can only be 0, 1, 2, or 3."
     condition     = var.teleport_management_zones >= 0 && var.teleport_management_zones < 4
   }
-}
-
-variable "use_existing_appid" {
-  description = "Use an existing appid instance. If this is false, one will be automatically created."
-  type        = bool
-  default     = false
 }
 
 variable "appid_resource_group" {
