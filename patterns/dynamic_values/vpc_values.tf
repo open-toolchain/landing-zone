@@ -97,7 +97,8 @@ locals {
             # Flatten array of network name
             [network],
             # if using teleport and network is where bastion is provisioned, add bastion acl
-            local.use_teleport && network == local.bastion_vpc ? ["bastion"] : []
+            local.use_teleport && network == local.bastion_vpc ? ["bastion"] : [],
+            local.use_f5 && network == local.vpc_list[0] ? ["f5-external"] : []
           ]
         ) :
         {
@@ -138,10 +139,15 @@ locals {
               }
             },
             [
-              # If this is bastion vpc and teleport is enabled, add 443 inbound rule to bastion vsi acl
-              for bastion_rule in(local.use_teleport && network == local.bastion_vpc ? ["bastion"] : []) :
+              # If this is bastion vpc and teleport is enabled or is f5 external interface, add 443 inbound rule to bastion vsi acl
+              for https_inbound_rule in flatten([
+                # If bastion and on bastion network, add bastion
+                local.use_teleport && network == local.bastion_vpc ? ["bastion"] : [],
+                # If use f5, on f5 network, and acl is f5-external
+                local.use_f5 && network == local.vpc_list[0] && network_acl == "f5-external" ? ["f5-external"] : []
+              ]) :
               {
-                name        = "allow-bastion-443-inbound"
+                name        = "allow-${https_inbound_rule}-443-inbound"
                 action      = "allow"
                 direction   = "inbound"
                 destination = "10.0.0.0/8"
@@ -185,7 +191,16 @@ locals {
               : "10.${zone + (index(var.vpcs, network) * 3)}0.${1 + index(["vsi", "vpe", "vpn", "bastion"], subnet)}0.0/24"
             )
             public_gateway = subnet == "bastion" ? true : null
-            acl_name       = subnet == "bastion" ? "bastion-acl" : "${network}-acl"
+            acl_name       = (
+              # subnet is bastion
+              subnet == "bastion" 
+              ? "bastion-acl" # bastion acl
+              # subnet is f5-external
+              : subnet == "f5-external" 
+              ? "f5-external-acl" 
+              # default acl
+              : "${network}-acl"
+            )
           }
         ]
       }
