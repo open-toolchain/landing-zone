@@ -40,7 +40,7 @@ module "f5_cloud_init" {
   zone                    = each.value.zone
   secondary_subnets       = each.value.secondary_subnets
   hostname                = each.value.hostname
-  domain                  = each.value.hostname
+  domain                  = each.value.domain
   tmos_admin_password     = lookup(var.f5_template_data, "tmos_admin_password", null) == null ? "null" : lookup(var.f5_template_data, "tmos_admin_password", null)
   license_type            = lookup(var.f5_template_data, "license_type", null) == null ? "null" : lookup(var.f5_template_data, "license_type", null)
   byol_license_basekey    = lookup(var.f5_template_data, "byol_license_basekey", null) == null ? "null" : lookup(var.f5_template_data, "byol_license_basekey", null)
