@@ -3,7 +3,11 @@
 ##############################################################################
 
 locals {
+
+  # Create teleport
   create_bastion_host = length(var.teleport_vsi) > 0
+
+  # Create appid instance or get from data
   create_appid = (
     local.create_bastion_host == false
     ? false                                       # false if not used
@@ -11,6 +15,8 @@ locals {
     ? "data"                                      # data
     : "resource"                                  # otherwise resource
   )
+
+  # Local reference to appid id
   appid_instance_id = (
     local.create_bastion_host == false
     ? null
@@ -18,6 +24,8 @@ locals {
     ? data.ibm_resource_instance.appid[0].id
     : ibm_resource_instance.appid[0].id
   )
+
+  # Local reference to appid guid
   appid_instance_guid = (
     local.create_bastion_host == false
     ? null
@@ -25,6 +33,8 @@ locals {
     ? data.ibm_resource_instance.appid[0].guid
     : ibm_resource_instance.appid[0].guid
   )
+
+  # List of teleport VSI
   teleport_vsi_list = module.dynamic_values.appid_redirect_urls
 }
 

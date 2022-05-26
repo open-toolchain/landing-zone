@@ -249,7 +249,12 @@ tfx.plan("tfx Generated Plan", () => {
         icmp: [],
         ip_version: "ipv4",
         remote: "161.26.0.0/16",
-        tcp: [],
+        tcp: [
+          {
+            port_max: 443,
+            port_min: 443,
+          },
+        ],
         udp: [],
       }
     ),
@@ -261,7 +266,12 @@ tfx.plan("tfx Generated Plan", () => {
         icmp: [],
         ip_version: "ipv4",
         remote: "161.26.0.0/16",
-        tcp: [],
+        tcp: [
+          {
+            port_max: 53,
+            port_min: 53,
+          },
+        ],
         udp: [],
       }
     ),
@@ -273,7 +283,12 @@ tfx.plan("tfx Generated Plan", () => {
         icmp: [],
         ip_version: "ipv4",
         remote: "161.26.0.0/16",
-        tcp: [],
+        tcp: [
+          {
+            port_max: 80,
+            port_min: 80,
+          },
+        ],
         udp: [],
       }
     ),
@@ -559,7 +574,12 @@ tfx.plan("tfx Generated Plan", () => {
         icmp: [],
         ip_version: "ipv4",
         remote: "161.26.0.0/16",
-        tcp: [],
+        tcp: [
+          {
+            port_min: 443,
+            port_max: 443,
+          },
+        ],
         udp: [],
       }
     ),
@@ -571,7 +591,12 @@ tfx.plan("tfx Generated Plan", () => {
         icmp: [],
         ip_version: "ipv4",
         remote: "161.26.0.0/16",
-        tcp: [],
+        tcp: [
+          {
+            port_min: 53,
+            port_max: 53,
+          },
+        ],
         udp: [],
       }
     ),
@@ -583,7 +608,12 @@ tfx.plan("tfx Generated Plan", () => {
         icmp: [],
         ip_version: "ipv4",
         remote: "161.26.0.0/16",
-        tcp: [],
+        tcp: [
+          {
+            port_min: 80,
+            port_max: 80,
+          },
+        ],
         udp: [],
       }
     ),
@@ -631,7 +661,12 @@ tfx.plan("tfx Generated Plan", () => {
         icmp: [],
         ip_version: "ipv4",
         remote: "161.26.0.0/16",
-        tcp: [],
+        tcp: [
+          {
+            port_max: 443,
+            port_min: 443
+          }
+        ],
         udp: [],
       }
     ),
@@ -643,7 +678,10 @@ tfx.plan("tfx Generated Plan", () => {
         icmp: [],
         ip_version: "ipv4",
         remote: "161.26.0.0/16",
-        tcp: [],
+        tcp: [{
+          port_max: 53,
+          port_min: 53
+        }],
         udp: [],
       }
     ),
@@ -655,7 +693,10 @@ tfx.plan("tfx Generated Plan", () => {
         icmp: [],
         ip_version: "ipv4",
         remote: "161.26.0.0/16",
-        tcp: [],
+        tcp: [{
+          port_max: 80,
+          port_min: 80
+        }],
         udp: [],
       }
     ),
@@ -882,7 +923,7 @@ tfx.plan("tfx Generated Plan", () => {
         tags: ["acceptance-test", "landing-zone"],
         timeouts: {
           create: null,
-          delete: "1h"
+          delete: "1h",
         },
       }
     ),
@@ -961,7 +1002,7 @@ tfx.plan("tfx Generated Plan", () => {
         timeouts: {
           create: "30m",
           delete: "30m",
-          update: null
+          update: null,
         },
       }
     ),
@@ -974,7 +1015,7 @@ tfx.plan("tfx Generated Plan", () => {
         timeouts: {
           create: "30m",
           delete: "30m",
-          update: null
+          update: null,
         },
       }
     ),
@@ -985,7 +1026,7 @@ tfx.plan("tfx Generated Plan", () => {
       timeouts: {
         create: "30m",
         delete: "30m",
-        update: null
+        update: null,
       },
     })
   );
@@ -1085,12 +1126,51 @@ tfx.plan("tfx Generated Plan", () => {
             tcp: [],
             udp: [],
           },
+        ],
+      }
+    ),
+    tfx.resource(
+      "Network Acl Management Acl",
+      'ibm_is_network_acl.network_acl["f5-external-acl"]',
+      {
+        name: "at-test-management-f5-external-acl",
+        rules: [
           {
             action: "allow",
             destination: "10.0.0.0/8",
             direction: "inbound",
             icmp: [],
-            name: "allow-bastion-443-inbound",
+            name: "allow-ibm-inbound",
+            source: "161.26.0.0/16",
+            tcp: [],
+            udp: [],
+          },
+          {
+            action: "allow",
+            destination: "10.0.0.0/8",
+            direction: "inbound",
+            icmp: [],
+            name: "allow-all-network-inbound",
+            source: "10.0.0.0/8",
+            tcp: [],
+            udp: [],
+          },
+          {
+            action: "allow",
+            destination: "0.0.0.0/0",
+            direction: "outbound",
+            icmp: [],
+            name: "allow-all-outbound",
+            source: "0.0.0.0/0",
+            tcp: [],
+            udp: [],
+          },
+          {
+            action: "allow",
+            destination: "10.0.0.0/8",
+            direction: "inbound",
+            icmp: [],
+            name: "allow-f5-external-443-inbound",
             source: "0.0.0.0/0",
             tcp: [
               {
