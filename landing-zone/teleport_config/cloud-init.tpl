@@ -8,16 +8,19 @@ write_files:
     # writing teleport license
   - path: /root/license.pem
     permissions: "0644"
+    encoding: base64
     content: ${TELEPORT_LICENSE}
 
     # writing https cert
   - path: /root/ca.crt
     permissions: "0644"
+    encoding: base64
     content: ${HTTPS_CERT}
 
     # writing https key
   - path: /root/ca.key
     permissions: "0644"
+    encoding: base64
     content: ${HTTPS_KEY}
 
     # writing teleport roles

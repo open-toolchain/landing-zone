@@ -6,9 +6,9 @@ locals {
   user_data = templatefile(
     "${path.module}/cloud-init.tpl",
     {
-      TELEPORT_LICENSE          = tostring(var.TELEPORT_LICENSE),
-      HTTPS_CERT                = tostring(var.HTTPS_CERT),
-      HTTPS_KEY                 = tostring(var.HTTPS_KEY),
+      TELEPORT_LICENSE          = base64encode(tostring(var.TELEPORT_LICENSE)),
+      HTTPS_CERT                = base64encode(tostring(var.HTTPS_CERT)),
+      HTTPS_KEY                 = base64encode(tostring(var.HTTPS_KEY)),
       HOSTNAME                  = tostring(var.HOSTNAME),
       DOMAIN                    = tostring(var.DOMAIN),
       COS_BUCKET                = tostring(var.COS_BUCKET),
