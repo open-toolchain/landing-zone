@@ -103,13 +103,13 @@ output "workload_rules" {
 output "bastion_rules" {
   description = "List of rules for F5 Bastion interface."
   value = flatten([
-    for zone in var.f5_teleport_zones :
+    for zone in [1,2,3] :
     [
       for ports in [[3023, 3025], [3080, 3080]] :
       {
         name      = "${zone}-inbound-${ports[0]}"
         direction = "inbound"
-        source    = "10.${4 + zone}.${1 + index(var.f5_tiers, "bastion")}0.0/24"
+        source    = "10.${4 + zone}.${1 + index(concat(var.f5_tiers, ["bastion"]), "bastion")}0.0/24"
         tcp = {
           port_min = ports[0]
           port_max = ports[1]
