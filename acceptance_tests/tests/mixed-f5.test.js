@@ -2437,7 +2437,7 @@ tfx.plan("tfx Generated Plan", () => {
         default_route_interface: "1.3",
         do_declaration_url: "null",
         do_local_declaration: "null",
-        domain: "f5-ve-01",
+        domain: "local",
         hostname: "f5-ve-01",
         phone_home_url: "null",
         template_source:
@@ -2467,7 +2467,7 @@ tfx.plan("tfx Generated Plan", () => {
         default_route_interface: "1.3",
         do_declaration_url: "null",
         do_local_declaration: "null",
-        domain: "f5-ve-01",
+        domain: "local",
         hostname: "f5-ve-01",
         phone_home_url: "null",
         template_source:
@@ -2497,7 +2497,7 @@ tfx.plan("tfx Generated Plan", () => {
         default_route_interface: "1.3",
         do_declaration_url: "null",
         do_local_declaration: "null",
-        domain: "f5-ve-01",
+        domain: "local",
         hostname: "f5-ve-01",
         phone_home_url: "null",
         template_source:

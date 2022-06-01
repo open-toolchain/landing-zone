@@ -23,7 +23,7 @@ module "f5_tiers_no_values" {
 }
 
 locals {
-  f5_tiers_no_values_correct_tiers = regex("3", length(module.f5_tiers_no_values.value))
+  f5_tiers_no_values_correct_tiers = regex("1", length(module.f5_tiers_no_values.value))
 }
 
 ##############################################################################
@@ -57,7 +57,7 @@ module "f5_tiers_waf_no_bastion" {
 }
 
 locals {
-  f5_tiers_waf_no_bastion_correct_tiers = regex("6", length(module.f5_tiers_waf_no_bastion.value))
+  f5_tiers_waf_no_bastion_correct_tiers = regex("4", length(module.f5_tiers_waf_no_bastion.value))
 }
 
 ##############################################################################

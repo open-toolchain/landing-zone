@@ -125,9 +125,12 @@ module "f5_vsi" {
       ][0]
     }
   ]
-  enable_floating_ip     = each.value.enable_management_floating_ip == true ? true : false
-  secondary_floating_ips = each.value.enable_external_floating_ip == true ? [each.value.secondary_subnets[0].name] : []
-  depends_on             = [module.ssh_keys]
+  enable_floating_ip = each.value.enable_management_floating_ip == true ? true : false
+  secondary_floating_ips = each.value.enable_external_floating_ip == true ? [
+    for subnet in each.value.secondary_subnets :
+    subnet.name if can(regex("external", subnet.name))
+  ] : []
+  depends_on = [module.ssh_keys]
 }
 
 ##############################################################################

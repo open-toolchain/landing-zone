@@ -103,7 +103,7 @@ output "workload_rules" {
 output "bastion_rules" {
   description = "List of rules for F5 Bastion interface."
   value = flatten([
-    for zone in [1,2,3] :
+    for zone in [1, 2, 3] :
     [
       for ports in [[3023, 3025], [3080, 3080]] :
       {

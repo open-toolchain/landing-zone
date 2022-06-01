@@ -46,6 +46,7 @@ locals {
   bastion_subnet_tiers = var.provision_teleport_in_f5 == true ? ["bastion"] : []
   # List of network tiers, if firewall type is null empty, otherwsie list of tiers
   f5_network_tiers = var.vpn_firewall_type == null ? [] : var.vpn_firewall_types[var.vpn_firewall_type]
+  vpn_tiers        = var.vpn_firewall_type == "waf" || var.vpn_firewall_type == null ? [] : ["vpn-1", "vpn-2"]
 }
 
 ##############################################################################
@@ -57,7 +58,7 @@ locals {
 output "value" {
   description = "List of subnet tiers for F5 Network"
   value = concat(
-    ["vpn-1", "vpn-2"],         # static vpn tiers
+    local.vpn_tiers,            # static vpn tiers
     local.f5_network_tiers,     # dynamic f5 tiers
     local.bastion_subnet_tiers, # dynamic bastion tiers
     ["vpe"]                     # vpe tier

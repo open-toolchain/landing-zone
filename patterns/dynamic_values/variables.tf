@@ -153,7 +153,7 @@ variable "hostname" {
 variable "domain" {
   description = "The F5 BIG-IP domain name"
   type        = string
-  default     = "local"
+  default     = "f5-ve-01"
 }
 
 variable "app_id" {
