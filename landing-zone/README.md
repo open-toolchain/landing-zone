@@ -439,9 +439,11 @@ list(
 
 ---
 
-## Bastion Host
+## (Optional) Bastion Host
 
-This module lets users optionally create a bastion server using teleport on VSI workloads.
+Users can optionally provision a bastion host that have teleport installed. App ID will be used to authenticate users to access teleport. Teleport session recordings will be stored in a COS bucket.
+
+Bastion host components can be found in [bastion_host.tf](./bastion_host.tf)
 
 ### App ID Variable
 
@@ -449,16 +451,51 @@ To use the bastion host, users has 2 options: either create new App ID instance 
 If `use_data` is set to true then an existing App ID instance. If it's set to false then an App ID instance will be created.
 
 ```
-variable "appid" {
-  description = "The App ID instance to be used for the teleport vsi deployments"
-  type = object({
-    name                = string         # Name of existing or to be created APP ID instance
-    resource_group      = string         # The resource group of the existing or to be created APP ID instance
-    use_data            = optional(bool) # Bool specifying to use existing or to be created APP ID instance
-    keys                = list(string)   # List of App ID resource keys
-    create_bastion_host = bool           # Bool specifying to create bastion host or not
-  })
-}
+object(
+  {
+    name                = optional(string)         # Name of existing or to be created APP ID instance
+    resource_group      = optional(string)         # The resource group of the existing or to be created APP ID instance
+    use_data            = optional(bool)           # Bool specifying to use existing or to be created APP ID instance
+    keys                = optional(list(string))   # List of App ID resource keys
+    use_appid           = bool                     # Bool specifying to connect App ID to bastion host or not
+  }
+)
+
+```
+
+### Teleport Config Data Variable
+
+Teleport config data. This is used to create a single template for all teleport instances to use. Creating a single template allows for values to remain sensitive.
+
+```
+object(
+  {
+    teleport_license   = optional(string) # The PEM license file
+    https_cert         = optional(string) # The https certificate used by bastion host for teleport
+    https_key          = optional(string) # The https private key used by bastion host for teleport
+    domain             = optional(string) # The domain of the bastion host
+    cos_bucket_name    = optional(string) # Name of the COS bucket to store the session recordings
+    cos_key_name       = optional(string) # Name of the COS instance resource key. Must be HMAC credentials
+    teleport_version   = optional(string) # Version of Teleport Enterprise to use
+    message_of_the_day = optional(string) # Banner message the is exposed to the user at authentication time
+    hostname           = optional(string) # The hostname of the bastion host
+    app_id_key_name    = optional(string) # Name of APP ID key
+
+    ##############################################################################
+    # A list of maps that contain the user email and the role you want to 
+    # associate with them
+    ##############################################################################
+
+    claims_to_roles = optional(
+      list(
+        object({
+          email = string
+          roles = list(string)
+        })
+      )
+    )
+  }
+)
 ```
 
 ### Teleport VSI Variable
@@ -471,37 +508,13 @@ list(
       {
         name                            = string           # Name to be used for each teleport VSI created
         vpc_name                        = string           # Name of VPC from `vpcs` variable
-        vsi_per_subnet                  = number           # Number of identical teleport VSI to be created on each subnet
         resource_group                  = optional(string) # Name of resource group where the teleport VSI will be provisioned, must be in `var.resource_groups`
-        subnet_names                    = list(string)     # Names of subnets where the teleport VSI will be provisioned
+        subnet_name                     = string           # Name of the subnet where the teleport VSI will be provisioned
         ssh_keys                        = list(string)     # List of SSH Keys from `var.ssh_keys` to use when provisioning.
+        boot_volume_encryption_key_name = string           # Name of boot_volume_encryption_key        
         image_name                      = string           # Name of the image for the teleport VSI, use `ibmcloud is images` to view
         machine_type                    = string           # Name of machine type. Use `ibmcloud is in-prs` to view
-        teleport_license                = string           # The PEM license file
-        https_cert                      = string           # The https certificate used by bastion host for teleport
-        https_key                       = string           # The https private key used by bastion host for teleport
-        domain                          = string           # The domain of the bastion host
-        cos_bucket_name                 = string           # Name of the COS bucket to store the session recordings
-        cos_key_name                    = string           # Name of the COS instance resource key. Must be HMAC credentials
-        teleport_version                = string           # Version of Teleport Enterprise to use
-        message_of_the_day              = string           # Banner message the is exposed to the user at authentication time
-        boot_volume_encryption_key_name = string           # Name of boot_volume_encryption_key
-        app_id_key_name                 = string           # Name of APP ID instance
         
-        ##############################################################################
-        # A list of maps that contain the user email and the role you want to 
-        # associate with them
-        ##############################################################################
-
-        claims_to_roles = list(
-          object({
-            email = string
-            roles = list(string)
-          })
-        )
-
-        ##############################################################################
-
         ##############################################################################
         # When creating VSI, users can optionally create a new security group for
         # those instances. These fields function the same as in `var.security_groups`
@@ -544,7 +557,6 @@ list(
     )
   )
 ```
-
 ---
 
 ## Cluster and Worker pool
@@ -627,6 +639,7 @@ Cloud Object Storage components can be found in cos.tf.
 | ssh_keys                    | SSH Keys to use for VSI Provision. If `public_key` is not provided, the named key will be looked up from data.                            |
 | vsi                         | A list describing VSI workloads to create                                                                                                 |
 | teleport_vsi                | A list of teleport vsi deployments                                                                                                        |
+| teleport_config_data        | Teleport config data. This is used to create a single template for all teleport instances to use. Creating a single template allows for values to remain sensitive |
 | appid                       | The App ID instance to be used for the teleport vsi deployments                                                                           |
 | security_groups             | Security groups for VPC                                                                                                                   |
 | virtual_private_endpoints   | Object describing VPE to be created                                                                                                       |

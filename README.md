@@ -22,11 +22,12 @@
       1. [Overriding Variables](#overriding-variables)
       2. [Overriding Only Some Variables](#overriding-only-some-variables)
 4. [(Optional) F5 BIG-IP](#optional-f5-big-ip)
-5. [Module Recommendations for Additional Features](#module-recommendations-for-additional-features)
-6. [Versions](#versions)
-7. [Upgrading](#upgrading)
-8. [Sample Applications](#sample-applications)
-9. [Creating an Issue](#creating-an-issue)
+5. [(Optional) Bastion host using Teleport](#optional-bastion-host-using-teleport)
+6. [Module Recommendations for Additional Features](#module-recommendations-for-additional-features)
+7. [Versions](#versions)
+8. [Upgrading](#upgrading)
+9. [Sample Applications](#sample-applications)
+10. [Creating an Issue](#creating-an-issue)
     1. [Enhancement Feature](#enhancement-feature)
     2. [Bug Fixes](#bug-fixes)
 
@@ -229,6 +230,17 @@ For more information, please visit [provisioning a F5 BIG-IP](.docs/f5-big-ip/f5
 
 ---
 
+## (Optional) Bastion host using Teleport
+
+Teleport allows you to configure a virtual server instance in a VPC as a bastion host.  Some of Teleport features include Single sign-on to access the SSH server, auditing, and recording of your interactive sessions.  To learn more about teleport, see the following [documentation](https://goteleport.com/docs/).
+
+Through Secure Landing Zone, users can optionally provision the implemented solution described [here](https://cloud.ibm.com/docs/allowlist/framework-financial-services?topic=framework-financial-services-vpc-architecture-connectivity-bastion-tutorial-teleport) which configures a bastion host in your VPC using Teleport Enterprise Edition, along with provisioning a Object Storage bucket and App ID for enhanced security.
+ [App ID](https://cloud.ibm.com/docs/appid) will be used to authenticate users to access teleport. Teleport session recordings will be stored in the Object Storage bucket.
+This [cloud-init file](./landing-zone/teleport_config/cloud-init.tpl) will install teleport, and configure App ID and the Object Storage. These [variables](./landing-zone/teleport_config/variables.tf) will be used for the configuration.
+
+For more information, please visit [provisioning a bastion host using Teleport](.docs/bastion/bastion.md).
+
+---
 ## Module Recommendations for Additional Features
 
 | Feature | Description | Module | Version |
