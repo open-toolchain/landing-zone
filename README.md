@@ -3,23 +3,32 @@
 ## Table of Contents
 
 1. [Prerequisites](#prerequisites)
-    1. [Setup an IBM Cloud Account](#setting-up-an-ibm-cloud-account)
-    2. [Setup IBM Cloud Account for Secure Landing Zone](#setup-ibm-cloud-account-for-secure-landing-zone)
-    3. [Setup Account Access (Cloud IAM)](#setup-account-access-cloud-iam)
-    5. [Setup Repository Authorization](#setup-repository-authorization)
-    4. [(Optional) Setup Hyper Protect Crypto Services](#optional-setting-up-hyper-protect-crypto-services)
-2. [Patterns](#patterns)
-3. [Getting Started](#getting-started)
-    1. [Select your Pattern](#select-your-pattern)
-    2. [Select your Provision Method](#select-your-provision-method)
-4. [Customizing Your Environment](#customizing-your-environment)
-    1. [Using terraform.tfvars](#using-terraformtfvars)
-    2. [Using override.json](#using-overridejson)
+   1. [Setup an IBM Cloud Account](#setup-an-ibm-cloud-account)
+   2. [Setup IBM Cloud Account for Secure Landing Zone](#setup-ibm-cloud-account-for-secure-landing-zone)
+   3. [Setup Account Access (Cloud IAM)](#setup-account-access-cloud-iam)
+   4. [Setup Repository Authorization](#setup-repository-authorization)
+   5. [(Optional) Setup Hyper Protect Crypto Services](#optional-setup-hyper-protect-crypto-services)
+      1. [Hyper Crypto Service and Initialization](#hyper-crypto-service-and-initialization)
+         1. [Creating HPCS Using the IBM Cloud CLI](#creating-hpcs-using-the-ibm-cloud-cli)
+         2. [Initializing HPCS](#initializing-hpcs)
+2. [Getting Started](#getting-started)
+   1. [Select your Pattern](#select-your-pattern)
+   2. [Select your Provision Method](#select-your-provision-method)
+      1. [Provisioning with the IBM Cloud Toolchain](#provisioning-with-the-ibm-cloud-toolchain)
+      2. [Running the scripts locally](#running-the-scripts-locally)
+3. [Customizing Your Environment](#customizing-your-environment)
+   1. [Using terraform.tfvars](#using-terraformtfvars)
+   2. [Using override.json](#using-overridejson)
+      1. [Overriding Variables](#overriding-variables)
+      2. [Overriding Only Some Variables](#overriding-only-some-variables)
+4. [(Optional) F5 BIG-IP](#optional-f5-big-ip)
 5. [Module Recommendations for Additional Features](#module-recommendations-for-additional-features)
 6. [Versions](#versions)
 7. [Upgrading](#upgrading)
 8. [Sample Applications](#sample-applications)
-9. [Creating an issue](#creating-an-issue)
+9. [Creating an Issue](#creating-an-issue)
+    1. [Enhancement Feature](#enhancement-feature)
+    2. [Bug Fixes](#bug-fixes)
 
 ---
 
@@ -207,6 +216,16 @@ Locally executed run configurations do not require an apply to for `override.jso
     "enable_transit_gateway": false
 }
 ```
+
+---
+
+## (Optional) F5 BIG-IP
+
+The F5 BIG-IP Virtual Edition will enable you to setup a client-to-site full tunnel VPN to connect to your management/edge VPC and/or a web application firewall (WAF) to enable consumers to connect to your workload VPC over the public internet. 
+
+Through Secure Landing Zone, users can optionally provision the F5 BIG-IP so that one can either setup the implemented solution of a client-to-site VPN or web application firewall (WAF) which is described [here](https://cloud.ibm.com/docs/allowlist/framework-financial-services?topic=framework-financial-services-vpc-architecture-connectivity-f5-tutorial) 
+
+For more information, please visit [provisioning a F5 BIG-IP](.docs/f5-big-ip/f5-big-ip.md).
 
 ---
 

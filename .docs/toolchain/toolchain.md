@@ -29,6 +29,7 @@ The pipeline is comprised of some environment properties which are passed to the
 | app-cicd-token | not set | The CICD Token |
 | app-cicd-webhookurl | not set | The CICD Webhook URL |
 | pattern | vsi/mixed/roks | The pattern that you wish to use |
+| cra-skip-failure | false | If CRA has a failure, skip it continue execution of the pipeline |
 | pipeline-debug | false | Enable debug output within the pipeline (true/false) |
 | repositoryForManualTrigger | <Your code repo> | The repository where the terraform code is in |
 | schematics-wksp | slz-<pattern>-<timestamp> | The name of the schematics workspace to be created and used.  Do not change after first run otherwise a new workspace will be created |
