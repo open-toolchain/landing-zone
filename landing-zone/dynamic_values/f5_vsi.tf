@@ -2,32 +2,35 @@
 # F5 VSI Dynamic Values
 ##############################################################################
 
+module "f5_vsi_map" {
+  source = "./config_modules/list_to_map"
+  list   = var.f5_vsi
+}
+
+module "f5_primary_subnets" {
+  source           = "./config_modules/get_subnets"
+  for_each         = module.f5_vsi_map.value
+  subnet_zone_list = var.vpc_modules[each.value.vpc_name].subnet_zone_list
+  regex            = "${var.prefix}-${each.value.vpc_name}-${each.value.primary_subnet_name}"
+}
+
+module "f5_secondary_subnets" {
+  source           = "./config_modules/get_subnets"
+  for_each         = module.f5_vsi_map.value
+  subnet_zone_list = var.vpc_modules[each.value.vpc_name].subnet_zone_list
+  regex            = join("|", each.value.secondary_subnet_names)
+}
+
 locals {
   # Convert list to map
   f5_vsi_map = {
     for vsi_group in var.f5_vsi :
     ("${var.prefix}-${vsi_group.name}") => merge(vsi_group, {
       # Add VPC ID
-      vpc_id = var.vpc_modules[vsi_group.vpc_name].vpc_id
-      subnets = [
-        # Add subnets to list if they are contained in the subnet list, prepends prefixes
-        for subnet in var.vpc_modules[vsi_group.vpc_name].subnet_zone_list :
-        subnet if subnet.name == "${var.prefix}-${vsi_group.vpc_name}-${vsi_group.primary_subnet_name}"
-      ]
-      secondary_subnets = [
-        # Add subnets to list if they are contained in the subnet list, prepends prefixes
-        for subnet in var.vpc_modules[vsi_group.vpc_name].subnet_zone_list :
-        subnet if contains([
-          # Create modified list of names
-          for name in vsi_group.secondary_subnet_names :
-          "${var.prefix}-${vsi_group.vpc_name}-${name}"
-        ], subnet.name)
-      ]
-      zone = [
-        # Add subnets to list if they are contained in the subnet list, prepends prefixes
-        for subnet in var.vpc_modules[vsi_group.vpc_name].subnet_zone_list :
-        subnet.zone if subnet.name == "${var.prefix}-${vsi_group.vpc_name}-${vsi_group.primary_subnet_name}"
-      ][0]
+      vpc_id            = var.vpc_modules[vsi_group.vpc_name].vpc_id
+      subnets           = module.f5_primary_subnets[vsi_group.name].subnets
+      secondary_subnets = module.f5_secondary_subnets[vsi_group.name].subnets
+      zone              = module.f5_primary_subnets[vsi_group.name].subnets[0].zone
     })
   }
 }

@@ -63,7 +63,7 @@ locals {
     (network) => {
       zone-1 = (
         # If f5 on management and use teleport and management vpc
-        var.create_f5_network_on_management_vpc && var.use_teleport && network == var.vpcs[0]
+        var.create_f5_network_on_management_vpc && network == var.vpcs[0]
         # f5-tiers vsi vpn
         ? concat(var.f5_tiers, ["vsi", "vpn"])
         # if edge and edge
@@ -80,7 +80,7 @@ locals {
       )
       zone-2 = (
         # If f5 on management and use teleport and management vpc
-        var.create_f5_network_on_management_vpc && var.use_teleport && network == var.vpcs[0]
+        var.create_f5_network_on_management_vpc && network == var.vpcs[0]
         # F5 tiers and vsi
         ? concat(var.f5_tiers, ["vsi"])
         # if edge and edge
@@ -94,7 +94,7 @@ locals {
       )
       zone-3 = (
         # If f5 on management and use teleport and management vpc
-        var.create_f5_network_on_management_vpc && var.use_teleport && network == var.vpcs[0]
+        var.create_f5_network_on_management_vpc && network == var.vpcs[0]
         # F5 tiers and vsi
         ? concat(var.f5_tiers, ["vsi"])
         # if edge and edge

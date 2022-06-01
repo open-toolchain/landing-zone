@@ -64,10 +64,12 @@ module "f5_deployments_3_zones" {
 }
 
 locals {
-  f5_deployments_3_zones_3_deployments                    = regex("3", length(module.f5_deployments_3_zones.value))
-  f5_deployments_3_zones_2_scondary_subnets               = regex("2", length(module.f5_deployments_3_zones.value[0].secondary_subnet_names))
-  f5_deployments_3_zones_2_scondary_security_groups       = regex("2", length(module.f5_deployments_3_zones.value[0].secondary_subnet_security_group_names))
-  f5_deployments_3_zones_2_scondary_subnets_no_management = regex("false", tostring(contains(module.f5_deployments_3_zones.value[0].secondary_subnet_names, "f5-management")))
-}
+  f5_deployments_3_zones_3_deployments                     = regex("3", length(module.f5_deployments_3_zones.value))
+  f5_deployments_3_zones_2_secondary_subnets               = regex("2", length(module.f5_deployments_3_zones.value[0].secondary_subnet_names))
+  f5_deployments_3_zones_2_secondary_security_groups       = regex("2", length(module.f5_deployments_3_zones.value[0].secondary_subnet_security_group_names))
+  f5_deployments_3_zones_2_secondary_subnets_no_management = regex("false", tostring(contains(module.f5_deployments_3_zones.value[0].secondary_subnet_names, "f5-management")))
+  f5_deployments_3_zones_2_secondary_subnets_has_external  = regex("true", tostring(contains(module.f5_deployments_3_zones.value[0].secondary_subnet_names, "f5-external-zone-1")))
+  f5_deployments_3_zones_2_secondary_subnets_has_workload  = regex("true", tostring(contains(module.f5_deployments_3_zones.value[0].secondary_subnet_names, "f5-workload-zone-1")))
 
+}
 ##############################################################################

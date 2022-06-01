@@ -2,11 +2,29 @@
 # Access Group Locals
 ##############################################################################
 
+module "access_group_object" {
+  source = "./config_modules/list_to_map"
+  list   = var.access_groups
+  prefix = var.prefix
+}
+
+module "access_policies" {
+  source = "./config_modules/list_to_map"
+  list   = local.access_policy_list
+}
+
+module "dynamic_rules" {
+  source = "./config_modules/list_to_map"
+  list   = local.dynamic_rule_list
+}
+
 locals {
-  # Convert access groups from list into object
-  access_groups_object = {
-    for group in var.access_groups :
-    ("${var.prefix}-${group.name}") => group
+  access_groups_object = module.access_group_object.value
+  access_policies      = module.access_policies.value
+  dynamic_rules        = module.dynamic_rules.value
+  account_management_map = {
+    for group in local.account_management_list :
+    (group.group) => group.roles
   }
 
   # Add all policies to a single list
@@ -21,12 +39,6 @@ locals {
     ] if group.policies != null
   ])
 
-  # Convert to map
-  access_policies = {
-    for item in local.access_policy_list :
-    (item.name) => item
-  }
-
 
   # Add all policies to a single list
   dynamic_rule_list = flatten([
@@ -40,12 +52,6 @@ locals {
     ] if lookup(group, "dynamic_policies", null) != null
   ])
 
-  # Convert access policy list into object
-  dynamic_rules = {
-    for item in local.dynamic_rule_list :
-    (item.name) => item
-  }
-
   # All account management policies
   account_management_list = [
     for group in var.access_groups :
@@ -56,10 +62,6 @@ locals {
   ]
 
   # Convert to map
-  account_management_map = {
-    for group in local.account_management_list :
-    (group.group) => group.roles
-  }
 
   # Map of groups with invites
   access_groups_with_invites = {

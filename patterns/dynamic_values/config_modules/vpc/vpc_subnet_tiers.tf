@@ -49,7 +49,7 @@ module "f5_edge_vpc_subnet_tiers" {
   use_teleport                        = true
   vpcs                                = ["management", "workload"]
   vpc_list                            = ["edge", "management", "workload"]
-  f5_tiers                            = ["f5"]
+  f5_tiers                            = ["f5-management", "f5-external", "f5-workload", "f5-bastion"]
   add_edge_vpc                        = true
   teleport_management_zones           = 0
 }
@@ -102,25 +102,14 @@ module "f5_management_vpc_subnet_tiers" {
   use_teleport                        = true
   vpcs                                = ["management", "workload"]
   vpc_list                            = ["management", "workload"]
-  f5_tiers                            = ["f5"]
+  f5_tiers                            = ["f5", "f6", "f7"]
   add_edge_vpc                        = true
   teleport_management_zones           = 0
 }
 
 locals {
   f5_management_vpc_subnet_tiers_network_length = regex("2", length(keys(module.f5_management_vpc_subnet_tiers.value)))
-  f5_management_vpc_subnet_tiers_f5_match = regex("true", tostring(
-    length(
-      distinct(
-        flatten(
-          [
-            for zone in ["zone-2", "zone-3"] :
-            module.f5_management_vpc_subnet_tiers.value["management"][zone][0] == "f5" && length(module.f5_management_vpc_subnet_tiers.value["management"][zone]) == 3
-          ]
-        )
-      )
-    ) == 1
-  ))
+  f5_management_vpc_subnet_tiers_f5_match       = regex("f5;f6;f7;vsi;vpn", join(";", module.f5_management_vpc_subnet_tiers.value["management"]["zone-1"]))
   f5_management_vpc_subnet_tiers_rest_same = regex("true", tostring(
     length(
       distinct(
