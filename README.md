@@ -256,6 +256,7 @@ You can see the version of Secure Landing Zone that you are on through the file 
 | Version | Date        | Comments |
 | ------- | ----------- | ------- |
 | 1.0.0   | 04/06/2022  | Initial release |
+| 1.0.1   | 06/01/2022  | Bastion with Teleport and F5 BIG-IP provision |
 
 ---
 
