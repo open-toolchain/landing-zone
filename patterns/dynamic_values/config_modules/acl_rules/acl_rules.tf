@@ -49,8 +49,8 @@ output "bastion" {
       destination = "10.0.0.0/8"
       source      = "0.0.0.0/0"
       tcp = {
-        port_min = 443
-        port_max = 443
+        source_port_min = 443
+        source_port_max = 443
       }
     }
   ]
