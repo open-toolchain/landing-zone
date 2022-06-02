@@ -58,7 +58,7 @@ module "vpc_address_prefixes_f5_management" {
 locals {
   vpc_address_prefixes_f5_management_three_networks          = regex("2", length(keys(module.vpc_address_prefixes_f5_management.value)))
   vpc_address_prefixes_f5_management_workload_no_address     = regex("0", length(module.vpc_address_prefixes_f5_management.value["workload"].zone-2))
-  vpc_address_prefixes_f5_management_correct_prefix_count_z1 = regex("2", length(module.vpc_address_prefixes_f5_management.value["management"].zone-1))
+  vpc_address_prefixes_f5_management_correct_prefix_count_z1 = regex("3", length(module.vpc_address_prefixes_f5_management.value["management"].zone-1))
   vpc_address_prefixes_f5_management_correct_prefix_count_z2 = regex("2", length(module.vpc_address_prefixes_f5_management.value["management"].zone-2))
   vpc_address_prefixes_f5_management_correct_prefix_count_z3 = regex("2", length(module.vpc_address_prefixes_f5_management.value["management"].zone-3))
   vpc_address_prefixes_f5_management_cidr_correct_z1         = regex("10.5.0.0/16", module.vpc_address_prefixes_f5_management.value["management"].zone-1[0])

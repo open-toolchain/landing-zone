@@ -1503,6 +1503,16 @@ tfx.plan("tfx Generated Plan", () => {
       }
     ),
     tfx.resource(
+      "Address Prefixes At Test Management Zone 1 3",
+      'ibm_is_vpc_address_prefix.address_prefixes["at-test-management-zone-1-3"]',
+      {
+        cidr: "10.10.30.0/24",
+        is_default: false,
+        name: "at-test-management-zone-1-3",
+        zone: "us-south-1",
+      }
+    ),
+    tfx.resource(
       "Address Prefixes At Test Management Zone 2 1",
       'ibm_is_vpc_address_prefix.address_prefixes["at-test-management-zone-2-1"]',
       {

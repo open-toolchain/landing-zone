@@ -48,6 +48,8 @@ output "value" {
         network == var.vpc_list[0] && var.add_edge_vpc
         ? ["10.${4 + zone}.0.0/16"]
         # If not adding edge and is management
+        : network == var.vpcs[0] && var.create_f5_network_on_management_vpc && zone == 1
+        ? ["10.${4 + zone}.0.0/16", "10.${zone}0.10.0/24", "10.10.30.0/24"]
         : network == var.vpcs[0] && var.create_f5_network_on_management_vpc
         ? ["10.${4 + zone}.0.0/16", "10.${zone}0.10.0/24"]
         # default to empty
