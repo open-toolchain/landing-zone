@@ -360,8 +360,6 @@ variable "vsi" {
   )
 }
 
-
-
 ##############################################################################
 
 
@@ -504,6 +502,7 @@ variable "cos" {
         cross_region_location = optional(string)
         kms_key               = optional(string)
         allowed_ip            = optional(list(string))
+        hard_quota            = optional(number)
         archive_rule = optional(object({
           days    = number
           enable  = bool
@@ -523,10 +522,12 @@ variable "cos" {
       }))
       keys = optional(
         list(object({
-          name = string
-          role = string
+          name        = string
+          role        = string
+          enable_HMAC = bool
         }))
       )
+
     })
   )
 
@@ -766,7 +767,6 @@ variable "atracker" {
 # Cluster variables
 ##############################################################################
 
-
 variable "clusters" {
   description = "A list describing clusters workloads to create"
   type = list(
@@ -777,27 +777,33 @@ variable "clusters" {
       workers_per_subnet = number           # Worker nodes per subnet.
       machine_type       = string           # Worker node flavor
       kube_type          = string           # iks or openshift
+      kube_version       = optional(string) # Can be a version from `ibmcloud ks versions` or `default`
       entitlement        = optional(string) # entitlement option for openshift
       pod_subnet         = optional(string) # Portable subnet for pods
       service_subnet     = optional(string) # Portable subnet for services
       resource_group     = string           # Resource Group used for cluster
       cos_name           = optional(string) # Name of COS instance Required only for OpenShift clusters
+      update_all_workers = optional(bool)   # If true force workers to update
       kms_config = optional(
         object({
-          crk_name         = string
-          private_endpoint = optional(bool)
+          crk_name         = string         # Name of key
+          private_endpoint = optional(bool) # Private endpoint
         })
       )
-      worker_pools = optional(list(
-        object({
-          name               = string           # Worker pool name
-          vpc_name           = string           # VPC name
-          workers_per_subnet = number           # Worker nodes per subnet
-          flavor             = string           # Worker node flavor
-          subnet_names       = list(string)     # List of vpc subnets for worker pool
-          entitlement        = optional(string) # entitlement option for openshift
-      })))
-  }))
+      worker_pools = optional(
+        list(
+          object({
+            name               = string           # Worker pool name
+            vpc_name           = string           # VPC name
+            workers_per_subnet = number           # Worker nodes per subnet
+            flavor             = string           # Worker node flavor
+            subnet_names       = list(string)     # List of vpc subnets for worker pool
+            entitlement        = optional(string) # entitlement option for openshift
+          })
+        )
+      )
+    })
+  )
 
   # kube_type validation
   validation {
@@ -854,6 +860,579 @@ variable "wait_till" {
       "OneWorkerNodeReady",
       "IngressReady"
     ], var.wait_till)
+  }
+}
+
+##############################################################################
+
+##############################################################################
+# App ID Variables
+##############################################################################
+
+variable "appid" {
+  description = "The App ID instance to be used for the teleport vsi deployments"
+  type = object({
+    name           = optional(string)
+    resource_group = optional(string)
+    use_data       = optional(bool)
+    keys           = optional(list(string))
+    use_appid      = bool
+  })
+  default = {
+    use_appid = false
+  }
+
+  validation {
+    error_message = "Name must be included if use_appid is true."
+    condition = (
+      lookup(var.appid, "use_appid") == false
+      ) || (
+      lookup(var.appid, "name", null) != null &&
+      lookup(var.appid, "use_appid") == true
+    )
+  }
+
+  # app id key validation
+  validation {
+    condition = lookup(var.appid, "keys", null) == null || (
+      length(
+        lookup(var.appid, "keys", null) == null ? [] : lookup(var.appid, "keys")
+        ) == length(
+        distinct(
+          lookup(var.appid, "keys", null) == null ? [] : lookup(var.appid, "keys")
+        )
+      )
+    )
+    error_message = "Duplicate appid key. Please provide unique appid keys."
+  }
+}
+
+##############################################################################
+
+##############################################################################
+# Bastion Host Variables
+##############################################################################
+
+variable "teleport_config_data" {
+  description = "Teleport config data. This is used to create a single template for all teleport instances to use. Creating a single template allows for values to remain sensitive"
+  type = object({
+    teleport_license   = optional(string)
+    https_cert         = optional(string)
+    https_key          = optional(string)
+    domain             = optional(string)
+    cos_bucket_name    = optional(string)
+    cos_key_name       = optional(string)
+    teleport_version   = optional(string)
+    message_of_the_day = optional(string)
+    hostname           = optional(string)
+    app_id_key_name    = optional(string)
+    claims_to_roles = optional(
+      list(
+        object({
+          email = string
+          roles = list(string)
+        })
+      )
+    )
+  })
+  sensitive = true
+  default   = null
+}
+
+variable "teleport_vsi" {
+  description = "A list of teleport vsi deployments"
+  type = list(
+    object(
+      {
+        name                            = string
+        vpc_name                        = string
+        resource_group                  = optional(string)
+        subnet_name                     = string
+        ssh_keys                        = list(string)
+        boot_volume_encryption_key_name = string
+        image_name                      = string
+        machine_type                    = string
+        security_groups                 = optional(list(string))
+        security_group = optional(
+          object({
+            name = string
+            rules = list(
+              object({
+                name      = string
+                direction = string
+                source    = string
+                tcp = optional(
+                  object({
+                    port_max = number
+                    port_min = number
+                  })
+                )
+                udp = optional(
+                  object({
+                    port_max = number
+                    port_min = number
+                  })
+                )
+                icmp = optional(
+                  object({
+                    type = number
+                    code = number
+                  })
+                )
+              })
+            )
+          })
+        )
+
+
+      }
+    )
+  )
+  default = []
+  # vsi name validation
+  validation {
+    condition     = length(distinct([for name in flatten(var.teleport_vsi[*].name) : name])) == length(flatten(var.teleport_vsi[*].name))
+    error_message = "Duplicate teleport_vsi name. Please provide unique teleport_vsi names."
+  }
+}
+
+##############################################################################
+
+
+##############################################################################
+# IAM Settings
+# > For more information about IAM account settings refer to the
+#   terraform documentation here:
+#   https://registry.terraform.io/providers/IBM-Cloud/ibm/latest/docs/resources/iam_account_settings
+##############################################################################
+
+variable "iam_account_settings" {
+  description = "IAM Account Settings."
+  type = object({
+    enable                          = bool
+    mfa                             = optional(number)
+    allowed_ip_addresses            = optional(string)
+    include_history                 = optional(bool)
+    if_match                        = optional(string)
+    max_sessions_per_identity       = optional(string)
+    restrict_create_service_id      = optional(string)
+    restrict_create_platform_apikey = optional(string)
+    session_expiration_in_seconds   = optional(string)
+    session_invalidation_in_seconds = optional(string)
+  })
+
+  default = {
+    enable = false
+  }
+
+  validation {
+    error_message = "Allowed ip addresses must be a comma separated string of ip addresses and cidr subnets."
+    condition = (
+      lookup(var.iam_account_settings, "allowed_ip_addresses", null) == null
+      ? true
+      : can(regex("^([[:digit:]]{1,3}.[[:digit:]]{1,3}.[[:digit:]]{1,3}.[[:digit:]]{1,3}(/[[:digit:]]{1,2})?,?)+$", lookup(var.iam_account_settings, "allowed_ip_addresses")))
+    )
+  }
+
+  validation {
+    error_message = "IAM Account if_match setting must be either NOT_SET or a whole number greater than 0."
+    condition = (
+      lookup(var.iam_account_settings, "if_match", null) == null
+      ? true
+      : var.iam_account_settings.if_match == "NOT_SET"
+      ? true
+      : tonumber(var.iam_account_settings.if_match) > 0
+    )
+  }
+
+  validation {
+    error_message = "IAM Account max_sessions_per_identity setting must be either NOT_SET or a whole number greater than 0."
+    condition = (
+      lookup(var.iam_account_settings, "max_sessions_per_identity", null) == null
+      ? true
+      : var.iam_account_settings.max_sessions_per_identity == "NOT_SET"
+      ? true
+      : tonumber(var.iam_account_settings.max_sessions_per_identity) > 0
+    )
+  }
+
+  validation {
+    error_message = "IAM account mfa value must be one of the following: [ NONE , TOTP , TOTP4ALL , LEVEL1 , LEVEL2 , LEVEL3]."
+    condition = (
+      lookup(var.iam_account_settings, "mfa", null) == null
+      ? true
+      : contains(["NONE", "TOTP", "TOTP4ALL", "LEVEL1", "LEVEL2", "LEVEL3", "null"], lookup(var.iam_account_settings, "mfa"))
+    )
+  }
+
+  validation {
+    error_message = "IAM account restrict_create_service_id value must be one of the following: [ RESTRICTED, NOT_RESTRICTED, NOT_SET ]."
+    condition = (
+      lookup(var.iam_account_settings, "restrict_create_service_id", null) == null
+      ? true
+      : contains(["NOT_SET", "RESTRICTED", "NOT_RESTRICTED"], lookup(var.iam_account_settings, "restrict_create_service_id"))
+    )
+  }
+
+  validation {
+    error_message = "IAM account restrict_create_platform_apikey value must be one of the following: [ RESTRICTED, NOT_RESTRICTED, NOT_SET ]."
+    condition = (
+      lookup(var.iam_account_settings, "restrict_create_platform_apikey", null) == null
+      ? true
+      : contains(["NOT_SET", "RESTRICTED", "NOT_RESTRICTED"], lookup(var.iam_account_settings, "restrict_create_platform_apikey"))
+    )
+  }
+
+  validation {
+    error_message = "IAM Account session_expiration_in_seconds setting must be either NOT_SET or a whole number between 900 and 86400."
+    condition = (
+      lookup(var.iam_account_settings, "session_expiration_in_seconds", null) == null
+      ? true
+      : var.iam_account_settings.session_expiration_in_seconds == "NOT_SET"
+      ? true
+      : tonumber(var.iam_account_settings.session_expiration_in_seconds) >= 900 && tonumber(var.iam_account_settings.session_expiration_in_seconds) <= 86400
+    )
+  }
+  validation {
+    error_message = "IAM Account session_expiration_in_seconds setting must be either NOT_SET or a whole number between 900 and 7200."
+    condition = (
+      lookup(var.iam_account_settings, "session_invalidation_in_seconds", null) == null
+      ? true
+      : var.iam_account_settings.session_invalidation_in_seconds == "NOT_SET"
+      ? true
+      : tonumber(var.iam_account_settings.session_invalidation_in_seconds) >= 900 && tonumber(var.iam_account_settings.session_expiration_in_seconds) <= 7200
+    )
+  }
+}
+
+##############################################################################
+
+
+##############################################################################
+# Access Group Rules
+##############################################################################
+
+variable "access_groups" {
+  description = "A list of access groups to create"
+  default     = []
+  type = list(
+    object({
+      name        = string # Name of the group
+      description = string # Description of group
+      policies = list(
+        object({
+          name  = string       # Name of the policy
+          roles = list(string) # list of roles for the policy
+          resources = object({
+            resource_group       = optional(string) # Name of the resource group the policy will apply to
+            resource_type        = optional(string) # Name of the resource type for the policy ex. "resource-group"
+            resource             = optional(string) # The resource of the policy definition
+            service              = optional(string) # Name of the service type for the policy ex. "cloud-object-storage"
+            resource_instance_id = optional(string) # ID of a service instance to give permissions
+          })
+        })
+      )
+      dynamic_policies = optional(
+        list(
+          object({
+            name              = string # Dynamic group name
+            identity_provider = string # URI for identity provider
+            expiration        = number # How many hours authenticated users can work before refresh
+            conditions = object({
+              claim    = string # key value to evaluate the condition against.
+              operator = string # The operation to perform on the claim. Supported values are EQUALS, EQUALS_IGNORE_CASE, IN, NOT_EQUALS_IGNORE_CASE, NOT_EQUALS, and CONTAINS.
+              value    = string # Value to be compared agains
+            })
+          })
+        )
+      )
+      account_management_policies = optional(list(string))
+      invite_users                = optional(list(string)) # Users to invite to the access group
+    })
+  )
+
+  validation {
+    error_message = "Invite users should not have any duplicate invites within the same group."
+    condition = length(
+      flatten(
+        [
+          for group in [for access_group in var.access_groups : access_group if lookup(access_group, "invite_users", null) != null] :
+          true if length(group.invite_users) != length(distinct(group.invite_users))
+        ]
+      )
+    ) == 0
+  }
+
+  validation {
+    error_message = "Invite users should not have any duplicate account management policies within the same group."
+    condition = length(
+      flatten(
+        [
+          for group in [for access_group in var.access_groups : access_group if lookup(access_group, "account_management_policies", null) != null] :
+          true if length(group.account_management_policies) != length(distinct(group.account_management_policies))
+        ]
+      )
+    ) == 0
+  }
+
+  validation {
+    error_message = "All access group policies must have unique names."
+    condition = length(
+      flatten(
+        [
+          for group in var.access_groups :
+          [
+            for policy in group.policies :
+            policy.name
+          ]
+        ]
+      )
+      ) == length(
+      distinct(
+        flatten(
+          [
+            for group in var.access_groups :
+            [
+              for policy in group.policies :
+              policy.name
+            ]
+          ]
+        )
+      )
+    )
+  }
+
+  validation {
+    error_message = "All access group dynamic rules must have unique names."
+    condition = length(
+      flatten(
+        [
+          for group in var.access_groups :
+          [
+            for policy in group.dynamic_policies :
+            policy.name
+          ] if lookup(group, "dynamic_policies", null) != null
+        ]
+      )
+      ) == length(
+      distinct(
+        flatten(
+          [
+            for group in var.access_groups :
+            [
+              for policy in group.dynamic_policies :
+              policy.name
+            ] if lookup(group, "dynamic_policies", null) != null
+          ]
+        )
+      )
+    )
+  }
+
+  validation {
+    error_message = "All access groups must have unique names."
+    condition = length(var.access_groups) == length(distinct([
+      for group in var.access_groups : group.name
+    ]))
+  }
+}
+
+##############################################################################
+
+
+#############################################################################
+# F5 Variables
+##############################################################################
+
+variable "f5_vsi" {
+  description = "A list describing F5 VSI workloads to create"
+  type = list(
+    object({
+      name                   = string
+      vpc_name               = string
+      primary_subnet_name    = string
+      secondary_subnet_names = list(string)
+      secondary_subnet_security_group_names = list(
+        object({
+          group_name     = string
+          interface_name = string
+        })
+      )
+      ssh_keys                        = list(string)
+      f5_image_name                   = string
+      machine_type                    = string
+      resource_group                  = optional(string)
+      enable_management_floating_ip   = optional(bool)
+      enable_external_floating_ip     = optional(bool)
+      security_groups                 = optional(list(string))
+      boot_volume_encryption_key_name = optional(string)
+      hostname                        = string
+      domain                          = string
+      security_group = optional(
+        object({
+          name = string
+          rules = list(
+            object({
+              name      = string
+              direction = string
+              source    = string
+              tcp = optional(
+                object({
+                  port_max = number
+                  port_min = number
+                })
+              )
+              udp = optional(
+                object({
+                  port_max = number
+                  port_min = number
+                })
+              )
+              icmp = optional(
+                object({
+                  type = number
+                  code = number
+                })
+              )
+            })
+          )
+        })
+      )
+      block_storage_volumes = optional(list(
+        object({
+          name           = string
+          profile        = string
+          capacity       = optional(number)
+          iops           = optional(number)
+          encryption_key = optional(string)
+        })
+      ))
+      load_balancers = optional(list(
+        object({
+          name              = string
+          type              = string
+          listener_port     = number
+          listener_protocol = string
+          connection_limit  = number
+          algorithm         = string
+          protocol          = string
+          health_delay      = number
+          health_retries    = number
+          health_timeout    = number
+          health_type       = string
+          pool_member_port  = string
+          security_group = optional(
+            object({
+              name = string
+              rules = list(
+                object({
+                  name      = string
+                  direction = string
+                  source    = string
+                  tcp = optional(
+                    object({
+                      port_max = number
+                      port_min = number
+                    })
+                  )
+                  udp = optional(
+                    object({
+                      port_max = number
+                      port_min = number
+                    })
+                  )
+                  icmp = optional(
+                    object({
+                      type = number
+                      code = number
+                    })
+                  )
+                })
+              )
+            })
+          )
+        })
+      ))
+    })
+  )
+  default = []
+
+  validation {
+    error_message = "Image names for F5 VSI must be one of [`f5-bigip-15-1-5-1-0-0-14-all-1slot`,`f5-bigip-15-1-5-1-0-0-14-ltm-1slot`, `f5-bigip-16-1-2-2-0-0-28-ltm-1slot`,`f5-bigip-16-1-2-2-0-0-28-all-1slot`]."
+    condition = length(
+      [
+        for f5_vsi in var.f5_vsi :
+        f5_vsi if !contains(
+          [
+            "f5-bigip-15-1-5-1-0-0-14-all-1slot",
+            "f5-bigip-15-1-5-1-0-0-14-ltm-1slot",
+            "f5-bigip-16-1-2-2-0-0-28-ltm-1slot",
+            "f5-bigip-16-1-2-2-0-0-28-all-1slot"
+          ],
+          f5_vsi.f5_image_name
+        )
+      ]
+    ) == 0
+  }
+}
+
+variable "f5_template_data" {
+  description = "Data for all f5 templates"
+  sensitive   = true
+  type = object({
+    tmos_admin_password     = optional(string)
+    license_type            = optional(string)
+    byol_license_basekey    = optional(string)
+    license_host            = optional(string)
+    license_username        = optional(string)
+    license_password        = optional(string)
+    license_pool            = optional(string)
+    license_sku_keyword_1   = optional(string)
+    license_sku_keyword_2   = optional(string)
+    license_unit_of_measure = optional(string)
+    do_declaration_url      = optional(string)
+    as3_declaration_url     = optional(string)
+    ts_declaration_url      = optional(string)
+    phone_home_url          = optional(string)
+    template_source         = optional(string)
+    template_version        = optional(string)
+    app_id                  = optional(string)
+    tgactive_url            = optional(string)
+    tgstandby_url           = optional(string)
+    tgrefresh_url           = optional(string)
+  })
+  default = {
+    tmos_admin_password = "Iamapassword2ru"
+    license_type        = "none"
+  }
+
+  validation {
+    error_message = "Value for tmos_password must be at least 15 characters, contain one numeric, one uppercase, and one lowercase character."
+    condition = lookup(var.f5_template_data, "tmos_admin_password") == null ? true : (
+      length(var.f5_template_data.tmos_admin_password) >= 15
+      && can(regex("[A-Z]", var.f5_template_data.tmos_admin_password))
+      && can(regex("[a-z]", var.f5_template_data.tmos_admin_password))
+      && can(regex("[0-9]", var.f5_template_data.tmos_admin_password))
+    )
+  }
+}
+
+##############################################################################
+
+##############################################################################
+# Secrets Manager Variables
+##############################################################################
+
+variable "secrets_manager" {
+  description = "Map describing an optional secrets manager deployment"
+  type = object({
+    use_secrets_manager = bool
+    name                = optional(string)
+    kms_key_name        = optional(string)
+    resource_group      = optional(string)
+  })
+  default = {
+    use_secrets_manager = false
   }
 }
 

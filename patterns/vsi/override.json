@@ -20,7 +20,8 @@
           "keys": [
               {
                   "name": "cos-bind-key",
-                  "role": "Writer"
+                  "role": "Writer",
+                  "enable_HMAC": false
               }
           ],
           "name": "atracker-cos",
@@ -110,6 +111,7 @@
       {
           "service_name": "cos",
           "service_type": "cloud-object-storage",
+          "resource_group": "slz-service-rg",
           "vpcs": [
               {
                   "name": "management",
@@ -320,8 +322,8 @@
   "vsi": [
       {
           "boot_volume_encryption_key_name": "slz-vsi-volume-key",
-          "image_name": "ibm-ubuntu-16-04-5-minimal-amd64-1",
-          "machine_type": "cx2-2x4",
+          "image_name": "ibm-ubuntu-18-04-6-minimal-amd64-2",
+          "machine_type": "cx2-4x8",
           "name": "management-server",
           "security_group": {
               "name": "management",
@@ -384,8 +386,8 @@
       },
       {
           "boot_volume_encryption_key_name": "slz-vsi-volume-key",
-          "image_name": "ibm-ubuntu-16-04-5-minimal-amd64-1",
-          "machine_type": "cx2-2x4",
+          "image_name": "ibm-ubuntu-18-04-6-minimal-amd64-2",
+          "machine_type": "cx2-4x8",
           "name": "workload-server",
           "security_group": {
               "name": "workload",

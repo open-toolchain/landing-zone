@@ -21,7 +21,9 @@ locals {
         # Public gateway ID
         public_gateway = (
           lookup(value, "public_gateway", null) == true && lookup(var.use_public_gateways, zone, null) != null
-          ? var.public_gateways[zone].id
+          ? (
+            lookup(var.public_gateways, zone, null) == null ? null : var.public_gateways[zone].id
+          )
           : null
         )
       }

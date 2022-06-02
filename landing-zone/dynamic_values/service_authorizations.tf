@@ -37,6 +37,16 @@ locals {
       target_resource_instance_id = split(":", local.cos_instance_ids[instance.name])[7]
     }
   }
+  service_authorization_secrets_manager_to_key_management = {
+    for instance in(var.secrets_manager.use_secrets_manager ? ["secrets-manager-to-kms"] : []) :
+    (instance) => {
+      source_service_name         = "secrets-manager"
+      description                 = "Allow secrets manager to read from Key Management"
+      roles                       = ["Reader"]
+      target_service_name         = local.target_key_management_service
+      target_resource_instance_id = var.key_management_guid
+    }
+  }
 }
 
 ##############################################################################

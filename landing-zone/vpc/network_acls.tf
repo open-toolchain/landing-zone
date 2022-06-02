@@ -134,7 +134,23 @@ resource "ibm_is_network_acl" "network_acl" {
       direction   = rules.value.direction
 
       dynamic "tcp" {
-        for_each = rules.value.tcp == null ? [] : [rules.value]
+        for_each = (
+          # if rules null
+          rules.value.tcp == null
+          # empty array
+          ? []
+          # otherwise check each possible field against how many of the values are
+          # equal to null and only include rules where one of the values is not null
+          # this allows for patterns to include `tcp` blocks for conversion to list
+          # while still not creating a rule. default behavior would force the rule to
+          # be included if all indiviual values are set to null
+          : length([
+            for value in ["port_min", "port_max", "source_port_min", "source_port_min"] :
+            true if lookup(rules.value["tcp"], value, null) == null
+          ]) == 4
+          ? []
+          : [rules.value]
+        )
         content {
           port_min        = lookup(rules.value.tcp, "port_min", null)
           port_max        = lookup(rules.value.tcp, "port_max", null)
@@ -144,7 +160,23 @@ resource "ibm_is_network_acl" "network_acl" {
       }
 
       dynamic "udp" {
-        for_each = rules.value.udp == null ? [] : [rules.value]
+        for_each = (
+          # if rules null
+          rules.value.udp == null
+          # empty array
+          ? []
+          # otherwise check each possible field against how many of the values are
+          # equal to null and only include rules where one of the values is not null
+          # this allows for patterns to include `udp` blocks for conversion to list
+          # while still not creating a rule. default behavior would force the rule to
+          # be included if all indiviual values are set to null
+          : length([
+            for value in ["port_min", "port_max", "source_port_min", "source_port_min"] :
+            true if lookup(rules.value["udp"], value, null) == null
+          ]) == 4
+          ? []
+          : [rules.value]
+        )
         content {
           port_min        = lookup(rules.value.udp, "port_min", null)
           port_max        = lookup(rules.value.udp, "port_max", null)
@@ -154,7 +186,23 @@ resource "ibm_is_network_acl" "network_acl" {
       }
 
       dynamic "icmp" {
-        for_each = rules.value.icmp == null ? [] : [rules.value]
+        for_each = (
+          # if rules null
+          rules.value.icmp == null
+          # empty array
+          ? []
+          # otherwise check each possible field against how many of the values are
+          # equal to null and only include rules where one of the values is not null
+          # this allows for patterns to include `udp` blocks for conversion to list
+          # while still not creating a rule. default behavior would force the rule to
+          # be included if all indiviual values are set to null
+          : length([
+            for value in ["code", "type"] :
+            true if lookup(rules.value["icmp"], value, null) == null
+          ]) == 2
+          ? []
+          : [rules.value]
+        )
         content {
           type = rules.value.icmp.type
           code = rules.value.icmp.code

@@ -65,7 +65,6 @@ spec:
       args:
         - |
           #!/bin/bash -e
-
           if [[ "${PIPELINE_DEBUG}" == "true" ]]; then
             pwd
             env
@@ -74,8 +73,7 @@ spec:
           fi
 
           TOOLCHAIN_ID=$(jq -r '.toolchain_guid' /config/toolchain.json)
-          echo "TOOLCHAIN ID ===========> ${TOOLCHAIN_ID}"
-
+          echo "TOOLCHAIN ID => ${TOOLCHAIN_ID}"
           REGION_ID=$(jq -r '.region_id' /config/toolchain.json)
           REGION=$(echo "${REGION_ID}" | grep -oP '.+:.+:\K[\w-]+')
           
@@ -83,20 +81,40 @@ spec:
           TF_CMD="${TF_DIR}/terraform"
           wget -q https://releases.hashicorp.com/terraform/1.0.10/terraform_1.0.10_linux_amd64.zip -O "${TF_CMD}.zip"
           unzip -d "${TF_DIR}" -u "${TF_CMD}.zip"
-
           ibmcloud plugin install cra -f; 
           ibmcloud login --apikey ${IBMCLOUD_API_KEY} -r "${REGION}";  
-
           cd /artifacts/patterns/"${PATTERN}"
-
           echo "Issuing terraform init";
           "${TF_CMD}" init;
-
-          echo "Issuing terraform plan";
-          "${TF_CMD}" plan -lock=false -out=./tfplan > /dev/null 2>&1;
           
+          echo "Issuing terraform plan";
+          "${TF_CMD}" plan -lock=false -out=./tfplan > tfout.txt 2>&1;
+          rc=$?
+          if [[ $rc -ne 0 || "${PIPELINE_DEBUG}" == "true" ]]; then
+             echo "Generated Terraform plan:"
+             cat tfout.txt
+
+             if [[ $rc -ne 0 ]]; then 
+                exit 1
+             fi  
+          fi
+          echo "Successfully generated terraform plan"
+
           echo "Issuing terraform show";
-          "${TF_CMD}" show -json ./tfplan > ./tfplan.json; 
+          "${TF_CMD}" show -json ./tfplan > ./tfplan.json;
+          rc=$?
+          if [[ $rc -ne 0 || "${PIPELINE_DEBUG}" == "true"  ]]; then
+             echo "Generated Terraform plan:"
+             cat tfout.txt
+
+             echo "Generated plan in JSON format"
+             cat tfplan.json
+
+             if [[ $rc -ne 0 ]]; then 
+                exit 1
+             fi 
+          fi
+          echo "Successfully saved plan in JSON format"
           
           echo "Issuing cra scan";
           export TOOLCHAIN_ID="${TOOLCHAIN_ID}"; 
@@ -109,7 +127,6 @@ spec:
                echo "Skipping cra scan failure of return code ${rc}"
                exit 0;
             fi
-            
             exit $rc
           fi 
       volumeMounts:

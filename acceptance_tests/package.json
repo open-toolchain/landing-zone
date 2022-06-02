@@ -1,0 +1,15 @@
+{
+  "name": "terraform-unit-tests",
+  "version": "0.0.1",
+  "description": "i run unit tests",
+  "main": "index.js",
+  "scripts": {
+    "test": "npx mocha -timeout 10000000 ./tests",
+    "build": "npm i && npm i -g tfxjs mocha"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "tfxjs": "^0.6.1"
+  }
+}

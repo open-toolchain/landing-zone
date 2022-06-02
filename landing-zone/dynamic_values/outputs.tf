@@ -117,6 +117,11 @@ output "service_authorization_flow_logs_to_cos" {
   value       = local.service_authorization_flow_logs_to_cos
 }
 
+output "service_authorization_secrets_manager_to_key_management" {
+  description = "Service authorization to allow secrets manager to read from kms"
+  value       = local.service_authorization_secrets_manager_to_key_management
+}
+
 ##############################################################################
 
 ##############################################################################
@@ -168,6 +173,117 @@ output "vpn_connection_list" {
 output "vpn_connection_map" {
   description = "Map of VPN gateway connections"
   value       = local.vpn_connection_map
+}
+
+##############################################################################
+
+
+##############################################################################
+# IAM Outputs
+##############################################################################
+
+output "access_groups_object" {
+  description = "Convert access group list to map"
+  value       = local.access_groups_object
+}
+
+output "access_policy_list" {
+  description = "List of access policies"
+  value       = local.access_policy_list
+}
+
+output "access_policies" {
+  description = "Map of access policies"
+  value       = local.access_policies
+}
+
+output "dynamic_rule_list" {
+  description = "List of dynamic rules"
+  value       = local.dynamic_rule_list
+}
+
+output "dynamic_rules" {
+  description = "Map of dynamic rules"
+  value       = local.dynamic_rules
+}
+
+output "account_management_list" {
+  description = "List of account management policies for group"
+  value       = local.account_management_list
+}
+
+output "account_management_map" {
+  description = "Map of account management policies by group"
+  value       = local.account_management_map
+}
+
+output "access_groups_with_invites" {
+  description = "map of access groups with invite users"
+  value       = local.access_groups_with_invites
+}
+
+##############################################################################
+
+##############################################################################
+# Bastion VSI Outputs
+##############################################################################
+
+output "bastion_vsi_map" {
+  description = "Map of Bastion Host VSI deployments"
+  value       = local.bastion_vsi_map
+}
+
+##############################################################################
+
+##############################################################################
+# App ID Outputs
+##############################################################################
+
+output "appid_redirect_urls" {
+  description = "List of redirect urls from teleport VSI names"
+  value       = local.appid_redirect_urls
+}
+
+##############################################################################
+
+##############################################################################
+# VSI Outputs
+##############################################################################
+
+output "vsi_map" {
+  description = "Map of VSI deployments"
+  value       = local.vsi_map
+}
+
+output "vsi_images_list" {
+  description = "List of Images from VSI and Bastion VSI deployments"
+  value       = local.vsi_images_list
+}
+
+output "vsi_images_map" {
+  description = "Map of Images from VSI and Bastion VSI deployments"
+  value       = local.vsi_images_map
+}
+
+output "ssh_keys" {
+  description = "List of SSH keys with resource group ID added"
+  value       = local.ssh_keys
+}
+
+##############################################################################
+
+##############################################################################
+# VSI Outputs
+##############################################################################
+
+output "f5_vsi_map" {
+  description = "Map of VSI deployments"
+  value       = local.f5_vsi_map
+}
+
+output "f5_template_map" {
+  description = "Map of template data for f5 deployments"
+  value       = module.f5_cloud_init
 }
 
 ##############################################################################

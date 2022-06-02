@@ -47,7 +47,6 @@ variable "subnets" {
   )
 }
 
-
 ##############################################################################
 
 
@@ -88,6 +87,13 @@ variable "boot_volume_encryption_key" {
 variable "enable_floating_ip" {
   description = "Create a floating IP for each virtual server created"
   type        = bool
+  default     = false
+}
+
+variable "allow_ip_spoofing" {
+  description = "Allow IP spoofing on the primary network interface"
+  type        = bool
+  default     = false
 }
 
 variable "create_security_group" {
@@ -128,12 +134,16 @@ variable "security_group" {
 
   validation {
     error_message = "Each security group rule must have a unique name."
-    condition     = length(distinct(var.security_group.rules.*.name)) == length(var.security_group.rules.*.name)
+    condition = (
+      var.security_group == null
+      ? true
+      : length(distinct(var.security_group.rules.*.name)) == length(var.security_group.rules.*.name)
+    )
   }
 
   validation {
     error_message = "Security group rules can only use one of the following blocks: `tcp`, `udp`, `icmp`."
-    condition = length(
+    condition = var.security_group == null ? true : length(
       distinct(
         flatten([
           for rule in var.security_group.rules :
@@ -150,7 +160,7 @@ variable "security_group" {
 
   validation {
     error_message = "Security group rule direction can only be `inbound` or `outbound`."
-    condition = length(
+    condition = var.security_group == null ? true : length(
       distinct(
         flatten([
           for rule in var.security_group.rules :
@@ -163,7 +173,7 @@ variable "security_group" {
 }
 
 variable "security_group_ids" {
-  description = "IDs of additional security groups to be added to VSI deployment. A VSI can have a maximum of 5 security groups."
+  description = "IDs of additional security groups to be added to VSI deployment primary interface. A VSI interface can have a maximum of 5 security groups."
   type        = list(string)
   default     = []
 
@@ -303,6 +313,70 @@ variable "load_balancers" {
     error_message = "Each load balancer must have a unique name."
     condition     = length(distinct(var.load_balancers.*.name)) == length(var.load_balancers.*.name)
   }
+}
+
+##############################################################################
+
+
+##############################################################################
+# Secondary Interface Variables
+##############################################################################
+
+variable "secondary_subnets" {
+  description = "List of secondary network interfaces to add to vsi secondary subnets must be in the same zone as VSI. This is only recommended for use with a deployment of 1 VSI."
+  type = list(
+    object({
+      name = string
+      id   = string
+      zone = string
+      cidr = string
+    })
+  )
+  default = []
+}
+
+variable "secondary_use_vsi_security_group" {
+  description = "Use the security group created by this module in the secondary interface"
+  type        = bool
+  default     = false
+}
+
+variable "secondary_security_groups" {
+  description = "IDs of additional security groups to be added to VSI deployment secondary interfaces. A VSI interface can have a maximum of 5 security groups."
+  type = list(
+    object({
+      security_group_id = string
+      interface_name    = string
+    })
+  )
+  default = []
+
+  validation {
+    error_message = "Security group IDs must be unique."
+    condition     = length(var.secondary_security_groups) == length(distinct(var.secondary_security_groups))
+  }
+
+  validation {
+    error_message = "No more than 5 security groups can be added to a VSI deployment."
+    condition     = length(var.secondary_security_groups) <= 5
+  }
+}
+
+variable "secondary_floating_ips" {
+  description = "List of secondary interfaces to add floating ips"
+  type        = list(string)
+  default     = []
+
+  validation {
+    error_message = "Secondary floating IPs must contain a unique list of interfaces."
+    condition     = length(var.secondary_floating_ips) == length(distinct(var.secondary_floating_ips))
+  }
+}
+
+variable "secondary_allow_ip_spoofing" {
+  description = "Allow IP spoofing on additional network interfaces"
+  type        = bool
+  default     = false
 }
 
 ##############################################################################

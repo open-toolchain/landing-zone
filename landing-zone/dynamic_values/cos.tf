@@ -49,7 +49,10 @@ locals {
         for cos_key in instance.keys :
         merge({
           instance = instance.name
-        }, cos_key)
+          }, cos_key,
+          {
+            parameters = cos_key.enable_HMAC == true ? { "HMAC" = true } : null
+        })
       ] if lookup(instance, "keys", null) != null
     ]
   )

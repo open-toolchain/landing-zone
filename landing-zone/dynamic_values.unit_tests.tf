@@ -36,6 +36,8 @@ locals {
   assert_key_exists_in_map                     = lookup(module.unit_tests.cos_key_map, "data-bucket-key")
   assert_bucket_exists_in_instance_map         = lookup(module.unit_tests.bucket_to_instance_map, "data-bucket")
   assert_bucket_contains_correct_api_key       = regex("1234", module.unit_tests.bucket_to_instance_map["data-bucket"].bind_key)
+  assert_cos_keys_map_contains_HMAC_key        = regex(module.unit_tests.cos_key_map["teleport-key"].parameters.HMAC, true)
+  assert_cos_keys_list_contains_HMAC_key       = regex(true, module.unit_tests.cos_keys_list[1].parameters.HMAC)
 }
 
 ##############################################################################
@@ -132,8 +134,52 @@ locals {
   assert_vpn_gateway_correct_vpc_id           = regex("1234", module.unit_tests.vpn_gateway_map["test-gateway"].vpc_id)
   assert_vpn_gateway_correct_subnet_id        = regex("vpn-id", module.unit_tests.vpn_gateway_map["test-gateway"].subnet_id)
   assert_vpn_connection_exists_in_list        = regex("test-gateway-connection-1", module.unit_tests.vpn_connection_list[0].connection_name)
-  assert_vpn_connection_correct_gateway_name  = regex("ut-test-gateway", module.unit_tests.vpn_connection_map["test-gateway-connection-1"].gateway_name)
+  assert_vpn_connection_correct_gateway_name  = regex("test-gateway", module.unit_tests.vpn_connection_map["test-gateway-connection-1"].gateway_name)
   assert_vpn_connection_correct_preshared_key = regex("preshared_key", module.unit_tests.vpn_connection_map["test-gateway-connection-1"].preshared_key)
+}
+
+##############################################################################
+
+
+##############################################################################
+# IAM Unit Tests
+##############################################################################
+
+locals {
+  assert_access_group_convert_to_object           = lookup(module.unit_tests.access_groups_object, "ut-test")
+  assert_access_group_policy_has_group_name       = regex("ut-test", module.unit_tests.access_policy_list[0].group)
+  assert_access_group_policy_map_has_policy       = lookup(module.unit_tests.access_policies, "policy")
+  assert_dynamic_rule_has_group_name              = regex("ut-test", module.unit_tests.dynamic_rule_list[0].group)
+  assert_dynamic_rule_map_has_policy              = lookup(module.unit_tests.dynamic_rules, "dynamic-policy")
+  assert_account_management_list_has_group_name   = regex("ut-test", module.unit_tests.account_management_list[0].group)
+  assert_access_groups_with_invite_contains_group = lookup(module.unit_tests.access_groups_with_invites, "ut-test")
+}
+
+##############################################################################
+
+
+##############################################################################
+# App Id Unit Tests
+##############################################################################
+
+locals {
+  assert_appid_instance_contains_redirect_url = regex("https://ut-teleport.yes:3080/v1/webapi/oidc/callback", module.unit_tests.appid_redirect_urls[0])
+}
+
+##############################################################################
+
+
+##############################################################################
+# F5 Unit Tests
+##############################################################################
+
+locals {
+  assert_subnets_correct_list           = regex("ut-test-subnet-1", module.unit_tests.f5_vsi_map["ut-f5-zone-1"].subnets[0].name)
+  assert_correct_subnet_length          = regex("1", tostring(length(module.unit_tests.f5_vsi_map["ut-f5-zone-1"].subnets)))
+  assert_secondary_subnets_correct_list = regex("ut-test-subnet-f5-1", module.unit_tests.f5_vsi_map["ut-f5-zone-1"].secondary_subnets[0].name)
+  assert_correct_zone                   = regex("1-zone", module.unit_tests.f5_vsi_map["ut-f5-zone-1"].zone)
+  assert_template_rendered_for_vsi      = lookup(module.unit_tests.f5_template_map, "ut-f5-zone-1")
+  assert_template_reges                 = regex("#cloud-config\nchpasswd:\n  expire: false\n  list: |\n    admin:frog\ntmos_dhcpv4_tmm:\n  enabled: true\n  rd_enabled: false\n  icontrollx_trusted_sources: false\n  inject_routes: true\n  configsync_interface: 1.1\n  default_route_interface: 1.2\n  dhcp_timeout: 120\n  dhcpv4_options:\n    mgmt:\n      host-name: f5-ve-01\n      domain-name: f5-ve-01\n    '1.2':\n      routers: 10.0.0.1\n  do_enabled: true \n  do_declaration: null\n  do_declaration_url: null\n  do_declaration_url_headers:\n    PRIVATE-TOKEN: x6VpQuWhiT_KgT3mzyTe\n  do_template_variables:\n    primary_dns: 8.8.8.8\n    secondary_dns: 1.1.1.1\n    timezone: Europe/Paris\n    primary_ntp: 132.163.96.5\n    secondary_ntp: 132.163.97.5\n    primary_radius: 10.20.22.20\n    primary_radius_secret: testing123\n    secondary_radius: 10.20.23.20\n    secondary_radius_secret: testing123\n  as3_enabled: true\n  as3_declaration_url: null\n  as3_declaration_url_headers:\n    PRIVATE-TOKEN: x6VpQuWhiT_KgT3mzyTe\n  as3_template_variables:\n    selfip_snat_address: 10.20.40.40\n  ts_enabled: true\n  ts_declaration_url: null\n  ts_declaration_url_headers:\n    PRIVATE-TOKEN: x6VpQuWhiT_KgT3mzyTe\n  ts_template_variables:\n    splunk_log_ingest: 10.20.23.30\n    splunk_password: 0f29e5dc-bee8-4898-9054-9b66574a3e14\n  phone_home_url: null\n  phone_home_url_verify_tls: false\n  phone_home_url_metadata:\n    template_source: f5devcentral/ibmcloud_schematics_bigip_multinic_declared\n    template_version: 20210201\n    zone: 1-zone\n    vpc: 1234\n    app_id: null\n  tgactive_url: \n  tgstandby_url: null\n  tgrefresh_url: null\n  ", module.unit_tests.f5_template_map["ut-f5-zone-1"].user_data)
 }
 
 ##############################################################################
