@@ -154,10 +154,6 @@
   },
   "resource_groups": [
       {
-          "create": false,
-          "name": "Default"
-      },
-      {
           "create": true,
           "name": "slz-service-rg"
       },
