@@ -3,24 +3,12 @@
 ##############################################################################
 
 locals {
-  cos_location = "global"
-  # List of COS instance IDs
-  cos_instance_ids = module.dynamic_values.cos_instance_ids
-  # Map of COS instances from data
-  cos_data_map = {
-    for instance in var.cos :
-    (instance.name) => instance if instance.use_data == true
-  }
-  # Map of created cos instances
-  cos_map = {
-    for instance in var.cos :
-    (instance.name) => instance if instance.use_data != true
-  }
-  # Map of COS buckets
-  buckets_map = module.dynamic_values.cos_bucket_map
-  # Map of COS keys
-  cos_key_map = module.dynamic_values.cos_key_map
-  # Map connecting buckets to instances and spi bind keys
+  cos_location           = "global"
+  cos_instance_ids       = module.dynamic_values.cos_instance_ids
+  cos_data_map           = module.dynamic_values.cos_data_map
+  cos_map                = module.dynamic_values.cos_map
+  buckets_map            = module.dynamic_values.cos_bucket_map
+  cos_key_map            = module.dynamic_values.cos_key_map
   bucket_to_instance_map = module.dynamic_values.bucket_to_instance_map
 }
 

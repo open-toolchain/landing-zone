@@ -1,14 +1,56 @@
 ##############################################################################
-# F5 VSI and Template Data
+# Map of F5 Values to get subnets
 ##############################################################################
 
-module "f5" {
-  source           = "./config_modules/f5"
-  prefix           = var.prefix
-  f5_vsi           = var.f5_vsi
-  vpc_modules      = var.vpc_modules
-  f5_template_data = var.f5_template_data
-  region           = var.region
+module "f5_vsi_map" {
+  source = "../list_to_map"
+  list   = var.f5_vsi
+}
+
+##############################################################################
+
+##############################################################################
+# F5 Primary interface subnets
+##############################################################################
+
+module "f5_primary_subnets" {
+  source           = "../get_subnets"
+  for_each         = module.f5_vsi_map.value
+  subnet_zone_list = var.vpc_modules[each.value.vpc_name].subnet_zone_list
+  regex            = "${var.prefix}-${each.value.vpc_name}-${each.value.primary_subnet_name}"
+}
+
+##############################################################################
+
+##############################################################################
+# F5 Secondary interface subnets
+##############################################################################
+
+module "f5_secondary_subnets" {
+  source           = "../get_subnets"
+  for_each         = module.f5_vsi_map.value
+  subnet_zone_list = var.vpc_modules[each.value.vpc_name].subnet_zone_list
+  regex            = join("|", each.value.secondary_subnet_names)
+}
+
+##############################################################################
+
+##############################################################################
+# F5 Map with vpc ID and subnets
+##############################################################################
+
+module "composed_f5_map" {
+  source = "../list_to_map"
+  list = [
+    for group in var.f5_vsi :
+    merge(group, {
+      vpc_id            = var.vpc_modules[group.vpc_name].vpc_id
+      subnets           = module.f5_primary_subnets[group.name].subnets
+      secondary_subnets = module.f5_secondary_subnets[group.name].subnets
+      zone              = module.f5_primary_subnets[group.name].subnets[0].zone
+    })
+  ]
+  prefix = var.prefix
 }
 
 ##############################################################################
@@ -18,8 +60,8 @@ module "f5" {
 ##############################################################################
 
 module "f5_cloud_init" {
-  for_each                = module.f5.f5_vsi_map
-  source                  = "../f5_config"
+  for_each                = module.composed_f5_map.value
+  source                  = "../../../f5_config"
   region                  = var.region
   vpc_id                  = each.value.vpc_id
   zone                    = each.value.zone
@@ -52,79 +94,17 @@ module "f5_cloud_init" {
 ##############################################################################
 
 ##############################################################################
-# [Unit Test] F5 and Template
+# F5 Outputs
 ##############################################################################
 
-module "ut_f5" {
-  source = "./config_modules/f5"
-  prefix = "ut"
-  region = "us-south"
-  f5_vsi = [
-    {
-      name                = "f5-zone-1"
-      primary_subnet_name = "subnet-1"
-      vpc_name            = "test"
-      secondary_subnet_names = [
-        "subnet-f5-1",
-        "subnet-f5-2"
-      ]
-      hostname = "f5-ve-01"
-      domain   = "local"
-    }
-  ]
-  vpc_modules = {
-    test = {
-      vpc_id = "1234"
-      subnet_zone_list = [
-        {
-          name = "ut-test-subnet-1"
-          id   = "1-id"
-          zone = "1-zone"
-          cidr = "10.10.10.10/10"
-        },
-        {
-          name = "ut-test-subnet-f5-1"
-          id   = "1-id"
-          zone = "1-zone"
-          cidr = "10.10.10.10/10"
-        },
-        {
-          name = "ut-test-subnet-f5-2"
-          id   = "1-id"
-          zone = "1-zone"
-          cidr = "10.10.10.10/10"
-        }
-      ]
-    }
-  }
-  f5_template_data = {
-    tmos_admin_password     = "Gooooooooooooooooodpass1"
-    license_type            = "none"
-    byol_license_basekey    = null
-    license_host            = null
-    license_username        = null
-    license_password        = null
-    license_pool            = null
-    license_sku_keyword_1   = null
-    license_sku_keyword_2   = null
-    license_unit_of_measure = "hourly"
-    do_declaration_url      = null
-    as3_declaration_url     = null
-    ts_declaration_url      = null
-    phone_home_url          = null
-    template_source         = "f5devcentral/ibmcloud_schematics_bigip_multinic_declared"
-    template_version        = "20210201"
-    app_id                  = null
-    tgactive_url            = ""
-    tgstandby_url           = null
-    tgrefresh_url           = null
-  }
+output "f5_vsi_map" {
+  description = "Map of VSI deployments"
+  value       = module.composed_f5_map.value
 }
 
-locals {
-  ut_f5_vsi_has_correct_zone     = regex("1-zone", module.ut_f5.f5_vsi_map["ut-f5-zone-1"].zone)
-  ut_f5_assert_template_rendered = lookup(module.ut_f5.f5_template_map, "ut-f5-zone-1")
-  ut_f5_template_regex           = regex("#cloud-config\nchpasswd:\n  expire: false\n  list: |\n    admin:frog\ntmos_dhcpv4_tmm:\n  enabled: true\n  rd_enabled: false\n  icontrollx_trusted_sources: false\n  inject_routes: true\n  configsync_interface: 1.1\n  default_route_interface: 1.2\n  dhcp_timeout: 120\n  dhcpv4_options:\n    mgmt:\n      host-name: f5-ve-01\n      domain-name: f5-ve-01\n    '1.2':\n      routers: 10.0.0.1\n  do_enabled: true \n  do_declaration: null\n  do_declaration_url: null\n  do_declaration_url_headers:\n    PRIVATE-TOKEN: x6VpQuWhiT_KgT3mzyTe\n  do_template_variables:\n    primary_dns: 8.8.8.8\n    secondary_dns: 1.1.1.1\n    timezone: Europe/Paris\n    primary_ntp: 132.163.96.5\n    secondary_ntp: 132.163.97.5\n    primary_radius: 10.20.22.20\n    primary_radius_secret: testing123\n    secondary_radius: 10.20.23.20\n    secondary_radius_secret: testing123\n  as3_enabled: true\n  as3_declaration_url: null\n  as3_declaration_url_headers:\n    PRIVATE-TOKEN: x6VpQuWhiT_KgT3mzyTe\n  as3_template_variables:\n    selfip_snat_address: 10.20.40.40\n  ts_enabled: true\n  ts_declaration_url: null\n  ts_declaration_url_headers:\n    PRIVATE-TOKEN: x6VpQuWhiT_KgT3mzyTe\n  ts_template_variables:\n    splunk_log_ingest: 10.20.23.30\n    splunk_password: 0f29e5dc-bee8-4898-9054-9b66574a3e14\n  phone_home_url: null\n  phone_home_url_verify_tls: false\n  phone_home_url_metadata:\n    template_source: f5devcentral/ibmcloud_schematics_bigip_multinic_declared\n    template_version: 20210201\n    zone: 1-zone\n    vpc: 1234\n    app_id: null\n  tgactive_url: \n  tgstandby_url: null\n  tgrefresh_url: null\n  ", module.ut_f5.f5_template_map["ut-f5-zone-1"].user_data)
+output "f5_template_map" {
+  description = "Map of template data for f5 deployments"
+  value       = module.f5_cloud_init
 }
 
 ##############################################################################

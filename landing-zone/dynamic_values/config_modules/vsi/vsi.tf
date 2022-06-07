@@ -1,59 +1,40 @@
 ##############################################################################
-# Variables
-##############################################################################
-
-variable "vsi_list" {
-  description = "List of VSI"
-}
-
-variable "prefix" {
-  description = "Prefix"
-  type        = string
-}
-
-variable "vpc_modules" {
-  description = "Map of VPC modules"
-}
-
-##############################################################################
-
-##############################################################################
-# List to map for subnet creation
+# VSI List To Map
 ##############################################################################
 
 module "vsi_list_to_map" {
   source = "../list_to_map"
-  list   = var.vsi_list
+  list   = var.vsi
+  prefix = var.prefix
 }
 
 ##############################################################################
 
 ##############################################################################
-# Get subnets for each VSI
+# Get VSI Subnets
 ##############################################################################
 
 module "vsi_subnets" {
   source           = "../get_subnets"
   for_each         = module.vsi_list_to_map.value
   subnet_zone_list = var.vpc_modules[each.value.vpc_name].subnet_zone_list
-  regex            = "${var.prefix}-${each.value.vpc_name}-${each.value.subnet_name}"
+  regex            = join("|", each.value.subnet_names)
 }
 
 ##############################################################################
 
 ##############################################################################
-# Composed Bastion VSI list
+# Composed VSI Map
 ##############################################################################
 
-module "composed_bastion_vsi_map" {
+module "composed_vsi_map" {
   source = "../list_to_map"
   prefix = var.prefix
   list = [
-    for vsi_group in var.vsi_list :
+    for vsi_group in var.vsi :
     merge(vsi_group, {
-      # Add VPC ID and subnets
       vpc_id  = var.vpc_modules[vsi_group.vpc_name].vpc_id
-      subnets = module.vsi_subnets[vsi_group.name].subnets
+      subnets = module.vsi_subnets["${var.prefix}-${vsi_group.name}"].subnets
     })
   ]
 }
@@ -61,12 +42,34 @@ module "composed_bastion_vsi_map" {
 ##############################################################################
 
 ##############################################################################
-# Outputs
+# VSI Images
 ##############################################################################
 
-output "value" {
-  description = "Map of VSI"
-  value       = module.composed_bastion_vsi_map.value
+module "vsi_image_map" {
+  source = "../list_to_map"
+  list = [
+    for instance in concat(var.vsi, var.bastion_vsi) :
+    {
+      name       = "${var.prefix}-${instance.name}"
+      image_name = instance.image_name
+    }
+  ]
+}
+
+##############################################################################
+
+##############################################################################
+# VSI Outputs
+##############################################################################
+
+output "vsi_map" {
+  description = "Map of VSI deplioyments"
+  value       = module.composed_vsi_map.value
+}
+
+output "vsi_image_map" {
+  description = "Map of VSI images"
+  value       = module.vsi_image_map.value
 }
 
 ##############################################################################

@@ -1609,7 +1609,7 @@ tfx.plan("tfx Generated Plan", () => {
             source: "0.0.0.0/0",
             tcp: [],
             udp: [],
-          },
+          }
         ],
       }
     ),

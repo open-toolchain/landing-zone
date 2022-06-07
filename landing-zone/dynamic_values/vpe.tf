@@ -1,72 +1,70 @@
 ##############################################################################
-# VPE Dynamic Values
+# Virtual Private Endpoints
 ##############################################################################
 
-locals {
-  # Create map of services by endpoint
-  vpe_services = {
-    for endpoint in var.virtual_private_endpoints :
-    # create string for service name and type
-    "${endpoint.service_name}-${endpoint.service_type}" => {
-      # Only COS supported now
-      crn = "crn:v1:bluemix:public:cloud-object-storage:global:::endpoint:s3.direct.${var.region}.cloud-object-storage.appdomain.cloud"
-      id  = local.cos_instance_ids[endpoint.service_name]
-    }
-  }
-
-  # Create list of needed gateways
-  vpe_gateway_list = flatten([
-    # fore each service
-    for service in var.virtual_private_endpoints :
-    [
-      # for each VPC create an object for the endpoints to be created
-      for vpcs in service.vpcs :
-      {
-        name                = "${vpcs.name}-${service.service_name}"
-        vpc_id              = var.vpc_modules[vpcs.name].vpc_id
-        resource_group      = lookup(service, "resource_group", null)
-        security_group_name = lookup(vpcs, "security_group_name", null)
-        crn                 = local.vpe_services["${service.service_name}-${service.service_type}"].crn
-      }
-    ]
-  ])
-
-  # Convert gateway list to map
-  vpe_gateway_map = {
-    for gateway in local.vpe_gateway_list :
-    (gateway.name) => gateway
-  }
-
-  # Get a list of subnets to create VPE reserved addressess
-  vpe_subnet_reserved_ip_list = flatten([
-    # For each service
-    for service in var.virtual_private_endpoints :
-    [
-      # For each VPC attached to that service
-      for vpcs in service.vpcs :
-      [
-        # For each subnet where a VPE will be created
-        for subnet in vpcs.subnets :
-        # Create reserved IP object
-        {
-          ip_name      = "${vpcs.name}-${service.service_name}-gateway-${subnet}-ip"
-          gateway_name = "${vpcs.name}-${service.service_name}"
-          id = [
-            for vpc_subnet in var.vpc_modules[vpcs.name].subnet_zone_list :
-            vpc_subnet.id if vpc_subnet.name == "${var.prefix}-${vpcs.name}-${subnet}"
-          ][0]
-        }
-      ]
-    ]
-  ])
-
-  # Reserved IP map
-  vpe_subnet_reserved_ip_map = {
-    for subnet in local.vpe_subnet_reserved_ip_list :
-    (subnet.ip_name) => subnet
-  }
-
+module "vpe" {
+  source                    = "./config_modules/vpe"
+  prefix                    = var.prefix
+  region                    = var.region
+  virtual_private_endpoints = var.virtual_private_endpoints
+  vpc_modules               = var.vpc_modules
+  cos_instance_ids          = local.cos_instance_ids
 }
 
 ##############################################################################
 
+##############################################################################
+# [Unit Test] VPE
+##############################################################################
+
+module "ut_vpe" {
+  source = "./config_modules/vpe"
+  prefix = "ut"
+  region = "us-south"
+  virtual_private_endpoints = [{
+    service_name   = "test-cos",
+    service_type   = "cloud-object-storage"
+    resource_group = "test-rg"
+    vpcs = [
+      {
+        name = "test"
+        subnets = [
+          "vpe-zone-1"
+        ]
+      }
+    ]
+  }]
+  vpc_modules = {
+    test = {
+      vpc_id = "1234"
+      subnet_zone_list = [
+        {
+          name = "ut-test-vpe-zone-1"
+          id   = "vpe-id"
+          zone = "vpe-zone"
+          cidr = "vpe"
+      }]
+    }
+  }
+  cos_instance_ids = {
+    test-cos = {
+      name = "ut-test-cos"
+      id   = ":::::::1234"
+    }
+  }
+}
+
+locals {
+  assert_vpe_exists_in_map                                   = lookup(module.ut_vpe.vpe_services, "test-cos-cloud-object-storage")
+  assert_vpe_has_correct_crn                                 = regex("crn:v1:bluemix:public:cloud-object-storage:global:::endpoint:s3.direct.us-south.cloud-object-storage.appdomain.cloud", module.ut_vpe.vpe_services["test-cos-cloud-object-storage"].crn)
+  assert_vpe_has_correct_id                                  = regex("crn:v1:bluemix:public:cloud-object-storage:global:::endpoint:s3.direct.us-south.cloud-object-storage.appdomain.cloud", module.ut_vpe.vpe_services["test-cos-cloud-object-storage"].crn)
+  assert_vpe_gateway_map_contains_gateway                    = lookup(module.ut_vpe.vpe_gateway_map, "test-test-cos")
+  assert_vpe_gateway_correct_vpc_id                          = regex("1234", module.ut_vpe.vpe_gateway_map["test-test-cos"].vpc_id)
+  assert_vpe_gateway_correct_service_crn                     = regex("crn:v1:bluemix:public:cloud-object-storage:global:::endpoint:s3.direct.us-south.cloud-object-storage.appdomain.cloud", module.ut_vpe.vpe_gateway_map["test-test-cos"].crn)
+  assert_vpe_subnet_reserved_ip_map_contains_ip              = lookup(module.ut_vpe.vpe_subnet_reserved_ip_map, "test-test-cos-gateway-vpe-zone-1-ip")
+  assert_vpe_subnet_reserved_ip_map_has_correct_gateway_name = regex("test-test-cos", module.ut_vpe.vpe_subnet_reserved_ip_map["test-test-cos-gateway-vpe-zone-1-ip"].gateway_name)
+  assert_vpe_subnet_reserved_ip_map_has_correct_subnet_id    = regex("vpe-id", module.ut_vpe.vpe_subnet_reserved_ip_map["test-test-cos-gateway-vpe-zone-1-ip"].id)
+}
+
+
+##############################################################################

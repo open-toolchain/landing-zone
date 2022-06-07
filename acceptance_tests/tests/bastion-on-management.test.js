@@ -665,8 +665,8 @@ tfx.plan("tfx Generated Plan", () => {
         tcp: [
           {
             port_max: 443,
-            port_min: 443
-          }
+            port_min: 443,
+          },
         ],
         udp: [],
       }
@@ -679,10 +679,12 @@ tfx.plan("tfx Generated Plan", () => {
         icmp: [],
         ip_version: "ipv4",
         remote: "161.26.0.0/16",
-        tcp: [{
-          port_max: 53,
-          port_min: 53
-        }],
+        tcp: [
+          {
+            port_max: 53,
+            port_min: 53,
+          },
+        ],
         udp: [],
       }
     ),
@@ -694,10 +696,12 @@ tfx.plan("tfx Generated Plan", () => {
         icmp: [],
         ip_version: "ipv4",
         remote: "161.26.0.0/16",
-        tcp: [{
-          port_max: 80,
-          port_min: 80
-        }],
+        tcp: [
+          {
+            port_max: 80,
+            port_min: 80,
+          },
+        ],
         udp: [],
       }
     ),
