@@ -86,10 +86,15 @@ spec:
           ibmcloud config --check-version=false
           ibmcloud login --apikey ${TF_VAR_ibmcloud_api_key} --no-region
         
+          function find_workspace() {
+            ibmcloud resource search "type:workspace AND name:$1" --output json | \
+            jq -e ".items[0] | select(.name==\"$1\") | {"id":.resource_id, "name": .name, "attr": .}"
+          }
+
           #Search to see if workspace exists 
           echo "Verifying if schematics workspace ${SCHEMATICS_WKSP} exists"
-          ibmcloud terraform workspace list | grep $SCHEMATICS_WKSP
-          if [[ $? -eq 1 ]]; then 
+          find_workspace $SCHEMATICS_WKSP
+          if [[ $? -ne 0 ]]; then 
              echo "Creating schematics workspace ${SCHEMATICS_WKSP}"
              sed -i'' "s/<IBMCLOUD_API_KEY>/${TF_VAR_ibmcloud_api_key}/" schematics.json
              sed -i'' "s/<WORKSPACE_NAME>/${SCHEMATICS_WKSP}/" schematics.json
@@ -104,6 +109,8 @@ spec:
              GIT_TOKEN=$(cat $GIT_CREDENTIALS_FILE | jq -r .GIT_TOKEN)
 
              ibmcloud terraform workspace new --github-token "${GIT_TOKEN}" --file schematics.json
+             # Try 5 times - new resource may not show up in search results immediately
+             for i in {1..5}; do find_workspace $SCHEMATICS_WKSP && break || sleep 15; done
 
              touch new-schematics-wksp
           else 
@@ -112,7 +119,8 @@ spec:
 
           echo "Retrieving workspace id"
           ibmcloud terraform workspace list
-          OUTPUT=$(ibmcloud terraform workspace list --output json | jq ".workspaces[] | select(.name==\"$SCHEMATICS_WKSP\")")
+          # ibmcloud terraform workspace list may produce invalid JSON in some cases, caused by incorrectly formatted resource data
+          OUTPUT=$(find_workspace $SCHEMATICS_WKSP | tee /artifacts/wrksp_$SCHEMATICS_WKSP.json)
           echo $OUTPUT
           if [[ $? -ne 0 || "XX_" == "XX_${OUTPUT}" ]]; then 
             echo "Unable to find workspace name ${SCHEMATICS_WKSP}"
@@ -168,7 +176,9 @@ spec:
 
           echo "Retrieving workspace id"
           ibmcloud terraform workspace list
-          OUTPUT=$(ibmcloud terraform workspace list --output json | jq ".workspaces[] | select(.name==\"$SCHEMATICS_WKSP\")")
+          # ibmcloud terraform workspace list may produce invalid JSON in some cases, caused by incorrectly formatted resource data
+          # Workspace attributes stored in a file at workspace-create step
+          OUTPUT=$(cat /artifacts/wrksp_$SCHEMATICS_WKSP.json)
           echo $OUTPUT
           if [[ $? -ne 0 || "XX_" == "XX_${OUTPUT}" ]]; then 
             echo "Unable to find workspace name ${SCHEMATICS_WKSP}"
@@ -232,7 +242,9 @@ spec:
 
           echo "Retrieving workspace id"
           ibmcloud terraform workspace list
-          OUTPUT=$(ibmcloud terraform workspace list --output json | jq ".workspaces[] | select(.name==\"$SCHEMATICS_WKSP\")")
+          # ibmcloud terraform workspace list may produce invalid JSON in some cases, caused by incorrectly formatted resource data
+          # Workspace attributes stored in a file at workspace-create step
+          OUTPUT=$(cat /artifacts/wrksp_$SCHEMATICS_WKSP.json)
           echo $OUTPUT
           if [[ $? -ne 0 || "XX_" == "XX_${OUTPUT}" ]]; then 
             echo "Unable to find workspace name ${SCHEMATICS_WKSP}"
@@ -296,7 +308,9 @@ spec:
 
           echo "Retrieving workspace id"
           ibmcloud terraform workspace list
-          OUTPUT=$(ibmcloud terraform workspace list --output json | jq ".workspaces[] | select(.name==\"$SCHEMATICS_WKSP\")")
+          # ibmcloud terraform workspace list may produce invalid JSON in some cases, caused by incorrectly formatted resource data
+          # Workspace attributes stored in a file at workspace-create step
+          OUTPUT=$(cat /artifacts/wrksp_$SCHEMATICS_WKSP.json)
           echo $OUTPUT
           if [[ $? -ne 0 || "XX_" == "XX_${OUTPUT}" ]]; then 
             echo "Unable to find workspace name ${SCHEMATICS_WKSP}"
@@ -364,7 +378,9 @@ spec:
 
           echo "Retrieving workspace id"
           ibmcloud terraform workspace list
-          OUTPUT=$(ibmcloud terraform workspace list --output json | jq ".workspaces[] | select(.name==\"$SCHEMATICS_WKSP\")")
+          # ibmcloud terraform workspace list may produce invalid JSON in some cases, caused by incorrectly formatted resource data
+          # Workspace attributes stored in a file at workspace-create step
+          OUTPUT=$(cat /artifacts/wrksp_$SCHEMATICS_WKSP.json)
           echo $OUTPUT
           if [[ $? -ne 0 || "XX_" == "XX_${OUTPUT}" ]]; then 
             echo "Unable to find workspace name ${SCHEMATICS_WKSP}"

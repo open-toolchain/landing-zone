@@ -54,9 +54,15 @@ spec:
           # force login (required by schematics cli)
           ibmcloud login --apikey $IBMCLOUD_API_KEY $REGION
 
+          function find_workspace() {
+            ibmcloud resource search "type:workspace AND name:$1" --output json | \
+            jq -e ".items[0] | select(.name==\"$1\") | {"id":.resource_id, "name": .name, "attr": .}"
+          }
+
           echo "Retrieving workspace id"
           ibmcloud terraform workspace list
-          OUTPUT=$(ibmcloud terraform workspace list --output json | jq ".workspaces[] | select(.name==\"$SCHEMATICS_WKSP\")")
+          # ibmcloud terraform workspace list may produce invalid JSON in some cases, caused by incorrectly formatted resource data
+          OUTPUT=$(find_workspace $SCHEMATICS_WKSP)
           echo $OUTPUT
           if [[ $? -ne 0 || "XX_" == "XX_${OUTPUT}" ]]; then 
             echo "Unable to find workspace name ${SCHEMATICS_WKSP}"
@@ -72,7 +78,7 @@ spec:
           ACTIVITY_ID=$(echo $ACTIVITY | jq -r ".activityid")
           echo "Activity ID   $ACTIVITY_ID"
           # poll until status is no longer INPROGRESS, or if there is an error
-          error_count = 0
+          error_count=0
           while :
           do
             STATUS=$(ibmcloud terraform workspace action --id $WORKSPACE_ID --act-id $ACTIVITY_ID --json)
