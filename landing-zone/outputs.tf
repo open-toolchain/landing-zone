@@ -125,3 +125,136 @@ output "f5_host_names" {
 }
 
 ##############################################################################
+
+##############################################################################
+# VPC Outputs
+##############################################################################
+
+output "vpc_names" {
+  description = "List of VPC names"
+  value = [
+    for network in module.vpc :
+    network.vpc_name
+  ]
+}
+
+output "subnet_names" {
+  description = "List of Subnet names created"
+  value = flatten([
+    for network in module.vpc :
+    network.subnet_zone_list.*.name
+  ])
+}
+
+##############################################################################
+
+##############################################################################
+# Resource Group Outputs
+##############################################################################
+
+output "resource_group_names" {
+  description = "List of resource groups names used within landing zone."
+  value       = keys(local.resource_groups)
+}
+
+##############################################################################
+
+##############################################################################
+# Secrets Manager Outputs
+##############################################################################
+
+output "secrets_manager_name" {
+  description = "Name of secrets manager instance"
+  value       = var.secrets_manager.use_secrets_manager ? ibm_resource_instance.secrets_manager[0].name : null
+}
+
+##############################################################################
+
+##############################################################################
+# Security Group Outputs
+##############################################################################
+
+output "security_group_names" {
+  description = "List of security group names"
+  value = [
+    for group in ibm_is_security_group.security_group :
+    group.name
+  ]
+}
+
+##############################################################################
+
+##############################################################################
+# Service Authorization Names
+##############################################################################
+
+output "service_authorization_names" {
+  description = "List of service authorization names"
+  value       = keys(ibm_iam_authorization_policy.policy)
+}
+
+##############################################################################
+
+##############################################################################
+# SSH Key Outputs
+##############################################################################
+
+output "ssh_key_names" {
+  description = "List of SSH Key names"
+  value       = module.ssh_keys.ssh_keys.*.name
+}
+
+##############################################################################
+
+##############################################################################
+# Transit Gateway Outputs
+##############################################################################
+
+output "transit_gateway_name" {
+  description = "Name of created transit gateway"
+  value       = var.enable_transit_gateway ? null : ibm_tg_gateway.transit_gateway[0].name
+}
+
+##############################################################################
+
+##############################################################################
+# VSI Outputs
+##############################################################################
+
+output "vsi_names" {
+  description = "List of VSI names"
+  value = flatten([
+    for group in module.vsi :
+    group.list.*.name
+  ])
+}
+
+##############################################################################
+
+##############################################################################
+# VPE Variables
+##############################################################################
+
+output "vpe_gateway_names" {
+  description = "VPE gateway names"
+  value = [
+    for gateway in ibm_is_virtual_endpoint_gateway.endpoint_gateway :
+    gateway.name
+  ]
+}
+
+##############################################################################
+
+##############################################################################
+# VPN Names
+##############################################################################
+
+output "vpn_names" {
+  description = "List of VPN names"
+  value = [
+    for gateway in ibm_is_vpn_gateway.gateway :
+    gateway.name
+  ]
+}
+
+##############################################################################

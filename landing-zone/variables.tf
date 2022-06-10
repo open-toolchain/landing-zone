@@ -1437,3 +1437,35 @@ variable "secrets_manager" {
 }
 
 ##############################################################################
+
+##############################################################################
+# VPC Placement Group Variable
+##############################################################################
+
+variable vpc_placement_groups {
+  description = "List of VPC placement groups to create"
+  type        = list(
+    object({
+      access_tags = optional(list(string))
+      name        = string
+      resource_group = optional(string)
+      strategy = string
+    })
+  )
+  default = []
+
+  validation {
+    error_message = "Each VPC Placement group must have a unique name."
+    condition     = length(var.vpc_placement_groups) == 0 ? true : length(var.vpc_placement_groups.*.name) != distinct(length(var.vpc_placement_groups.*.name))
+  }
+
+  validation {
+    error_message = "Each placement group must have a strategy of either `host_spread` or `power_spread`."
+    condition     = length(var.vpc_placement_groups) == 0 ? true :length([
+      for group in var.vpc_placement_groups:
+      false if group.strategy != "host_spread" && group.strategy != "power_spread"
+    ]) == 0
+  }
+}
+
+##############################################################################

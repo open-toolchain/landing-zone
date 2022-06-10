@@ -2,6 +2,11 @@
 # KMS Outputs
 ##############################################################################
 
+output "key_management_name" {
+  description = "Name of key management service"
+  value       = var.key_management.use_hs_crypto == true ? data.ibm_resource_instance.hpcs_instance[0].name : var.key_management.use_data == true ? data.ibm_resource_instance.kms[0].name : ibm_resource_instance.kms[0].name
+}
+
 output "key_management_crn" {
   description = "CRN for KMS instance"
   value       = var.key_management.use_hs_crypto == true ? data.ibm_resource_instance.hpcs_instance[0].crn : var.key_management.use_data == true ? data.ibm_resource_instance.kms[0].crn : ibm_resource_instance.kms[0].crn

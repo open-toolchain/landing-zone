@@ -316,6 +316,7 @@ locals {
       hostname           = lookup(local.override, "teleport_config", null) == null ? local.config.teleport_config.hostname : lookup(local.override.teleport_config, "hostname", local.config.teleport_config.hostname)
       claims_to_roles    = lookup(local.override, "teleport_config", null) == null ? local.config.teleport_config.claims_to_roles : lookup(local.override.teleport_config, "claims_to_roles", local.config.teleport_config.claims_to_roles)
     }
+    vpc_placement_groups = lookup(local.override, "vpc_placement_groups", [])
   }
   ##############################################################################
 
