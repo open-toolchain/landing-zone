@@ -2,7 +2,6 @@
 require("dotenv").config();
 const tfxjs = require("tfxjs");
 const tfx = new tfxjs("./patterns/mixed-f5", "ibmcloud_api_key");
-
 tfx.plan("tfx Generated Plan", () => {
   tfx.module(
     "Landing Zone",
@@ -13,6 +12,9 @@ tfx.plan("tfx Generated Plan", () => {
         "https://at-test-bastion-2.domain.com:3080/v1/webapi/oidc/callback",
         "https://at-test-bastion-3.domain.com:3080/v1/webapi/oidc/callback",
       ],
+    }),
+    tfx.resource("Random COS Suffix", "random_string.random_cos_suffix", {
+      length: 8,
     }),
     tfx.resource("Atracker Route 0", "ibm_atracker_route.atracker_route[0]", {
       name: "at-test-atracker-route",
@@ -334,10 +336,12 @@ tfx.plan("tfx Generated Plan", () => {
         icmp: [],
         ip_version: "ipv4",
         remote: "161.26.0.0/16",
-        tcp: [{
-          port_max: 443,
-          port_min: 443
-        }],
+        tcp: [
+          {
+            port_max: 443,
+            port_min: 443,
+          },
+        ],
         udp: [],
       }
     ),
@@ -349,10 +353,12 @@ tfx.plan("tfx Generated Plan", () => {
         icmp: [],
         ip_version: "ipv4",
         remote: "161.26.0.0/16",
-        tcp: [{
-          port_max: 53,
-          port_min: 53
-        }],
+        tcp: [
+          {
+            port_max: 53,
+            port_min: 53,
+          },
+        ],
         udp: [],
       }
     ),
@@ -364,10 +370,12 @@ tfx.plan("tfx Generated Plan", () => {
         icmp: [],
         ip_version: "ipv4",
         remote: "161.26.0.0/16",
-        tcp: [{
-          port_max: 80,
-          port_min: 80
-        }],
+        tcp: [
+          {
+            port_max: 80,
+            port_min: 80,
+          },
+        ],
         udp: [],
       }
     ),
@@ -653,10 +661,12 @@ tfx.plan("tfx Generated Plan", () => {
         icmp: [],
         ip_version: "ipv4",
         remote: "161.26.0.0/16",
-        tcp: [{
-          port_max: 443,
-          port_min: 443
-        }],
+        tcp: [
+          {
+            port_max: 443,
+            port_min: 443,
+          },
+        ],
         udp: [],
       }
     ),
@@ -668,10 +678,12 @@ tfx.plan("tfx Generated Plan", () => {
         icmp: [],
         ip_version: "ipv4",
         remote: "161.26.0.0/16",
-        tcp: [{
-          port_max: 53,
-          port_min: 53
-        }],
+        tcp: [
+          {
+            port_max: 53,
+            port_min: 53,
+          },
+        ],
         udp: [],
       }
     ),
@@ -683,10 +695,12 @@ tfx.plan("tfx Generated Plan", () => {
         icmp: [],
         ip_version: "ipv4",
         remote: "161.26.0.0/16",
-        tcp: [{
-          port_max: 80,
-          port_min: 80
-        }],
+        tcp: [
+          {
+            port_max: 80,
+            port_min: 80,
+          },
+        ],
         udp: [],
       }
     ),
@@ -734,10 +748,12 @@ tfx.plan("tfx Generated Plan", () => {
         icmp: [],
         ip_version: "ipv4",
         remote: "161.26.0.0/16",
-        tcp: [{
-          port_max: 443,
-          port_min: 443
-        }],
+        tcp: [
+          {
+            port_max: 443,
+            port_min: 443,
+          },
+        ],
         udp: [],
       }
     ),
@@ -749,10 +765,12 @@ tfx.plan("tfx Generated Plan", () => {
         icmp: [],
         ip_version: "ipv4",
         remote: "161.26.0.0/16",
-        tcp: [{
-          port_max: 53,
-          port_min: 53
-        }],
+        tcp: [
+          {
+            port_max: 53,
+            port_min: 53,
+          },
+        ],
         udp: [],
       }
     ),
@@ -764,10 +782,12 @@ tfx.plan("tfx Generated Plan", () => {
         icmp: [],
         ip_version: "ipv4",
         remote: "161.26.0.0/16",
-        tcp: [{
-          port_max: 80,
-          port_min: 80
-        }],
+        tcp: [
+          {
+            port_max: 80,
+            port_min: 80,
+          },
+        ],
         udp: [],
       }
     ),
@@ -1081,7 +1101,6 @@ tfx.plan("tfx Generated Plan", () => {
       'ibm_resource_instance.cos["atracker-cos"]',
       {
         location: "global",
-        name: "at-test-atracker-cos",
         plan: "standard",
         service: "cloud-object-storage",
         tags: ["acceptance-test", "landing-zone"],
@@ -1089,7 +1108,7 @@ tfx.plan("tfx Generated Plan", () => {
     ),
     tfx.resource("Cos Cos", 'ibm_resource_instance.cos["cos"]', {
       location: "global",
-      name: "at-test-cos",
+
       plan: "standard",
       service: "cloud-object-storage",
       tags: ["acceptance-test", "landing-zone"],
@@ -1121,7 +1140,7 @@ tfx.plan("tfx Generated Plan", () => {
       timeouts: {
         create: "30m",
         delete: "30m",
-        update: null
+        update: null,
       },
     }),
     tfx.resource(
@@ -1133,7 +1152,7 @@ tfx.plan("tfx Generated Plan", () => {
         timeouts: {
           create: "30m",
           delete: "30m",
-          update: null
+          update: null,
         },
       }
     ),
@@ -1146,7 +1165,7 @@ tfx.plan("tfx Generated Plan", () => {
         timeouts: {
           create: "30m",
           delete: "30m",
-          update: null
+          update: null,
         },
       }
     ),
@@ -1157,11 +1176,10 @@ tfx.plan("tfx Generated Plan", () => {
       timeouts: {
         create: "30m",
         delete: "30m",
-        update: null
+        update: null,
       },
     })
   );
-
   tfx.module(
     "Vpc Management",
     'module.acceptance_tests.module.landing-zone.module.vpc["management"]',
@@ -1458,7 +1476,6 @@ tfx.plan("tfx Generated Plan", () => {
       }
     )
   );
-
   tfx.module(
     "Vpc Edge",
     'module.acceptance_tests.module.landing-zone.module.vpc["edge"]',
@@ -1609,7 +1626,7 @@ tfx.plan("tfx Generated Plan", () => {
             source: "0.0.0.0/0",
             tcp: [],
             udp: [],
-          }
+          },
         ],
       }
     ),
@@ -1901,7 +1918,6 @@ tfx.plan("tfx Generated Plan", () => {
       }
     )
   );
-
   tfx.module(
     "Key Management",
     "module.acceptance_tests.module.landing-zone.module.key_management",
@@ -1955,7 +1971,6 @@ tfx.plan("tfx Generated Plan", () => {
       service: "kms",
     })
   );
-
   tfx.module(
     "Vpc Workload",
     'module.acceptance_tests.module.landing-zone.module.vpc["workload"]',
@@ -2232,7 +2247,6 @@ tfx.plan("tfx Generated Plan", () => {
       }
     )
   );
-
   tfx.module(
     "Ssh Keys",
     "module.acceptance_tests.module.landing-zone.module.ssh_keys",
@@ -2242,7 +2256,6 @@ tfx.plan("tfx Generated Plan", () => {
       tags: ["acceptance-test", "landing-zone"],
     })
   );
-
   tfx.module(
     "Teleport Config[0]",
     "module.acceptance_tests.module.landing-zone.module.teleport_config[0]",
@@ -2258,7 +2271,6 @@ tfx.plan("tfx Generated Plan", () => {
       ],
     })
   );
-
   tfx.module(
     "Vsi At Test Management Server",
     'module.acceptance_tests.module.landing-zone.module.vsi["at-test-management-server"]',
@@ -2423,7 +2435,6 @@ tfx.plan("tfx Generated Plan", () => {
       }
     )
   );
-
   tfx.module(
     "F5 Cloud Init At Test F5 Zone 1",
     'module.acceptance_tests.module.landing-zone.module.dynamic_values.module.f5_cloud_init["at-test-f5-zone-1"]',
@@ -2453,7 +2464,6 @@ tfx.plan("tfx Generated Plan", () => {
       },
     })
   );
-
   tfx.module(
     "F5 Cloud Init At Test F5 Zone 3",
     'module.acceptance_tests.module.landing-zone.module.dynamic_values.module.f5_cloud_init["at-test-f5-zone-3"]',
@@ -2483,7 +2493,6 @@ tfx.plan("tfx Generated Plan", () => {
       },
     })
   );
-
   tfx.module(
     "F5 Cloud Init At Test F5 Zone 2",
     'module.acceptance_tests.module.landing-zone.module.dynamic_values.module.f5_cloud_init["at-test-f5-zone-2"]',
@@ -2513,7 +2522,6 @@ tfx.plan("tfx Generated Plan", () => {
       },
     })
   );
-
   tfx.module(
     "Bastion Host At Test Bastion 1",
     'module.acceptance_tests.module.landing-zone.module.bastion_host["at-test-bastion-1"]',
@@ -2540,7 +2548,6 @@ tfx.plan("tfx Generated Plan", () => {
       }
     )
   );
-
   tfx.module(
     "Bastion Host At Test Bastion 3",
     'module.acceptance_tests.module.landing-zone.module.bastion_host["at-test-bastion-3"]',
@@ -2567,7 +2574,6 @@ tfx.plan("tfx Generated Plan", () => {
       }
     )
   );
-
   tfx.module(
     "Bastion Host At Test Bastion 2",
     'module.acceptance_tests.module.landing-zone.module.bastion_host["at-test-bastion-2"]',
@@ -2594,7 +2600,6 @@ tfx.plan("tfx Generated Plan", () => {
       }
     )
   );
-
   tfx.module(
     "F5 Vsi At Test F5 Zone 3",
     'module.acceptance_tests.module.landing-zone.module.f5_vsi["at-test-f5-zone-3"]',
@@ -2608,7 +2613,7 @@ tfx.plan("tfx Generated Plan", () => {
           },
         ],
         force_action: false,
-        image: "r006-c9f07041-bb56-4492-b25c-5f407ebea358",
+        image: "r006-1c0242c4-a99c-4d27-ad2c-4003a7fea131",
         name: "at-test-f5-zone-3-1",
         network_interfaces: [
           {
@@ -2632,7 +2637,6 @@ tfx.plan("tfx Generated Plan", () => {
       }
     )
   );
-
   tfx.module(
     "F5 Vsi At Test F5 Zone 2",
     'module.acceptance_tests.module.landing-zone.module.f5_vsi["at-test-f5-zone-2"]',
@@ -2646,7 +2650,7 @@ tfx.plan("tfx Generated Plan", () => {
           },
         ],
         force_action: false,
-        image: "r006-c9f07041-bb56-4492-b25c-5f407ebea358",
+        image: "r006-1c0242c4-a99c-4d27-ad2c-4003a7fea131",
         name: "at-test-f5-zone-2-1",
         network_interfaces: [
           {
@@ -2670,7 +2674,6 @@ tfx.plan("tfx Generated Plan", () => {
       }
     )
   );
-
   tfx.module(
     "F5 Vsi At Test F5 Zone 1",
     'module.acceptance_tests.module.landing-zone.module.f5_vsi["at-test-f5-zone-1"]',
@@ -2684,7 +2687,7 @@ tfx.plan("tfx Generated Plan", () => {
           },
         ],
         force_action: false,
-        image: "r006-c9f07041-bb56-4492-b25c-5f407ebea358",
+        image: "r006-1c0242c4-a99c-4d27-ad2c-4003a7fea131",
         name: "at-test-f5-zone-1-1",
         network_interfaces: [
           {

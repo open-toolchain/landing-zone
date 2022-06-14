@@ -14,6 +14,9 @@ tfx.plan("tfx Generated Plan", () => {
         "https://at-test-bastion-3.domain.com:3080/v1/webapi/oidc/callback",
       ],
     }),
+    tfx.resource("Random COS Suffix", "random_string.random_cos_suffix", {
+      length: 8,
+    }),
     tfx.resource("Atracker Route 0", "ibm_atracker_route.atracker_route[0]", {
       name: "at-test-atracker-route",
       receive_global_events: true,
@@ -964,7 +967,6 @@ tfx.plan("tfx Generated Plan", () => {
       'ibm_resource_instance.cos["atracker-cos"]',
       {
         location: "global",
-        name: "at-test-atracker-cos",
         plan: "standard",
         service: "cloud-object-storage",
         tags: ["acceptance-test", "landing-zone"],
@@ -972,7 +974,6 @@ tfx.plan("tfx Generated Plan", () => {
     ),
     tfx.resource("Cos Cos", 'ibm_resource_instance.cos["cos"]', {
       location: "global",
-      name: "at-test-cos",
       plan: "standard",
       service: "cloud-object-storage",
       tags: ["acceptance-test", "landing-zone"],
@@ -2312,7 +2313,7 @@ tfx.plan("tfx Generated Plan", () => {
           },
         ],
         force_action: false,
-        image: "r006-c9f07041-bb56-4492-b25c-5f407ebea358",
+        image: "r006-1c0242c4-a99c-4d27-ad2c-4003a7fea131",
         name: "at-test-f5-zone-3-1",
         network_interfaces: [
           {
@@ -2350,7 +2351,7 @@ tfx.plan("tfx Generated Plan", () => {
           },
         ],
         force_action: false,
-        image: "r006-c9f07041-bb56-4492-b25c-5f407ebea358",
+        image: "r006-1c0242c4-a99c-4d27-ad2c-4003a7fea131",
         name: "at-test-f5-zone-2-1",
         network_interfaces: [
           {
@@ -2388,7 +2389,7 @@ tfx.plan("tfx Generated Plan", () => {
           },
         ],
         force_action: false,
-        image: "r006-c9f07041-bb56-4492-b25c-5f407ebea358",
+        image: "r006-1c0242c4-a99c-4d27-ad2c-4003a7fea131",
         name: "at-test-f5-zone-1-1",
         network_interfaces: [
           {

@@ -7,6 +7,7 @@ module "cloud_object_storage" {
   prefix                = var.prefix
   vpc_list              = local.vpc_list
   bastion_resource_list = local.bastion_resource_list
+  use_random_cos_suffix = var.use_random_cos_suffix
 }
 
 ##############################################################################

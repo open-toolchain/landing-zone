@@ -40,7 +40,7 @@ resource "ibm_is_flow_log" "flow_logs" {
   name           = "${each.key}-logs"
   target         = each.value.vpc_id
   active         = true
-  storage_bucket = each.value.bucket
+  storage_bucket = ibm_cos_bucket.buckets[each.value.bucket].bucket_name
   resource_group = each.value.resource_group == null ? null : local.resource_groups[each.value.resource_group]
 
   depends_on = [ibm_cos_bucket.buckets, ibm_iam_authorization_policy.policy]

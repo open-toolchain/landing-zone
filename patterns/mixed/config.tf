@@ -26,6 +26,7 @@ module "dynamic_values" {
   teleport_vsi_image_name             = var.teleport_vsi_image_name
   domain                              = var.domain
   hostname                            = var.hostname
+  use_random_cos_suffix               = var.use_random_cos_suffix
 }
 
 ##############################################################################

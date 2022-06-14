@@ -76,6 +76,10 @@ variable "cos_resource_keys" {
   description = "Create COS resource keys"
 }
 
+variable "suffix" {
+  description = "Suffix for cos"
+}
+
 ##############################################################################
 
 ##############################################################################

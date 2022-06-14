@@ -16,6 +16,7 @@ module "dynamic_values" {
   cos_data_source           = data.ibm_resource_instance.cos
   cos_resource              = ibm_resource_instance.cos
   cos_resource_keys         = ibm_resource_key.key
+  suffix                    = random_string.random_cos_suffix.result
   ssh_keys                  = var.ssh_keys
   vsi                       = var.vsi
   virtual_private_endpoints = var.virtual_private_endpoints

@@ -21,9 +21,9 @@ module "prefix_map" {
   ]
 }
 
-module address_prefixes {
+module "address_prefixes" {
   source = "./config_modules/list_to_map"
-  list   = flatten([
+  list = flatten([
     for zone in ["zone-1", "zone-2", "zone-3"] :
     module.prefix_map.value[zone].addresses
   ])

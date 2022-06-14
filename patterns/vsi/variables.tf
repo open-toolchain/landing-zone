@@ -32,10 +32,10 @@ variable "region" {
 variable "ssh_public_key" {
   description = "Public SSH Key for VSI creation. Must be a valid SSH key that does not already exist in the deployment region."
   type        = string
-  /*validation {
+  validation {
     error_message = "Public SSH Key must be a vlid ssh rsa public key."
-   // condition     = can(regex("ssh-rsa AAAA[0-9A-Za-z+/]+[=]{0,3} ([^@]+@[^@]+)", var.ssh_public_key))
-  }*/
+    condition     = can(regex("ssh-rsa AAAA[0-9A-Za-z+/]+[=]{0,3} ([^@]+@[^@]+)", var.ssh_public_key))
+  }
 }
 
 variable "tags" {
@@ -100,6 +100,19 @@ variable "hs_crypto_resource_group" {
   description = "If you're using Hyper Protect Crypto services in a resource group other than `Default`, provide the name here."
   type        = string
   default     = null
+}
+
+##############################################################################
+
+
+##############################################################################
+# COS Variables
+##############################################################################
+
+variable "use_random_cos_suffix" {
+  description = "Add a random 8 character string to the end of each cos instance, bucket, and key."
+  type        = bool
+  default     = true
 }
 
 ##############################################################################

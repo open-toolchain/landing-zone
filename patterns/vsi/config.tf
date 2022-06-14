@@ -27,6 +27,7 @@ module "dynamic_values" {
   domain                              = var.domain
   hostname                            = var.hostname
   add_cluster_encryption_key          = false
+  use_random_cos_suffix               = var.use_random_cos_suffix
 }
 
 ##############################################################################

@@ -26,6 +26,7 @@ module "dynamic_values" {
   teleport_vsi_image_name             = var.teleport_vsi_image_name
   domain                              = var.domain
   hostname                            = var.hostname
+  use_random_cos_suffix               = var.use_random_cos_suffix
   add_vsi_volume_encryption_key = (
     var.add_edge_vpc == true || var.teleport_management_zones > 0 || var.create_f5_network_on_management_vpc == true
     ? true

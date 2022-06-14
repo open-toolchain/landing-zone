@@ -6,7 +6,7 @@ resource "ibm_atracker_target" "atracker_target" {
   cos_endpoint {
     endpoint   = "s3.private.${var.region}.cloud-object-storage.appdomain.cloud"
     target_crn = local.bucket_to_instance_map[var.atracker.collector_bucket_name].id
-    bucket     = "${var.prefix}-${var.atracker.collector_bucket_name}"
+    bucket     = ibm_cos_bucket.buckets[replace(var.atracker.collector_bucket_name, var.prefix, "")].bucket_name
     api_key    = local.bucket_to_instance_map[var.atracker.collector_bucket_name].bind_key
   }
   name        = "${var.prefix}-atracker"

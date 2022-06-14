@@ -9,6 +9,7 @@ module "acceptance_tests" {
   network_cidr                        = "10.0.0.0/8"
   add_edge_vpc                        = false
   create_f5_network_on_management_vpc = true
+  use_random_cos_suffix               = true
   provision_teleport_in_f5            = true
   vpn_firewall_type                   = "vpn-and-waf"
   vpcs                                = ["management", "workload"]

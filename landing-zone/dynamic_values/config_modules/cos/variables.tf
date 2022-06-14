@@ -12,6 +12,12 @@ variable "prefix" {
   }
 }
 
+variable "suffix" {
+  description = "Suffix for COS instance"
+  type        = string
+  default     = ""
+}
+
 variable "cos" {
   description = "Direct reference to cos variable"
 }

@@ -36,6 +36,10 @@ module "cos_key_map" {
     {
       parent_field = "name"
       child_key    = "instance"
+    },
+    {
+      parent_field = "random_suffix"
+      child_key    = "random_suffix"
     }
   ]
   add_lookup_child_values = [
@@ -65,6 +69,10 @@ module "cos_bucket_map" {
     {
       parent_field = "use_data"
       child_key    = "use_data"
+    },
+    {
+      parent_field = "random_suffix"
+      child_key    = "random_suffix"
     }
   ]
 }
@@ -92,7 +100,7 @@ module "cos_resource_id_map" {
   list           = var.cos_resource
   value_key_name = "id"
   key_replace_value = {
-    find    = "${var.prefix}-"
+    find    = var.suffix == "" ? "${var.prefix}-" : "/${var.prefix}-|-${var.suffix}/"
     replace = ""
   }
 }

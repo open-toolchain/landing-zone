@@ -14,6 +14,19 @@ locals {
 
 ##############################################################################
 
+
+##############################################################################
+# Random Suffix
+##############################################################################
+
+resource "random_string" "random_cos_suffix" {
+  length  = 8
+  special = false
+  upper   = false
+}
+
+##############################################################################
+
 ##############################################################################
 # Cloud Object Storage Instances
 ##############################################################################
@@ -28,7 +41,7 @@ data "ibm_resource_instance" "cos" {
 
 resource "ibm_resource_instance" "cos" {
   for_each          = local.cos_map
-  name              = "${var.prefix}-${each.value.name}"
+  name              = "${var.prefix}-${each.value.name}${each.value.random_suffix == true ? "-${random_string.random_cos_suffix.result}" : ""}"
   resource_group_id = local.resource_groups[each.value.resource_group]
   service           = "cloud-object-storage"
   location          = local.cos_location
@@ -45,7 +58,7 @@ resource "ibm_resource_instance" "cos" {
 
 resource "ibm_resource_key" "key" {
   for_each             = local.cos_key_map
-  name                 = "${var.prefix}-${each.value.name}"
+  name                 = "${var.prefix}-${each.value.name}${each.value.random_suffix == "true" ? "-${random_string.random_cos_suffix.result}" : ""}"
   role                 = each.value.role
   resource_instance_id = local.cos_instance_ids[each.value.instance]
   tags                 = (var.tags != null ? var.tags : null)
@@ -61,7 +74,7 @@ resource "ibm_resource_key" "key" {
 resource "ibm_cos_bucket" "buckets" {
   for_each = local.buckets_map
 
-  bucket_name           = "${var.prefix}-${each.value.name}"
+  bucket_name           = "${var.prefix}-${each.value.name}${each.value.random_suffix == "true" ? "-${random_string.random_cos_suffix.result}" : ""}"
   resource_instance_id  = local.cos_instance_ids[each.value.instance]
   storage_class         = each.value.storage_class
   endpoint_type         = each.value.endpoint_type

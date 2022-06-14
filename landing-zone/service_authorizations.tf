@@ -28,5 +28,4 @@ resource "ibm_iam_authorization_policy" "policy" {
   description                 = each.value.description
 }
 
-
 ##############################################################################

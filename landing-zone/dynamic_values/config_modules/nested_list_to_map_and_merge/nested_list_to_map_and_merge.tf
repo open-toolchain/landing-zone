@@ -111,7 +111,7 @@ module "parent_merge_list_to_map" {
             # if not add prefix
             field.add_prefix == null
             # return parent data
-            ? parent[field.parent_field]
+            ? lookup(parent, field.parent_field, null)
             # otherwise prepend prefix
             : "${field.add_prefix}-${parent[field.parent_field]}"
           )

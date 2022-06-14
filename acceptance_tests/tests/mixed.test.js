@@ -16,6 +16,9 @@ tfx.plan("LandingZone Mixed Pattern", () => {
         receive_global_events: true,
       }
     ),
+    tfx.resource("Random COS Suffix", "random_string.random_cos_suffix", {
+      length: 8,
+    }),
     tfx.resource(
       "Activity Tracker Target",
       "ibm_atracker_target.atracker_target",
@@ -302,7 +305,7 @@ tfx.plan("LandingZone Mixed Pattern", () => {
       'ibm_resource_instance.cos["atracker-cos"]',
       {
         location: "global",
-        name: "at-test-atracker-cos",
+
         plan: "standard",
         service: "cloud-object-storage",
         tags: tags,
@@ -313,7 +316,7 @@ tfx.plan("LandingZone Mixed Pattern", () => {
       'ibm_resource_instance.cos["cos"]',
       {
         location: "global",
-        name: "at-test-cos",
+
         plan: "standard",
         service: "cloud-object-storage",
         tags: tags,
