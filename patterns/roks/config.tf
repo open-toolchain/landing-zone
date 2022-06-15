@@ -110,7 +110,7 @@ locals {
     ##############################################################################
     # Default SSH key
     ##############################################################################
-    ssh_keys = var.teleport_management_zones > 0 || var.provision_teleport_in_f5 ? [
+    ssh_keys = var.ssh_public_key != null ? [
       {
         name       = "ssh-key"
         public_key = var.ssh_public_key

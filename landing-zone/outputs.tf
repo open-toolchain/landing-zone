@@ -212,7 +212,7 @@ output "ssh_key_names" {
 
 output "transit_gateway_name" {
   description = "Name of created transit gateway"
-  value       = var.enable_transit_gateway ? null : ibm_tg_gateway.transit_gateway[0].name
+  value       = var.enable_transit_gateway ? ibm_tg_gateway.transit_gateway[0].name : null
 }
 
 ##############################################################################

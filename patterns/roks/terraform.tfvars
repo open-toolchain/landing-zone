@@ -1,6 +1,7 @@
 TF_VERSION               = "1.0"
 prefix                   = "< add user data here >"
 region                   = "< add user data here >"
+ssh_public_key           = null
 tags                     = []
 vpcs                     = ["management", "workload"]
 enable_transit_gateway   = true
