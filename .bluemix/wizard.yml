@@ -1,11 +1,30 @@
 ---
-version: '1'
+version: '2'
 messages:
   $i18n: locales.yml
 welcome:
   description: 
       $ref: "#/messages/wizard.welcome.description"
-    
+  prereq:
+    kind: info
+    text:
+      $ref: "#/messages/wizard.welcome.prereq"
+  template:
+    text:
+      $ref: "#/messages/wizard.welcome.template.link.text"
+    url: $env.repository + "/tree/" + $env.branch
+  documentation:
+    text:
+      $ref: "#/messages/wizard.welcome.documentation.link.text"
+    url: https://cloud.ibm.com/docs/allowlist/framework-financial-services?topic=framework-financial-services-get-started
+  info:
+    $ref: "#/messages/wizard.welcome.info.text"
+  tutorial:
+    text:
+      $ref: "#/messages/wizard.welcome.tutorial.link.text"
+    url: https://github.com/open-toolchain/landing-zone
+
+
 steps:
   - name: deployment_pattern
     title:
@@ -20,13 +39,13 @@ steps:
     conditions:
       $ref: conditions.yml#/infrastructureRepo_conditions
 
-  - name: security
-    title:
-      $ref: "#/messages/wizard.step.security.title"
-    form: wizard_security
+  # - name: security
+  #   title:
+  #     $ref: "#/messages/wizard.step.security.title"
+  #   form: wizard_security
 
   - name: schematics
-    indent_level: 1
+    #indent_level: 1
     title:
       $ref: "#/messages/wizard.step.schematics.title"
     form: wizard_schematics
@@ -121,9 +140,9 @@ form:
     schema:
       $ref: wizard_02_infrastructureRepo.json
 
-  wizard_security:
-    schema:
-      $ref: wizard_security.json
+  # wizard_security:
+  #   schema:
+  #     $ref: wizard_security.json
 
   wizard_schematics:
     parameters:
@@ -167,7 +186,7 @@ form:
 
   wizard_optional_tools:
     parameters:
-      app-cicd: true
+      app-cicd: false
       #slack: true
     schema:
       $ref: wizard_05_optional_tools.json

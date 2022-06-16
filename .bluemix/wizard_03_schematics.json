@@ -6,9 +6,6 @@
     "title": {
       "$ref": "#/messages/wizard.schematics.title"
     },
-    "longDescription": {
-      "$ref": "#/messages/wizard.schematics.longDescription"
-    },
     "type": "object",
     "properties": {
       "ibmcloud-api-key": {
@@ -25,12 +22,36 @@
     "required": ["ibmcloud-api-key"],
     "form": [
       {
+        "type": "notification",
+        "display": {
+            "style": "info",
+            "subtitle": {
+                "$ref": "#/messages/wizard.schematics.apikey.notification"
+            }
+        }
+      },
+      {
+        "type": "info",
+        "text": {
+            "$ref": "#/messages/wizard.schematics.apikey.definition"
+        }
+      },
+      {
+        "type": "info",
+        "text": ""
+      },
+      {
+        "type": "info",
+        "text": {
+            "$ref": "#/messages/wizard.schematics.apikey.input"
+        }
+      },
+      {
         "type": "text",
         "key": "ibmcloud-api-key",
         "title": {
           "$ref": "#/messages/wizard.schematics.apikey.title"
         }
-        
       }
     ]
   }

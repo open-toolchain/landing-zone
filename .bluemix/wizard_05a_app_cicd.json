@@ -6,9 +6,6 @@
     "title": {
       "$ref": "#/messages/wizard.optional.tools.app-cicd.title"
     },
-    "longDescription": {
-      "$ref": "#/messages/wizard.optional.tools.app-cicd.description"
-    },
     "type": "object",
     "properties": {
       "app_cicd_webhookurl": {
@@ -44,6 +41,22 @@
       {
         "type": "validator",
         "url": "/devops/validator/validator-v1.html"
+      },
+      {
+        "type": "info",
+        "text": {
+            "$ref": "#/messages/wizard.optional.tools.app-cicd.description"
+        }
+      },
+      {
+        "type": "info",
+        "text": ""
+      },
+      {
+        "type": "info",
+        "text": {
+            "$ref": "#/messages/wizard.optional.tools.app-cicd.parameters"
+        }
       },
       {
         "title": {
