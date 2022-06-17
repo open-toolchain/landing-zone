@@ -43,3 +43,12 @@ teleport_domain           = null
 message_of_the_day        = null
 teleport_admin_email      = null
 teleport_management_zones = 0
+
+##############################################################################
+# Security and Compliance Center
+##############################################################################
+enable_scc                = false
+scc_group_id              = null
+scc_group_passphrase      = null
+scc_collector_description = null
+scc_scope_description     = null

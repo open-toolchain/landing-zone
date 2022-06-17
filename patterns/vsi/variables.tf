@@ -478,6 +478,84 @@ variable "create_secrets_manager" {
 
 ##############################################################################
 
+##############################################################################
+# Security and Compliance Center
+##############################################################################
+
+variable "enable_scc" {
+  type    = bool
+  default = false
+}
+
+variable "scc_cred_name" {
+  type    = string
+  default = "slz-cred"
+
+  validation {
+    error_message = "SCC Credential Name must be 255 or fewer characters."
+    condition     = var.scc_cred_name == null ? true : can(regex("^[a-zA-Z0-9-\\.\\*,_\\s]*$", var.scc_cred_name)) && length(var.scc_cred_name) <= 255
+  }
+}
+
+variable "scc_group_id" {
+  type    = string
+  default = null
+
+  validation {
+    error_message = "SCC Credential Group ID must only contain numbers. Group ID must be 50 or fewer characters."
+    condition     = var.scc_group_id == null ? true : can(regex("^[0-9]*$", var.scc_group_id)) && length(var.scc_group_id) <= 50
+  }
+}
+
+variable "scc_group_passphrase" {
+  type      = string
+  sensitive = true
+
+  validation {
+    error_message = "SCC Credential Group passphrase must be 255 or fewer characters."
+    condition     = var.scc_group_passphrase == null ? true : can(regex("^[a-zA-Z0-9-\\.\\*,_\\s]*$", var.scc_group_passphrase)) && length(var.scc_group_passphrase) <= 255
+  }
+}
+
+variable "scc_cred_description" {
+  type    = string
+  default = "This credential is used for SCC."
+
+  validation {
+    error_message = "SCC Credential Description must be 255 or fewer characters."
+    condition     = var.scc_cred_description == null ? true : can(regex("^[a-zA-Z0-9-\\._,\\s]*$", var.scc_cred_description)) && length(var.scc_cred_description) <= 255
+  }
+}
+
+variable "scc_collector_description" {
+  type    = string
+  default = "collector description"
+  validation {
+    error_message = "SCC Collector Description must be 1000 or fewer characters."
+    condition     = var.scc_collector_description == null ? true : can(regex("^[0-9]*$", var.scc_collector_description)) && length(var.scc_collector_description) <= 1000
+  }
+}
+
+variable "scc_scope_description" {
+  type    = string
+  default = "IBM-schema-for-configuration-collection"
+  validation {
+    error_message = "SCC Scope Description must be 255 or fewer characters."
+    condition     = var.scc_scope_description == null ? true : can(regex("^[0-9]*$", var.scc_scope_description)) && length(var.scc_scope_description) <= 255
+  }
+}
+
+variable "scc_scope_name" {
+  type    = string
+  default = "scope"
+
+  validation {
+    error_message = "SCC Scope Name must be 50 or fewer characters."
+    condition     = var.scc_scope_name == null ? true : can(regex("^[a-zA-Z0-9-\\.,_\\s]*$", var.scc_scope_name)) && length(var.scc_scope_name) <= 50
+  }
+}
+
+##############################################################################
 
 ##############################################################################
 # Override JSON

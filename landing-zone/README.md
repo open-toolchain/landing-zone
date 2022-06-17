@@ -22,11 +22,12 @@ This module creates a secure landing zone within a single region.
 9. [IBM Cloud Services](#ibm-cloud-services-1)
     - [Cloud Object Storage](#cloud-object-storage)
 10. [VPC Placement Groups](#vpc-placement-groups)
-11. [Module Variables](#module-variables)
-12. [Contributing](#contributing)
-13. [Terraform Language Resources](#terraform-language-resources)
-14. [Using This Architecure as a Template for Multiple Patterns](#as-a-template-for-multiple-patterns)
-15. [Creating An Issue](#creating-an-issue)
+11. [Security and Compliance Center](#security-and-compliance-center)
+12. [Module Variables](#module-variables)
+13. [Contributing](#contributing)
+14. [Terraform Language Resources](#terraform-language-resources)
+15. [Using This Architecure as a Template for Multiple Patterns](#as-a-template-for-multiple-patterns)
+16. [Creating An Issue](#creating-an-issue)
 
 ---
 
@@ -626,6 +627,30 @@ Cloud Object Storage components can be found in cos.tf.
 
 ---
 
+## Security and Compliance Center
+
+Credentials need to be created from the patterns using an IBM Cloud API key for scc.tf to create a scope.
+
+Security and Compliance Center components account_settings, collector, and scope can be found in [scc.tf](./scc.tf) and credential can be found in [main.tf](./patterns/PATTERN/main.tf).
+
+### Security and Compliance Center Variable
+
+The `location_id` represents the geographic area where Posture Management requests are handled and processed. If `is_public` is set to true, then the collector connects to resources in your account over a public network. If set to false, the collector connects to resources by using a private IP that is accessible only through IBM Cloud private network. The `collector_passphrase` is only necessary if credential passphrase is enabled.
+
+```
+object(
+  {
+    enable_scc            = bool
+    location_id           = optional(string)
+    is_public             = optional(bool)
+    collector_passphrase  = optional(string)
+    collector_description = optional(string)
+    credential_id         = optional(string)
+    scope_name            = optional(string)
+    scope_description     = optional(string)
+  }
+)
+```
 ## VPC Placement Groups
 
 Any number of VPC placement groups can be created. For more information about VPC Placement groups see the documentation [here](https://cloud.ibm.com/docs/vpc?topic=vpc-about-placement-groups-for-vpc&interface=ui)
