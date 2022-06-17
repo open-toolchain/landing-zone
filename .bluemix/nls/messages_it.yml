@@ -19,7 +19,7 @@ wizard.deploymentPattern.longDescription: "Seleziona da uno dei pattern di distr
 wizard.deploymentPattern.text: "Selezionare un pattern appropriato per la distribuzione"
 wizard.deploymentPattern.simplepoc.title: "**POC semplice**\n\nSelezionare un pattern POC semplice per sperimentare e verificare SLZ."
 wizard.deploymentPattern.vsi.title: "**VSI su VPC**\n\nSeleziona questa opzione per un'architettura [VSI su VPC](https://github.com/open-toolchain/landing-zone/blob/main/.docs/patterns/vsi-pattern.md) conforme a FS."
-wizard.deploymentPattern.roks.title: "**ROKS su VPC**\n\nSelezione questa opzione per un'architettura [ROKS su VPC](https://github.com/open-toolchain/landing-zone/blob/main/.docs/patterns/roks-pattern.md) conforme a FS."
+wizard.deploymentPattern.roks.title: "**ROKS su VPC**\n\nSeleziona questa opzione per un'architettura [ROKS su VPC](https://github.com/open-toolchain/landing-zone/blob/main/.docs/patterns/roks-pattern.md) conforme a FS."
 wizard.deploymentPattern.mixed.title: "**Misto**\n\nSeleziona questa opzione per un'[architettura mista di VSI e ROKS su VPC](https://github.com/open-toolchain/landing-zone/blob/main/.docs/patterns/mixed-pattern.md) conforme a FS."
 wizard.step.infrastructureRepo.title: "Repository di infrastrutture"
 wizard.infrastructureRepo.sourceHost: "Provider origine"
