@@ -21,10 +21,9 @@ tfx.plan("tfx Generated Plan", () => {
       receive_global_events: true,
       rules: [{}],
     }),
-    tfx.resource("Atracker Target", "ibm_atracker_target.atracker_target", {
+    tfx.resource("Atracker Target", "ibm_atracker_target.atracker_target[0]", {
       cos_endpoint: [
         {
-          bucket: "at-test-atracker-bucket",
           endpoint: "s3.private.us-south.cloud-object-storage.appdomain.cloud",
         },
       ],
@@ -98,7 +97,6 @@ tfx.plan("tfx Generated Plan", () => {
         abort_incomplete_multipart_upload_days: [],
         activity_tracking: [],
         archive_rule: [],
-        bucket_name: "at-test-atracker-bucket",
         endpoint_type: "public",
         expire_rule: [],
         force_delete: true,
@@ -117,7 +115,6 @@ tfx.plan("tfx Generated Plan", () => {
         abort_incomplete_multipart_upload_days: [],
         activity_tracking: [],
         archive_rule: [],
-        bucket_name: "at-test-bastion-bucket",
         endpoint_type: "public",
         expire_rule: [],
         force_delete: true,
@@ -136,7 +133,6 @@ tfx.plan("tfx Generated Plan", () => {
         abort_incomplete_multipart_upload_days: [],
         activity_tracking: [],
         archive_rule: [],
-        bucket_name: "at-test-edge-bucket",
         endpoint_type: "public",
         expire_rule: [],
         force_delete: true,
@@ -155,7 +151,6 @@ tfx.plan("tfx Generated Plan", () => {
         abort_incomplete_multipart_upload_days: [],
         activity_tracking: [],
         archive_rule: [],
-        bucket_name: "at-test-management-bucket",
         endpoint_type: "public",
         expire_rule: [],
         force_delete: true,
@@ -174,7 +169,6 @@ tfx.plan("tfx Generated Plan", () => {
         abort_incomplete_multipart_upload_days: [],
         activity_tracking: [],
         archive_rule: [],
-        bucket_name: "at-test-workload-bucket",
         endpoint_type: "public",
         expire_rule: [],
         force_delete: true,
@@ -244,7 +238,6 @@ tfx.plan("tfx Generated Plan", () => {
     tfx.resource("Flow Logs Edge", 'ibm_is_flow_log.flow_logs["edge"]', {
       active: true,
       name: "edge-logs",
-      storage_bucket: "at-test-edge-bucket",
     }),
     tfx.resource(
       "Flow Logs Management",
@@ -252,7 +245,6 @@ tfx.plan("tfx Generated Plan", () => {
       {
         active: true,
         name: "management-logs",
-        storage_bucket: "at-test-management-bucket",
       }
     ),
     tfx.resource(
@@ -261,7 +253,6 @@ tfx.plan("tfx Generated Plan", () => {
       {
         active: true,
         name: "workload-logs",
-        storage_bucket: "at-test-workload-bucket",
       }
     ),
     tfx.resource(
@@ -1117,12 +1108,10 @@ tfx.plan("tfx Generated Plan", () => {
       "Appid Key Slz Appid Key",
       'ibm_resource_key.appid_key["slz-appid-key"]',
       {
-        name: "at-test-slz-appid-key-app-id-key",
         role: "Writer",
       }
     ),
     tfx.resource("Key Bastion Key", 'ibm_resource_key.key["bastion-key"]', {
-      name: "at-test-bastion-key",
       parameters: {
         HMAC: "true",
       },
@@ -1130,7 +1119,6 @@ tfx.plan("tfx Generated Plan", () => {
       tags: ["acceptance-test", "landing-zone"],
     }),
     tfx.resource("Key Cos Bind Key", 'ibm_resource_key.key["cos-bind-key"]', {
-      name: "at-test-cos-bind-key",
       role: "Writer",
       tags: ["acceptance-test", "landing-zone"],
     }),

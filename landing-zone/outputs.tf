@@ -38,12 +38,12 @@ output "appid_redirect_urls" {
 
 output "atracker_target_name" {
   description = "Name of atracker target"
-  value       = ibm_atracker_target.atracker_target.name
+  value       = local.valid_atracker_region ? ibm_atracker_target.atracker_target[0].name : null
 }
 
 output "atracker_route_name" {
   description = "Name of atracker route"
-  value       = ibm_atracker_route.atracker_route.*.name
+  value       = local.valid_atracker_region ? ibm_atracker_route.atracker_route.*.name[0] : null
 }
 
 ##############################################################################

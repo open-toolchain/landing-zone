@@ -21,11 +21,10 @@ tfx.plan("LandingZone Mixed Pattern", () => {
     }),
     tfx.resource(
       "Activity Tracker Target",
-      "ibm_atracker_target.atracker_target",
+      "ibm_atracker_target.atracker_target[0]",
       {
         cos_endpoint: [
           {
-            bucket: "at-test-atracker-bucket",
             endpoint:
               "s3.private.us-south.cloud-object-storage.appdomain.cloud",
           },
@@ -76,7 +75,6 @@ tfx.plan("LandingZone Mixed Pattern", () => {
       "Activity Tracker Object Storage Bucket",
       `ibm_cos_bucket.buckets[\"atracker-bucket\"]`,
       {
-        bucket_name: "at-test-atracker-bucket",
         endpoint_type: "public",
         force_delete: true,
         region_location: "us-south",
@@ -88,7 +86,6 @@ tfx.plan("LandingZone Mixed Pattern", () => {
       "Management Object Storage Bucket",
       `ibm_cos_bucket.buckets[\"management-bucket\"]`,
       {
-        bucket_name: "at-test-management-bucket",
         endpoint_type: "public",
         force_delete: true,
         region_location: "us-south",
@@ -100,7 +97,6 @@ tfx.plan("LandingZone Mixed Pattern", () => {
       "Workload Object Storage Bucket",
       `ibm_cos_bucket.buckets[\"workload-bucket\"]`,
       {
-        bucket_name: "at-test-workload-bucket",
         endpoint_type: "public",
         force_delete: true,
         region_location: "us-south",
@@ -169,7 +165,6 @@ tfx.plan("LandingZone Mixed Pattern", () => {
       {
         active: true,
         name: "management-logs",
-        storage_bucket: "at-test-management-bucket",
       }
     ),
     tfx.resource(
@@ -178,7 +173,6 @@ tfx.plan("LandingZone Mixed Pattern", () => {
       {
         active: true,
         name: "workload-logs",
-        storage_bucket: "at-test-workload-bucket",
       }
     ),
     tfx.resource(
@@ -326,7 +320,6 @@ tfx.plan("LandingZone Mixed Pattern", () => {
       "Cloud Object Storage Bind Resource Key",
       'ibm_resource_key.key["cos-bind-key"]',
       {
-        name: "at-test-cos-bind-key",
         role: "Writer",
         tags: tags,
       }

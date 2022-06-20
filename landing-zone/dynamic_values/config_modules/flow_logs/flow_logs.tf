@@ -32,11 +32,11 @@ module "flow_logs_map" {
   list = [
     for vpc_network in var.vpcs :
     {
-      prefix         = vpc_network.prefix                                   # Set prefix to vpc prefic
-      vpc_id         = var.vpc_modules[vpc_network.prefix].vpc_id           # Set vpc name
-      bucket         = vpc_network.flow_logs_bucket_name                    # Get COS bucket name
-      resource_group = lookup(vpc_network, "resource_group", null)          # Get resource Grou[]
-    } if lookup(vpc_network, "flow_logs_bucket_name", null) != null         # Only if flow logs bucket name is not null
+      prefix         = vpc_network.prefix                           # Set prefix to vpc prefic
+      vpc_id         = var.vpc_modules[vpc_network.prefix].vpc_id   # Set vpc name
+      bucket         = vpc_network.flow_logs_bucket_name            # Get COS bucket name
+      resource_group = lookup(vpc_network, "resource_group", null)  # Get resource Grou[]
+    } if lookup(vpc_network, "flow_logs_bucket_name", null) != null # Only if flow logs bucket name is not null
   ]
 }
 
