@@ -514,7 +514,8 @@ variable "scc_group_passphrase" {
   description = "Group Passphrase of SCC Credential"
   type      = string
   sensitive = true
-
+  default = null
+  
   validation {
     error_message = "SCC Credential Group passphrase must be 255 or fewer characters."
     condition     = var.scc_group_passphrase == null ? true : can(regex("^[a-zA-Z0-9-\\.\\*,_\\s]*$", var.scc_group_passphrase)) && length(var.scc_group_passphrase) <= 255
