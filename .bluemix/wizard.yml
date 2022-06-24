@@ -13,10 +13,10 @@ welcome:
     text:
       $ref: "#/messages/wizard.welcome.template.link.text"
     url: $env.repository + "/tree/" + $env.branch
-  documentation:
-    text:
-      $ref: "#/messages/wizard.welcome.documentation.link.text"
-    url: https://cloud.ibm.com/docs/allowlist/framework-financial-services?topic=framework-financial-services-get-started
+  #documentation:
+  #  text:
+  #    $ref: "#/messages/wizard.welcome.documentation.link.text"
+  #  url: https://cloud.ibm.com/docs/allowlist/framework-financial-services?topic=framework-financial-services-get-started
   info:
     $ref: "#/messages/wizard.welcome.info.text"
   tutorial:
