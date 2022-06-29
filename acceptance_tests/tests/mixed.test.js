@@ -437,7 +437,7 @@ tfx.plan("LandingZone Mixed Pattern", () => {
       "Management Virtual Private Cloud ACL",
       'ibm_is_network_acl.network_acl["management-acl"]',
       {
-        name: "at-test-management-management-acl",
+        name: "at-test-management-acl",
         rules: aclRules.workload,
       }
     ),
@@ -584,7 +584,7 @@ tfx.plan("LandingZone Mixed Pattern", () => {
         "Workload Virtual Private Cloud ACL",
         'ibm_is_network_acl.network_acl["workload-acl"]',
         {
-          name: "at-test-workload-workload-acl",
+          name: "at-test-workload-acl",
           rules: aclRules.workload,
         }
       ),

@@ -1034,7 +1034,7 @@ tfx.plan("tfx Generated Plan", () => {
       "Network Acl Bastion Acl",
       'ibm_is_network_acl.network_acl["bastion-acl"]',
       {
-        name: "at-test-management-bastion-acl",
+        name: "at-test-bastion-acl",
         rules: [
           {
             action: "allow",
@@ -1090,7 +1090,7 @@ tfx.plan("tfx Generated Plan", () => {
       "Network Acl Management Acl",
       'ibm_is_network_acl.network_acl["management-acl"]',
       {
-        name: "at-test-management-management-acl",
+        name: "at-test-management-acl",
         rules: [
           {
             action: "allow",
@@ -1129,7 +1129,7 @@ tfx.plan("tfx Generated Plan", () => {
       "Network Acl Management Acl",
       'ibm_is_network_acl.network_acl["f5-external-acl"]',
       {
-        name: "at-test-management-f5-external-acl",
+        name: "at-test-f5-external-acl",
         rules: [
           {
             action: "allow",
@@ -1557,7 +1557,7 @@ tfx.plan("tfx Generated Plan", () => {
       "Network Acl Workload Acl",
       'ibm_is_network_acl.network_acl["workload-acl"]',
       {
-        name: "at-test-workload-workload-acl",
+        name: "at-test-workload-acl",
         rules: [
           {
             action: "allow",
