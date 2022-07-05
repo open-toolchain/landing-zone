@@ -60,8 +60,7 @@ spec:
           }
 
           echo "Retrieving workspace id"
-          ibmcloud terraform workspace list
-          # ibmcloud terraform workspace list may produce invalid JSON in some cases, caused by incorrectly formatted resource data
+          # ibmcloud schematics workspace list may produce invalid JSON in some cases, caused by incorrectly formatted resource data
           OUTPUT=$(find_workspace $SCHEMATICS_WKSP)
           echo $OUTPUT
           if [[ $? -ne 0 || "XX_" == "XX_${OUTPUT}" ]]; then 
@@ -71,17 +70,21 @@ spec:
 
           WORKSPACE_ID=$(echo "${OUTPUT}" | jq -r .id)
           echo "Workspace $WORKSPACE_ID"
+
+          REGION=$(echo "${OUTPUT}" | jq -r .attr.resource_id | sed -nE 's/^([a-zA-Z]+-[a-zA-Z]+).*/\1/p')
+          echo "Schematics region: ${REGION}"
+          ibmcloud target -r $REGION
          
           # run terraform destroy resource
-          echo "ibmcloud terraform destroy --id $WORKSPACE_ID --force"
-          ACTIVITY=$(ibmcloud terraform destroy -id $WORKSPACE_ID --json --force)
+          echo "ibmcloud schematics destroy --id $WORKSPACE_ID --force"
+          ACTIVITY=$(ibmcloud schematics destroy -id $WORKSPACE_ID --json --force)
           ACTIVITY_ID=$(echo $ACTIVITY | jq -r ".activityid")
           echo "Activity ID   $ACTIVITY_ID"
           # poll until status is no longer INPROGRESS, or if there is an error
           error_count=0
           while :
           do
-            STATUS=$(ibmcloud terraform workspace action --id $WORKSPACE_ID --act-id $ACTIVITY_ID --json)
+            STATUS=$(ibmcloud schematics workspace action --id $WORKSPACE_ID --act-id $ACTIVITY_ID --json)
             
             RET_VAL=$?
             if [ $RET_VAL -ne 0 ]; then
@@ -95,7 +98,7 @@ spec:
               STATUS_VALUE=$(echo $STATUS | jq -r ".status")
               echo "Polling for status: $STATUS_VALUE"
               if [ "$STATUS_VALUE" = "FAILED" ]; then
-                ibmcloud terraform logs --id $WORKSPACE_ID --act-id $ACTIVITY_ID
+                ibmcloud schematics logs --id $WORKSPACE_ID --act-id $ACTIVITY_ID
                 exit 1
               elif [ "$STATUS_VALUE" == "CREATED" ]; then  
                 continue
@@ -106,5 +109,5 @@ spec:
             # sleep for 5 seconds, while waiting for completion
             sleep 5
           done
-          ibmcloud terraform logs --id $WORKSPACE_ID --act-id $ACTIVITY_ID
+          ibmcloud schematics logs --id $WORKSPACE_ID --act-id $ACTIVITY_ID
     
