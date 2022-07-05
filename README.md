@@ -314,4 +314,4 @@ As we develop the SLZ template, issues are bound to come up. When an issue comes
 
 ## FAQ
 
-Check the [FAQ Boxnote](https://ibm.box.com/s/95x8elx8ra0txo64i4hdxnlu65aaethz) for answers to common questions.
+Check the [FAQ Boxnote](https://ibm.box.com/s/hy5svbs3r5it4o5ut2dak98hgfqn3wul) for answers to common questions.
