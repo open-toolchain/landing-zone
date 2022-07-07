@@ -97,6 +97,19 @@ variable "hs_crypto_resource_group" {
 
 
 ##############################################################################
+# COS Variables
+##############################################################################
+
+variable "use_random_cos_suffix" {
+  description = "Add a random 8 character string to the end of each cos instance, bucket, and key."
+  type        = bool
+  default     = true
+}
+
+##############################################################################
+
+
+##############################################################################
 # Cluster Variables
 ##############################################################################
 
@@ -212,7 +225,7 @@ variable "ssh_public_key" {
 variable "f5_image_name" {
   description = "Image name for f5 deployments. Must be null or one of `f5-bigip-15-1-5-1-0-0-14-all-1slot`,`f5-bigip-15-1-5-1-0-0-14-ltm-1slot`, `f5-bigip-16-1-2-2-0-0-28-ltm-1slot`,`f5-bigip-16-1-2-2-0-0-28-all-1slot`]."
   type        = string
-  default     = "f5-bigip-15-1-5-1-0-0-14-all-1slot"
+  default     = "f5-bigip-16-1-2-2-0-0-28-all-1slot"
 
   validation {
     error_message = "Invalid F5 image name. Must be null or one of `f5-bigip-15-1-5-1-0-0-14-all-1slot`,`f5-bigip-15-1-5-1-0-0-14-ltm-1slot`, `f5-bigip-16-1-2-2-0-0-28-ltm-1slot`,`f5-bigip-16-1-2-2-0-0-28-all-1slot`]."
@@ -502,6 +515,95 @@ variable "create_secrets_manager" {
 
 ##############################################################################
 
+##############################################################################
+# Security and Compliance Center
+##############################################################################
+
+variable "enable_scc" {
+  description = "Enable creation of SCC resources"
+  type    = bool
+  default = false
+}
+
+variable "scc_cred_name" {
+  description = "The name of the credential"
+  type    = string
+  default = "slz-cred"
+
+  validation {
+    error_message = "SCC Credential Name must be 255 or fewer characters."
+    condition     = var.scc_cred_name == null ? true : can(regex("^[a-zA-Z0-9-\\.\\*,_\\s]*$", var.scc_cred_name)) && length(var.scc_cred_name) <= 255
+  }
+}
+
+variable "scc_group_id" {
+  description = "Group ID of SCC Credential"
+  type    = string
+  default = null
+
+  validation {
+    error_message = "SCC Credential Group ID must only contain numbers. Group ID must be 50 or fewer characters."
+    condition     = var.scc_group_id == null ? true : can(regex("^[0-9]*$", var.scc_group_id)) && length(var.scc_group_id) <= 50
+  }
+}
+
+variable "scc_group_passphrase" {
+  description = "Group Passphrase of SCC Credential"
+  type      = string
+  sensitive = true
+  default   = null
+
+  validation {
+    error_message = "SCC Credential Group ID must be 255 or fewer characters."
+    condition     = var.scc_group_passphrase == null ? true : can(regex("^[a-zA-Z0-9-\\.\\*,_\\s]*$", var.scc_group_passphrase)) && length(var.scc_group_passphrase) <= 255
+  }
+}
+
+variable "scc_cred_description" {
+  description = "Description of SCC Credential"
+  type    = string
+  default = "This credential is used for SCC."
+
+  validation {
+    error_message = "SCC Credential Description must be 255 or fewer characters."
+    condition     = var.scc_cred_description == null ? true : can(regex("^[a-zA-Z0-9-\\._,\\s]*$", var.scc_cred_description)) && length(var.scc_cred_description) <= 255
+  }
+}
+
+variable "scc_collector_description" {
+  description = "Description of SCC Collector"
+  type    = string
+  default = "collector description"
+
+  validation {
+    error_message = "SCC Collector Description must be 1000 or fewer characters."
+    condition     = var.scc_collector_description == null ? true : can(regex("^[a-zA-Z0-9-\\._,\\s]*$", var.scc_collector_description)) && length(var.scc_collector_description) <= 1000
+  }
+}
+
+variable "scc_scope_description" {
+  description = "Description of SCC Scope"
+  type    = string
+  default = "IBM-schema-for-configuration-collection"
+
+  validation {
+    error_message = "SCC Scope Description must be 255 or fewer characters."
+    condition     = var.scc_scope_description == null ? true : can(regex("^[a-zA-Z0-9-\\._,\\s]*$", var.scc_scope_description)) && length(var.scc_scope_description) <= 255
+  }
+}
+
+variable "scc_scope_name" {
+  description = "The name of the SCC Scope"
+  type    = string
+  default = "scope"
+
+  validation {
+    error_message = "SCC Scope Name must be 50 or fewer characters."
+    condition     = var.scc_scope_name == null ? true : can(regex("^[a-zA-Z0-9-\\.,_\\s]*$", var.scc_scope_name)) && length(var.scc_scope_name) <= 50
+  }
+}
+
+##############################################################################
 
 ##############################################################################
 # Override JSON

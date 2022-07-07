@@ -1,65 +1,80 @@
 ##############################################################################
-# Cluster Map Function
+# Clusters
 ##############################################################################
 
-module "cluster_map" {
-  source = "./config_modules/list_to_map"
-  list   = var.clusters
+module "clusters" {
+  source           = "./config_modules/clusters"
+  prefix           = var.prefix
+  clusters         = var.clusters
+  vpc_modules      = var.vpc_modules
+  cos_instance_ids = local.cos_instance_ids
 }
 
-module "cluster_subnets" {
-  source           = "./config_modules/get_subnets"
-  for_each         = module.cluster_map.value
-  subnet_zone_list = var.vpc_modules[each.value.vpc_name].subnet_zone_list
-  regex            = join("|", each.value.subnet_names)
+##############################################################################
+
+##############################################################################
+# [Unit Test] Cluster Map
+##############################################################################
+
+module "ut_cluster_map" {
+  source = "./config_modules/clusters"
+  prefix = "ut"
+  clusters = [
+    {
+      name           = "test-cluster"
+      vpc_name       = "test"
+      subnet_names   = ["subnet-1", "subnet-3"]
+      resource_group = "test-resource-group"
+      kube_type      = "openshift"
+      cos_name       = "data-cos"
+      entitlement    = "cloud_pak"
+      worker_pools = [
+        {
+          name               = "logging-worker-pool"
+          vpc_name           = "test"
+          subnet_names       = ["subnet-1", "subnet-3"]
+          workers_per_subnet = 2
+          flavor             = "spicy"
+        }
+      ]
+    }
+  ]
+  cos_instance_ids = {
+    data-cos = "cosid"
+  }
+  vpc_modules = {
+    test = {
+      vpc_id = "1234"
+      subnet_zone_list = [
+        {
+          name = "ut-test-subnet-1"
+          id   = "1-id"
+          zone = "1-zone"
+          cidr = "1"
+        },
+        { name = "ut-test-subnet-2"
+          id   = "2-id"
+          zone = "2-zone"
+          cidr = "2"
+        },
+        {
+          name = "ut-test-subnet-3"
+          id   = "3-id"
+          zone = "3-zone"
+          cidr = "3"
+        },
+      ]
+    }
+  }
 }
 
 locals {
-  clusters_map = {
-    for cluster_group in var.clusters :
-    ("${var.prefix}-${cluster_group.name}") => merge(cluster_group, {
-      vpc_id           = var.vpc_modules[cluster_group.vpc_name].vpc_id
-      subnets          = module.cluster_subnets[cluster_group.name].subnets
-      cos_instance_crn = cluster_group.kube_type == "openshift" ? local.cos_instance_ids[cluster_group.cos_name] : null
-    })
-  }
-
-  # Create list of worker pools
-  worker_pools_list = flatten([
-    # For each cluster
-    for cluster_group in var.clusters : [
-      # For each worker pool associated with that cluster
-      for worker_pool_group in cluster_group.worker_pools :
-      merge(worker_pool_group, {
-        # Add Cluster Name
-        cluster_name = "${var.prefix}-${cluster_group.name}"
-        # Add entitlement for openshift workers
-        entitlement = cluster_group.kube_type == "iks" ? null : cluster_group.entitlement
-        # resource group
-        resource_group = cluster_group.resource_group
-        # Add VPC ID
-        vpc_id = var.vpc_modules[worker_pool_group.vpc_name].vpc_id
-        subnets = [
-          # Add subnets to list if they are contained in the subnet list, prepends prefixes
-          for subnet in var.vpc_modules[cluster_group.vpc_name].subnet_zone_list :
-          subnet if contains([
-            # Create modified list of names
-            for name in worker_pool_group.subnet_names :
-            "${var.prefix}-${worker_pool_group.vpc_name}-${name}"
-          ], subnet.name)
-        ]
-
-      }) if worker_pool_group != null
-    ] if cluster_group.worker_pools != null
-  ])
-
-  # Covert worker pools
-  worker_pools_map = {
-    for pool_map in local.worker_pools_list :
-    ("${pool_map.cluster_name}-${pool_map.name}") => pool_map
-  }
+  actual_clusters_map                      = module.ut_cluster_map.map
+  assert_cluster_map_correct_name          = lookup(local.actual_clusters_map, "ut-test-cluster")
+  assert_cluster_map_correct_vpc_id        = regex("1234", local.actual_clusters_map["ut-test-cluster"].vpc_id)
+  assert_cluster_map_correct_cos_crn       = regex("cosid", local.actual_clusters_map["ut-test-cluster"].cos_instance_crn)
+  assert_cluster_map_correct_subnet_number = regex("2", tostring(length(local.actual_clusters_map["ut-test-cluster"].subnets)))
+  assert_cluster_map_has_subnets           = regex("ut-test-subnet-1;ut-test-subnet-3", join(";", local.actual_clusters_map["ut-test-cluster"].subnets.*.name))
 }
 
 ##############################################################################
-
-

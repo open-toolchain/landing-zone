@@ -1,43 +1,59 @@
-
 ##############################################################################
 # VPN Gateway Values
 ##############################################################################
 
-locals {
-  # Create map of VPN gatways
-  vpn_gateway_map = {
-    # for each gateway
-    for gateway in var.vpn_gateways :
-    # Create a key for the gate way with an object containing options and subnet IDs
-    (gateway.name) => {
-      vpc_id = var.vpc_modules[gateway.vpc_name].vpc_id
-      subnet_id = [
-        for subnet in var.vpc_modules[gateway.vpc_name].subnet_zone_list :
-        subnet if subnet.name == "${var.prefix}-${gateway.vpc_name}-${gateway.subnet_name}"
-      ][0].id
-      mode           = gateway.mode
-      connections    = gateway.connections
-      resource_group = gateway.resource_group
-    }
-  }
-
-  # Create list of VPN Connections
-  vpn_connection_list = flatten([
-    for gateway in var.vpn_gateways :
-    [
-      for connection in gateway.connections :
-      merge({
-        gateway_name    = gateway.name
-        connection_name = "${gateway.name}-connection-${index(gateway.connections, connection) + 1}"
-      }, connection)
-    ]
-  ])
-
-  vpn_connection_map = {
-    for connection in local.vpn_connection_list :
-    (connection.connection_name) => connection
-  }
+module "vpn" {
+  source       = "./config_modules/vpn"
+  prefix       = var.prefix
+  vpc_modules  = var.vpc_modules
+  vpn_gateways = var.vpn_gateways
 }
 
 ##############################################################################
 
+##############################################################################
+# [Unit Test] VPN Gateway Values
+##############################################################################
+
+module "ut_vpn" {
+  source = "./config_modules/vpn"
+  prefix = "ut"
+  vpc_modules = {
+    test = {
+      vpc_id = "1234"
+      subnet_zone_list = [
+        {
+          name = "ut-test-vpn-zone-1"
+          id   = "vpn-id"
+          zone = "vpn-zone"
+          cidr = "vpn"
+      }]
+    }
+  }
+  vpn_gateways = [
+    {
+      connections = [{
+        peer_address   = "test-peer-address"
+        preshared_key  = "preshared_key"
+        local_cidrs    = ["cidr1"]
+        peer_cidrs     = ["cidr2"]
+        admin_state_up = true
+      }]
+      name           = "test-gateway",
+      resource_group = "test-rg"
+      subnet_name    = "vpn-zone-1"
+      vpc_name       = "test"
+      mode           = null
+    }
+  ]
+}
+
+locals {
+  assert_vpn_gateway_exists_in_map            = lookup(module.ut_vpn.vpn_gateway_map, "test-gateway")
+  assert_vpn_gateway_correct_vpc_id           = regex("1234", module.ut_vpn.vpn_gateway_map["test-gateway"].vpc_id)
+  assert_vpn_gateway_correct_subnet_id        = regex("vpn-id", module.ut_vpn.vpn_gateway_map["test-gateway"].subnet_id)
+  assert_vpn_connection_correct_gateway_name  = regex("test-gateway", module.ut_vpn.vpn_connection_map["test-gateway-connection-1"].gateway_name)
+  assert_vpn_connection_correct_preshared_key = regex("preshared_key", module.ut_vpn.vpn_connection_map["test-gateway-connection-1"].preshared_key)
+}
+
+##############################################################################

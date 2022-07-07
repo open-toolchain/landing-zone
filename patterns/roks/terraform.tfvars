@@ -1,6 +1,7 @@
 TF_VERSION               = "1.0"
 prefix                   = "< add user data here >"
 region                   = "< add user data here >"
+ssh_public_key           = null
 tags                     = []
 vpcs                     = ["management", "workload"]
 enable_transit_gateway   = true
@@ -23,7 +24,7 @@ add_edge_vpc                        = false
 provision_teleport_in_f5            = false
 create_f5_network_on_management_vpc = false
 vpn_firewall_type                   = null
-f5_image_name                       = "f5-bigip-15-1-5-1-0-0-14-all-1slot"
+f5_image_name                       = "f5-bigip-16-1-2-2-0-0-28-all-1slot"
 f5_instance_profile                 = "cx2-4x8"
 hostname                            = "f5-ve-01"
 domain                              = "local"
@@ -46,3 +47,13 @@ teleport_domain           = null
 message_of_the_day        = null
 teleport_admin_email      = null
 teleport_management_zones = 0
+
+##############################################################################
+# Security and Compliance Center
+##############################################################################
+enable_scc                = false
+scc_group_id              = null
+scc_group_passphrase      = null
+scc_collector_description = null
+scc_scope_description     = null
+

@@ -492,6 +492,7 @@ variable "cos" {
       use_data       = optional(bool)
       resource_group = string
       plan           = optional(string)
+      random_suffix  = optional(bool) # Use a random suffix for COS instance
       buckets = list(object({
         name                  = string
         storage_class         = string
@@ -1433,6 +1434,95 @@ variable "secrets_manager" {
   })
   default = {
     use_secrets_manager = false
+  }
+}
+
+##############################################################################
+# Security and Compliance Center
+##############################################################################
+variable "security_compliance_center" {
+  description = "Security and Compliance Center Variables"
+  type = object({
+    enable_scc            = bool
+    location_id           = optional(string)
+    is_public             = optional(bool)
+    collector_passphrase  = optional(string)
+    collector_description = optional(string)
+    credential_id         = optional(string)
+    scope_name            = optional(string)
+    scope_description     = optional(string)
+  })
+  default = {
+    enable_scc = false
+  }
+
+  validation {
+    error_message = "If enable_scc is true, location_id and is_public must not be null."
+    condition = (
+      lookup(var.security_compliance_center, "enable_scc") == false
+      ) || (
+      lookup(var.security_compliance_center, "enable_scc") == true &&
+      lookup(var.security_compliance_center, "is_public", null) != null &&
+      lookup(var.security_compliance_center, "location_id", null) != null
+    )
+  }
+
+  validation {
+    error_message = "SCC Location ID must be one of the following: [ us , eu , uk]."
+    condition = (
+      lookup(var.security_compliance_center, "location_id", null) == null
+      ? true
+      : contains(["us", "eu", "uk"], lookup(var.security_compliance_center, "location_id"))
+    )
+  }
+
+  validation {
+    error_message = "SCC Scope Name length must be 50 or fewer characters."
+    condition = (
+      lookup(var.security_compliance_center, "scope_name", null) == null
+      ? true
+      : can(regex("^[a-zA-Z0-9-\\.,_\\s]*$", var.security_compliance_center.scope_name)) && length(var.security_compliance_center.scope_name) <= 50
+    )
+  }
+
+  validation {
+    error_message = "SCC Scope Description length must be 255 or fewer characters."
+    condition = (
+      lookup(var.security_compliance_center, "scope_description", null) == null
+      ? true
+      : can(regex("^[a-zA-Z0-9-\\.,_\\s]*$", var.security_compliance_center.scope_description)) && length(var.security_compliance_center.scope_description) <= 255
+    )
+  }
+}
+
+
+##############################################################################
+# VPC Placement Group Variable
+##############################################################################
+
+variable "vpc_placement_groups" {
+  description = "List of VPC placement groups to create"
+  type = list(
+    object({
+      access_tags    = optional(list(string))
+      name           = string
+      resource_group = optional(string)
+      strategy       = string
+    })
+  )
+  default = []
+
+  validation {
+    error_message = "Each VPC Placement group must have a unique name."
+    condition     = length(var.vpc_placement_groups) == 0 ? true : length(var.vpc_placement_groups.*.name) != distinct(length(var.vpc_placement_groups.*.name))
+  }
+
+  validation {
+    error_message = "Each placement group must have a strategy of either `host_spread` or `power_spread`."
+    condition = length(var.vpc_placement_groups) == 0 ? true : length([
+      for group in var.vpc_placement_groups :
+      false if group.strategy != "host_spread" && group.strategy != "power_spread"
+    ]) == 0
   }
 }
 

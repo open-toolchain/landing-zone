@@ -46,7 +46,7 @@ variable "appid_resource_group" {
 locals {
   # List of resource groups used by default
   resource_group_list = flatten([
-    ["Default", "service"],
+    ["service"],
     var.hs_crypto_resource_group,
     var.appid_resource_group
   ])

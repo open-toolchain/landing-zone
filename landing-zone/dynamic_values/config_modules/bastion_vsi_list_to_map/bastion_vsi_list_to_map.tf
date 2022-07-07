@@ -42,19 +42,31 @@ module "vsi_subnets" {
 ##############################################################################
 
 ##############################################################################
+# Composed Bastion VSI list
+##############################################################################
+
+module "composed_bastion_vsi_map" {
+  source = "../list_to_map"
+  prefix = var.prefix
+  list = [
+    for vsi_group in var.vsi_list :
+    merge(vsi_group, {
+      # Add VPC ID and subnets
+      vpc_id  = var.vpc_modules[vsi_group.vpc_name].vpc_id
+      subnets = module.vsi_subnets[vsi_group.name].subnets
+    })
+  ]
+}
+
+##############################################################################
+
+##############################################################################
 # Outputs
 ##############################################################################
 
 output "value" {
   description = "Map of VSI"
-  value = {
-    for vsi_group in var.vsi_list :
-    ("${var.prefix}-${vsi_group.name}") => merge(vsi_group, {
-      # Add VPC ID
-      vpc_id  = var.vpc_modules[vsi_group.vpc_name].vpc_id
-      subnets = module.vsi_subnets[vsi_group.name].subnets
-    })
-  }
+  value       = module.composed_bastion_vsi_map.value
 }
 
 ##############################################################################

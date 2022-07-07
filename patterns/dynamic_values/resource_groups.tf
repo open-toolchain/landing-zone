@@ -25,10 +25,8 @@ module "resource_groups_base" {
 }
 
 locals {
-  base_resource_group_contains_4_groups = regex("4", tostring(length(module.resource_groups_base.value)))
+  base_resource_group_contains_3_groups = regex("3", tostring(length(module.resource_groups_base.value)))
   base_rg_names                         = module.resource_groups_base.value.*.name
-  base_rg_contains_Default              = regex("true", tostring(contains(local.base_rg_names, "Default")))
-  base_rg_does_not_create_Default       = regex("false", tostring(module.resource_groups_base.value[0].create))
   base_rg_contains_management           = regex("true", tostring(contains(local.base_rg_names, "ut-management-rg")))
   base_rg_contains_service              = regex("true", tostring(contains(local.base_rg_names, "ut-management-rg")))
   base_rg_contains_workload             = regex("true", tostring(contains(local.base_rg_names, "ut-workload-rg")))
@@ -52,7 +50,7 @@ locals {
   all_resource_group_contains_4_groups = regex("5", tostring(length(module.resource_groups_all.value)))
   all_rg_names                         = module.resource_groups_all.value.*.name
   all_rg_contains_Default              = regex("true", tostring(contains(local.all_rg_names, "Default")))
-  all_rg_does_not_create_Default       = regex("false", tostring(module.resource_groups_all.value[0].create))
+  all_rg_does_not_create_Default       = regex("false", tostring(module.resource_groups_all.value[1].create))
   all_rg_contains_management           = regex("true", tostring(contains(local.all_rg_names, "ut-management-rg")))
   all_rg_contains_service              = regex("true", tostring(contains(local.all_rg_names, "ut-management-rg")))
   all_rg_contains_workload             = regex("true", tostring(contains(local.all_rg_names, "ut-workload-rg")))

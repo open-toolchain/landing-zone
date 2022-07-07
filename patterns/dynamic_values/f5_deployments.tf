@@ -29,7 +29,7 @@ module "f5_deployments_0_zones" {
   f5_vpc_name              = "vpc"
   f5_resource_group        = "rg"
   f5_zones                 = []
-  f5_image_name            = "f5-bigip-15-1-5-1-0-0-14-all-1slot"
+  f5_image_name            = "f5-bigip-16-1-2-2-0-0-28-all-1slot"
   f5_instance_profile      = "uxt-1x2"
   domain                   = "unit.test"
   hostname                 = "unit-test"
@@ -54,7 +54,7 @@ module "f5_deployments_3_zones" {
   f5_vpc_name              = "vpc"
   f5_resource_group        = "rg"
   f5_zones                 = [1, 2, 3]
-  f5_image_name            = "f5-bigip-15-1-5-1-0-0-14-all-1slot"
+  f5_image_name            = "f5-bigip-16-1-2-2-0-0-28-all-1slot"
   f5_instance_profile      = "uxt-1x2"
   domain                   = "unit.test"
   hostname                 = "unit-test"

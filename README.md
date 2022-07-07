@@ -30,6 +30,7 @@
 10. [Creating an Issue](#creating-an-issue)
     1. [Enhancement Feature](#enhancement-feature)
     2. [Bug Fixes](#bug-fixes)
+11. [FAQ](#faq)
 
 ---
 
@@ -308,3 +309,9 @@ As we develop the SLZ template, issues are bound to come up. When an issue comes
   - example `When provisioning ROKS, network ALBs cannot be provisioned.`
 - If you are creating an issue related to a bug, a list of non-sensitive variables in code block format being used to create the architecture must be added to the issue description. This will enable us to recreate the issue locally and diagnose any problems that occur
 - Additionally, if there are any logging errors, please include those **as text or as part of a code block**.
+
+---
+
+## FAQ
+
+Check the [FAQ Boxnote](https://ibm.box.com/s/hy5svbs3r5it4o5ut2dak98hgfqn3wul) for answers to common questions.

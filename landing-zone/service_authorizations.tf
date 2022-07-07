@@ -5,12 +5,7 @@
 ##############################################################################
 
 locals {
-  authorization_policies = merge(
-    module.dynamic_values.service_authorization_vpc_to_key_management,
-    module.dynamic_values.service_authorization_cos_to_key_management,
-    module.dynamic_values.service_authorization_flow_logs_to_cos,
-    module.dynamic_values.service_authorization_secrets_manager_to_key_management
-  )
+  authorization_policies = module.dynamic_values.service_authorizations
 }
 
 ##############################################################################
@@ -32,6 +27,5 @@ resource "ibm_iam_authorization_policy" "policy" {
   roles                       = each.value.roles
   description                 = each.value.description
 }
-
 
 ##############################################################################

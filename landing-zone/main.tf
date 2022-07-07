@@ -10,10 +10,10 @@ locals {
 module "vpc" {
   source                      = "./vpc"
   for_each                    = local.vpc_map
+  name                        = each.value.prefix
   resource_group_id           = each.value.resource_group == null ? null : local.resource_groups[each.value.resource_group]
   region                      = var.region
-  prefix                      = "${var.prefix}-${each.value.prefix}"
-  vpc_name                    = "vpc"
+  prefix                      = var.prefix
   network_cidr                = var.network_cidr
   classic_access              = each.value.classic_access
   use_manual_address_prefixes = each.value.use_manual_address_prefixes
@@ -40,7 +40,7 @@ resource "ibm_is_flow_log" "flow_logs" {
   name           = "${each.key}-logs"
   target         = each.value.vpc_id
   active         = true
-  storage_bucket = each.value.bucket
+  storage_bucket = ibm_cos_bucket.buckets[each.value.bucket].bucket_name
   resource_group = each.value.resource_group == null ? null : local.resource_groups[each.value.resource_group]
 
   depends_on = [ibm_cos_bucket.buckets, ibm_iam_authorization_policy.policy]

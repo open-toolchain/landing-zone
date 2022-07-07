@@ -3,25 +3,26 @@
 ##############################################################################
 
 locals {
-  cos_location = "global"
-  # List of COS instance IDs
-  cos_instance_ids = module.dynamic_values.cos_instance_ids
-  # Map of COS instances from data
-  cos_data_map = {
-    for instance in var.cos :
-    (instance.name) => instance if instance.use_data == true
-  }
-  # Map of created cos instances
-  cos_map = {
-    for instance in var.cos :
-    (instance.name) => instance if instance.use_data != true
-  }
-  # Map of COS buckets
-  buckets_map = module.dynamic_values.cos_bucket_map
-  # Map of COS keys
-  cos_key_map = module.dynamic_values.cos_key_map
-  # Map connecting buckets to instances and spi bind keys
+  cos_location           = "global"
+  cos_instance_ids       = module.dynamic_values.cos_instance_ids
+  cos_data_map           = module.dynamic_values.cos_data_map
+  cos_map                = module.dynamic_values.cos_map
+  buckets_map            = module.dynamic_values.cos_bucket_map
+  cos_key_map            = module.dynamic_values.cos_key_map
   bucket_to_instance_map = module.dynamic_values.bucket_to_instance_map
+}
+
+##############################################################################
+
+
+##############################################################################
+# Random Suffix
+##############################################################################
+
+resource "random_string" "random_cos_suffix" {
+  length  = 8
+  special = false
+  upper   = false
 }
 
 ##############################################################################
@@ -40,7 +41,7 @@ data "ibm_resource_instance" "cos" {
 
 resource "ibm_resource_instance" "cos" {
   for_each          = local.cos_map
-  name              = "${var.prefix}-${each.value.name}"
+  name              = "${var.prefix}-${each.value.name}${each.value.random_suffix == true ? "-${random_string.random_cos_suffix.result}" : ""}"
   resource_group_id = local.resource_groups[each.value.resource_group]
   service           = "cloud-object-storage"
   location          = local.cos_location
@@ -57,7 +58,7 @@ resource "ibm_resource_instance" "cos" {
 
 resource "ibm_resource_key" "key" {
   for_each             = local.cos_key_map
-  name                 = "${var.prefix}-${each.value.name}"
+  name                 = "${var.prefix}-${each.value.name}${each.value.random_suffix == "true" ? "-${random_string.random_cos_suffix.result}" : ""}"
   role                 = each.value.role
   resource_instance_id = local.cos_instance_ids[each.value.instance]
   tags                 = (var.tags != null ? var.tags : null)
@@ -73,7 +74,7 @@ resource "ibm_resource_key" "key" {
 resource "ibm_cos_bucket" "buckets" {
   for_each = local.buckets_map
 
-  bucket_name           = "${var.prefix}-${each.value.name}"
+  bucket_name           = "${var.prefix}-${each.value.name}${each.value.random_suffix == "true" ? "-${random_string.random_cos_suffix.result}" : ""}"
   resource_instance_id  = local.cos_instance_ids[each.value.instance]
   storage_class         = each.value.storage_class
   endpoint_type         = each.value.endpoint_type

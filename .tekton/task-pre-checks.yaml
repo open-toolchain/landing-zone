@@ -109,7 +109,7 @@ spec:
           fi
 
           echo "Verify that all inputs that need to be user defined are set"
-          grep -w "add user data here" ./patterns/$PATTERN/terraform.tfvars
+          grep -E '^[a-z_]+.*=.*\"<.*add.*user.*data.*here.*>\"$' ./patterns/$PATTERN/terraform.tfvars
           if [[ $? -eq 0 ]]; then
             printf "./patterns/$PATTERN/terraform.tfvars file contain variables that need user input.  Please change the variables that are\n \
           set to <add user data here> to an appropriate value"

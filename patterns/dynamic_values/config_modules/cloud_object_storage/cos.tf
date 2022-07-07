@@ -32,6 +32,13 @@ variable "bastion_resource_list" {
   }
 }
 
+
+variable "use_random_cos_suffix" {
+  description = "Add a random 8 character string to the end of each cos instance, bucket, and key."
+  type        = bool
+  default     = false
+}
+
 ##############################################################################
 
 ##############################################################################
@@ -62,6 +69,7 @@ output "value" {
         role        = "Writer"
         enable_HMAC = false
       }]
+      random_suffix = var.use_random_cos_suffix
     },
     # COS instance for everything else
     {
@@ -89,6 +97,7 @@ output "value" {
           role        = "Writer"
         }
       ]
+      random_suffix = var.use_random_cos_suffix
     }
   ]
 }

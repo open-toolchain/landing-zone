@@ -20,6 +20,19 @@ variable "region" {
 
 ##############################################################################
 
+##############################################################################
+# VSI Variables
+##############################################################################
+
+variable "vsi" {
+  description = "Direct reference to VSI variable"
+}
+
+variable "ssh_keys" {
+  description = "Direct reference to SSH Keys"
+}
+
+##############################################################################
 
 ##############################################################################
 # VPC Variables
@@ -61,6 +74,10 @@ variable "cos_resource" {
 
 variable "cos_resource_keys" {
   description = "Create COS resource keys"
+}
+
+variable "suffix" {
+  description = "Suffix for cos"
 }
 
 ##############################################################################

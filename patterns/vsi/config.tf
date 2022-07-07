@@ -27,6 +27,7 @@ module "dynamic_values" {
   domain                              = var.domain
   hostname                            = var.hostname
   add_cluster_encryption_key          = false
+  use_random_cos_suffix               = var.use_random_cos_suffix
 }
 
 ##############################################################################
@@ -213,7 +214,43 @@ locals {
     }
 
     ##############################################################################
+
+    ##############################################################################
+    # Security and Compliance Center
+    ##############################################################################
+
+    security_compliance_center = {
+      enable_scc            = var.enable_scc
+      is_public             = false
+      location_id           = lookup(local.scc_region_map, var.region)
+      collector_passphrase  = var.scc_group_passphrase
+      collector_description = var.scc_collector_description
+      scope_name            = var.scc_scope_name
+      scope_description     = var.scc_scope_description
+    }
+
+    ##############################################################################
   }
+
+  ##############################################################################
+  # Dynamic SCC map for ibm_scc_account_location based on provided region
+  ##############################################################################
+
+  scc_region_map = {
+    us-south   = "us"
+    us-east    = "us"
+    eu-central = "eu"
+    eu-de      = "eu"
+    uk-south   = "uk"
+    eu-gb      = "uk"
+    ap-north   = "us"
+    ap-south   = "us"
+    au-syd     = "us"
+    jp-tok     = "us"
+    jp-osa     = "us"
+  }
+
+  ##############################################################################
 
   ##############################################################################
   # Compile Environment for Config output
@@ -240,6 +277,7 @@ locals {
     access_groups                  = lookup(local.override, "access_groups", local.config.access_groups)
     appid                          = lookup(local.override, "appid", local.config.appid)
     secrets_manager                = lookup(local.override, "secrets_manager", local.config.secrets_manager)
+    security_compliance_center     = lookup(local.override, "security_compliance_center", local.config.security_compliance_center)
     f5_vsi                         = lookup(local.override, "f5_vsi", local.config.f5_deployments)
     f5_template_data = {
       tmos_admin_password     = lookup(local.override, "f5_template_data", null) == null ? var.tmos_admin_password : lookup(local.override.f5_template_data, "tmos_admin_password", var.tmos_admin_password)
@@ -277,6 +315,7 @@ locals {
       hostname           = lookup(local.override, "teleport_config", null) == null ? local.config.teleport_config.hostname : lookup(local.override.teleport_config, "hostname", local.config.teleport_config.hostname)
       claims_to_roles    = lookup(local.override, "teleport_config", null) == null ? local.config.teleport_config.claims_to_roles : lookup(local.override.teleport_config, "claims_to_roles", local.config.teleport_config.claims_to_roles)
     }
+    vpc_placement_groups = lookup(local.override, "vpc_placement_groups", [])
   }
   ##############################################################################
 

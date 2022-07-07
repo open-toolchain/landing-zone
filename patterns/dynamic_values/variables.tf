@@ -61,6 +61,19 @@ variable "hs_crypto_resource_group" {
 
 
 ##############################################################################
+# COS Variables
+##############################################################################
+
+variable "use_random_cos_suffix" {
+  description = "Add a random 8 character string to the end of each cos instance, bucket, and key."
+  type        = bool
+  default     = false
+}
+
+##############################################################################
+
+
+##############################################################################
 # Virtual Server Variables
 ##############################################################################
 
@@ -130,7 +143,7 @@ variable "vpn_firewall_type" {
 variable "f5_image_name" {
   description = "Image name for f5 deployments. Must be null or one of `f5-bigip-15-1-5-1-0-0-14-all-1slot`,`f5-bigip-15-1-5-1-0-0-14-ltm-1slot`, `f5-bigip-16-1-2-2-0-0-28-ltm-1slot`,`f5-bigip-16-1-2-2-0-0-28-all-1slot`]."
   type        = string
-  default     = "f5-bigip-15-1-5-1-0-0-14-all-1slot"
+  default     = "f5-bigip-16-1-2-2-0-0-28-all-1slot"
 
   validation {
     error_message = "Invalid F5 image name. Must be null or one of `f5-bigip-15-1-5-1-0-0-14-all-1slot`,`f5-bigip-15-1-5-1-0-0-14-ltm-1slot`, `f5-bigip-16-1-2-2-0-0-28-ltm-1slot`,`f5-bigip-16-1-2-2-0-0-28-all-1slot`]."
