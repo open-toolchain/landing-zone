@@ -67,7 +67,7 @@ variable "keys" {
   }
 
   validation {
-    error_message = "Rotation interval month can only be from 1 to 12."
+    error_message = "Rotation interval month can only be set from 1 to 12."
     condition = length([
       for kms_key in [
         for rotation_key in [

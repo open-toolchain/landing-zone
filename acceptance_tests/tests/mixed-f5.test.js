@@ -19,12 +19,17 @@ tfx.plan("tfx Generated Plan", () => {
     tfx.resource("Atracker Route 0", "ibm_atracker_route.atracker_route[0]", {
       name: "at-test-atracker-route",
       receive_global_events: true,
-      rules: [{}],
+      rules: [
+        {
+          locations: null,
+        },
+      ],
     }),
     tfx.resource("Atracker Target", "ibm_atracker_target.atracker_target[0]", {
       cos_endpoint: [
         {
           endpoint: "s3.private.us-south.cloud-object-storage.appdomain.cloud",
+          service_to_service_enabled: null,
         },
       ],
       name: "at-test-atracker",
@@ -43,7 +48,7 @@ tfx.plan("tfx Generated Plan", () => {
             private_endpoint: true,
           },
         ],
-        kube_version: "4.10.15_openshift",
+        kube_version: "4.10.17_openshift",
         name: "at-test-workload-cluster",
         tags: ["acceptance-test", "landing-zone"],
         taints: [],
@@ -1920,6 +1925,11 @@ tfx.plan("tfx Generated Plan", () => {
       }
     ),
     tfx.resource(
+      "Landing Zone Key Management Atracker",
+      'ibm_kms_key_policies.key_policy["at-test-atracker-key"]',
+      {}
+    ),
+    tfx.resource(
       "Key At Test Roks Key",
       'ibm_kms_key.key["at-test-roks-key"]',
       {
@@ -1929,12 +1939,22 @@ tfx.plan("tfx Generated Plan", () => {
         standard_key: false,
       }
     ),
+    tfx.resource(
+      "Landing Zone Key Management Atracker",
+      'ibm_kms_key_policies.key_policy["at-test-roks-key"]',
+      {}
+    ),
     tfx.resource("Key At Test Slz Key", 'ibm_kms_key.key["at-test-slz-key"]', {
       force_delete: true,
       key_name: "at-test-slz-key",
       key_ring_id: "at-test-slz-ring",
       standard_key: false,
     }),
+    tfx.resource(
+      "Landing Zone Key Management Atracker",
+      'ibm_kms_key_policies.key_policy["at-test-slz-key"]',
+      {}
+    ),
     tfx.resource(
       "Key At Test Vsi Volume Key",
       'ibm_kms_key.key["at-test-vsi-volume-key"]',
@@ -1944,6 +1964,11 @@ tfx.plan("tfx Generated Plan", () => {
         key_ring_id: "at-test-slz-ring",
         standard_key: false,
       }
+    ),
+    tfx.resource(
+      "Landing Zone Key Management Atracker",
+      'ibm_kms_key_policies.key_policy["at-test-vsi-volume-key"]',
+      {}
     ),
     tfx.resource(
       "Rings At Test Slz Ring",
