@@ -28,8 +28,8 @@ variable "ssh_public_key" {
   description = "Public SSH Key for VSI creation. Must be a valid SSH key that does not already exist in the deployment region."
   type        = string
   validation {
-    error_message = "Public SSH Key must be a vlid ssh rsa public key."
-    condition     = can(regex("ssh-rsa AAAA[0-9A-Za-z+/]+[=]{0,3} ([^@]+@[^@]+)", var.ssh_public_key))
+    error_message = "Public SSH Key must be a valid ssh rsa public key."
+    condition     = can(regex("ssh-rsa AAAA[0-9A-Za-z+/]+[=]{0,3} ?([^@]+@[^@]+)?", var.ssh_public_key))
   }
 }
 

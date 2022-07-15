@@ -217,8 +217,8 @@ variable "ssh_public_key" {
   type        = string
   default     = null
   validation {
-    error_message = "Public SSH Key must be a vlid ssh rsa public key."
-    condition     = var.ssh_public_key == null || can(regex("ssh-rsa AAAA[0-9A-Za-z+/]+[=]{0,3} ([^@]+@[^@]+)", var.ssh_public_key))
+    error_message = "Public SSH Key must be a valid ssh rsa public key."
+    condition     = var.ssh_public_key == null || can(regex("ssh-rsa AAAA[0-9A-Za-z+/]+[=]{0,3} ?([^@]+@[^@]+)?", var.ssh_public_key))
   }
 }
 
