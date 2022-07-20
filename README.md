@@ -106,7 +106,7 @@ For proof of technology environments we recommend using the `auto-init` feature.
 
 ### Select your Pattern 
 
-The [landing zone module](./landing-zone/) can be used to create a fully cusomizable VPC environment. The three patterns below are each starting templates that can be used to quickly get started with Landing Zone. These patterns can be found in the [patterns](./patterns/) directory.
+The [landing zone module](./landing-zone/) can be used to create a fully customizable VPC environment. The three patterns below are each starting templates that can be used to quickly get started with Landing Zone. These patterns can be found in the [patterns](./patterns/) directory.
 
 Each of these patterns creates:
 - A resource group for cloud services and for each VPC.
@@ -114,7 +114,7 @@ Each of these patterns creates:
 - Encryption keys in either a Key Protect or Hyper Protect Crypto Services instance
 - A management and workload VPC connected by a transit gateway
 - A flow log collector for each VPC
-- All nessecary networking rules to allow communication
+- All necessary networking rules to allow communication
 - Virtual Private endpoints for Cloud Object storage in each VPC
 - A VPN Gateway in the Management VPC
 
@@ -198,7 +198,7 @@ The `override.json` allows users to pass any variable or supported optional vari
 
 After every execution of `terraform apply` either locally or through the pipeline, a JSON encoded definition of your environment based on the defaults for Landing Zone and any variables changed using `override.json` will be outputted so that you can then use it in the `override.json` file.  
 
-- For pipline runs, you can get the contents within the step labeled `workspace-apply` under the output line **Results for override.json:**
+- For pipeline runs, you can get the contents within the step labeled `workspace-apply` under the output line **Results for override.json:**
 
 - For locally executed runs, you can get the contents between the output lines of:
 ```
