@@ -46,6 +46,7 @@ resource "ibm_is_volume" "volume" {
   iops           = each.value.iops
   capacity       = each.value.capacity
   encryption_key = each.value.encryption_key
+  tags           = var.tags
 }
 
 ##############################################################################

@@ -46,7 +46,7 @@ resource "ibm_resource_instance" "cos" {
   service           = "cloud-object-storage"
   location          = local.cos_location
   plan              = each.value.plan
-  tags              = (var.tags != null ? var.tags : null)
+  tags              = var.tags
 }
 
 ##############################################################################
@@ -61,7 +61,7 @@ resource "ibm_resource_key" "key" {
   name                 = "${var.prefix}-${each.value.name}${each.value.random_suffix == "true" ? "-${random_string.random_cos_suffix.result}" : ""}"
   role                 = each.value.role
   resource_instance_id = local.cos_instance_ids[each.value.instance]
-  tags                 = (var.tags != null ? var.tags : null)
+  tags                 = var.tags
   parameters           = each.value.parameters
 }
 

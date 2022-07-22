@@ -48,7 +48,8 @@ locals {
 ##############################################################################
 
 resource "ibm_is_instance" "vsi" {
-  for_each       = local.vsi_map
+  for_each = local.vsi_map
+
   name           = each.key
   image          = var.image_id
   profile        = var.machine_type
@@ -57,6 +58,7 @@ resource "ibm_is_instance" "vsi" {
   zone           = each.value.zone
   user_data      = var.user_data
   keys           = var.ssh_key_ids
+  tags           = var.tags
 
   primary_network_interface {
     subnet = each.value.subnet_id
@@ -103,6 +105,7 @@ resource "ibm_is_floating_ip" "vsi_fip" {
   for_each = var.enable_floating_ip ? ibm_is_instance.vsi : {}
   name     = "${each.value.name}-fip"
   target   = each.value.primary_network_interface.0.id
+  tags     = var.tags
 }
 
 resource "ibm_is_floating_ip" "secondary_fip" {
@@ -112,6 +115,7 @@ resource "ibm_is_floating_ip" "secondary_fip" {
   }
   name   = each.key
   target = each.value.target
+  tags   = var.tags
 }
 
 ##############################################################################
