@@ -30,7 +30,8 @@ resource "ibm_is_vpc_address_prefix" "subnet_prefix" {
 ##############################################################################
 
 resource "ibm_is_subnet" "subnet" {
-  for_each        = local.subnet_object
+  for_each = local.subnet_object
+
   vpc             = ibm_is_vpc.vpc.id
   name            = each.key
   zone            = each.value.zone_name
@@ -38,7 +39,9 @@ resource "ibm_is_subnet" "subnet" {
   ipv4_cidr_block = length(keys(local.address_prefixes)) == 0 ? ibm_is_vpc_address_prefix.subnet_prefix[each.value.prefix_name].cidr : each.value.cidr
   network_acl     = ibm_is_network_acl.network_acl[each.value.acl].id
   public_gateway  = each.value.public_gateway
-  depends_on      = [ibm_is_vpc_address_prefix.address_prefixes]
+  tags            = var.tags
+
+  depends_on = [ibm_is_vpc_address_prefix.address_prefixes]
 }
 
 ##############################################################################

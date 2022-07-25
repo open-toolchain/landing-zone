@@ -20,12 +20,17 @@ tfx.plan("tfx Generated Plan", () => {
     tfx.resource("Atracker Route 0", "ibm_atracker_route.atracker_route[0]", {
       name: "at-test-atracker-route",
       receive_global_events: true,
-      rules: [{}],
+      rules: [
+        {
+          locations: null,
+        },
+      ],
     }),
     tfx.resource("Atracker Target", "ibm_atracker_target.atracker_target[0]", {
       cos_endpoint: [
         {
           endpoint: "s3.private.us-south.cloud-object-storage.appdomain.cloud",
+          service_to_service_enabled: null,
         },
       ],
       name: "at-test-atracker",
@@ -1732,12 +1737,22 @@ tfx.plan("tfx Generated Plan", () => {
         standard_key: false,
       }
     ),
+    tfx.resource(
+      "Landing Zone Key Management Atracker",
+      'ibm_kms_key_policies.key_policy["at-test-atracker-key"]',
+      {}
+    ),
     tfx.resource("Key At Test Slz Key", 'ibm_kms_key.key["at-test-slz-key"]', {
       force_delete: true,
       key_name: "at-test-slz-key",
       key_ring_id: "at-test-slz-ring",
       standard_key: false,
     }),
+    tfx.resource(
+      "Landing Zone Key Management Atracker",
+      'ibm_kms_key_policies.key_policy["at-test-slz-key"]',
+      {}
+    ),
     tfx.resource(
       "Key At Test Vsi Volume Key",
       'ibm_kms_key.key["at-test-vsi-volume-key"]',
@@ -1747,6 +1762,11 @@ tfx.plan("tfx Generated Plan", () => {
         key_ring_id: "at-test-slz-ring",
         standard_key: false,
       }
+    ),
+    tfx.resource(
+      "Landing Zone Key Management Atracker",
+      'ibm_kms_key_policies.key_policy["at-test-vsi-volume-key"]',
+      {}
     ),
     tfx.resource(
       "Rings At Test Slz Ring",
@@ -1794,7 +1814,7 @@ tfx.plan("tfx Generated Plan", () => {
     'module.acceptance_tests.module.landing-zone.module.dynamic_values.module.f5_cloud_init["at-test-f5-zone-2"]',
     tfx.resource("User Data", "data.template_file.user_data", {
       template:
-      "#cloud-config\nchpasswd:\n  expire: false\n  list: |\n    admin:${tmos_admin_password}\ntmos_dhcpv4_tmm:\n  enabled: true\n  rd_enabled: false\n  icontrollx_trusted_sources: false\n  inject_routes: true\n  configsync_interface: ${configsync_interface}\n  default_route_interface: ${default_route_interface}\n  dhcp_timeout: 120\n  dhcpv4_options:\n    mgmt:\n      host-name: ${hostname}\n      domain-name: ${domain}\n    '${default_route_interface}':\n      routers: ${default_route_gateway}\n  do_enabled: true \n  do_declaration: ${do_local_declaration}\n  do_declaration_url: ${do_declaration_url}\n  as3_enabled: true\n  as3_declaration_url: ${as3_declaration_url}\n  ts_enabled: true\n  ts_declaration_url: ${ts_declaration_url}\n  phone_home_url: ${phone_home_url}\n  phone_home_url_verify_tls: false\n  phone_home_url_metadata:\n    template_source: ${template_source}\n    template_version: ${template_version}\n    zone: ${zone}\n    vpc: ${vpc}\n    app_id: ${app_id}\n  tgactive_url: ${tgactive_url}\n  tgstandby_url: ${tgstandby_url}\n  tgrefresh_url: ${tgrefresh_url}\n  ",
+        "#cloud-config\nchpasswd:\n  expire: false\n  list: |\n    admin:${tmos_admin_password}\ntmos_dhcpv4_tmm:\n  enabled: true\n  rd_enabled: false\n  icontrollx_trusted_sources: false\n  inject_routes: true\n  configsync_interface: ${configsync_interface}\n  default_route_interface: ${default_route_interface}\n  dhcp_timeout: 120\n  dhcpv4_options:\n    mgmt:\n      host-name: ${hostname}\n      domain-name: ${domain}\n    '${default_route_interface}':\n      routers: ${default_route_gateway}\n  do_enabled: true \n  do_declaration: ${do_local_declaration}\n  do_declaration_url: ${do_declaration_url}\n  as3_enabled: true\n  as3_declaration_url: ${as3_declaration_url}\n  ts_enabled: true\n  ts_declaration_url: ${ts_declaration_url}\n  phone_home_url: ${phone_home_url}\n  phone_home_url_verify_tls: false\n  phone_home_url_metadata:\n    template_source: ${template_source}\n    template_version: ${template_version}\n    zone: ${zone}\n    vpc: ${vpc}\n    app_id: ${app_id}\n  tgactive_url: ${tgactive_url}\n  tgstandby_url: ${tgstandby_url}\n  tgrefresh_url: ${tgrefresh_url}\n  ",
       vars: {
         app_id: "null",
         as3_declaration_url: "null",

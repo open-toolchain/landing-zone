@@ -27,6 +27,7 @@ tfx.plan("LandingZone Mixed Pattern", () => {
           {
             endpoint:
               "s3.private.us-south.cloud-object-storage.appdomain.cloud",
+            service_to_service_enabled: null,
           },
         ],
         target_type: "cloud_object_storage",
@@ -365,6 +366,11 @@ tfx.plan("LandingZone Mixed Pattern", () => {
     ),
     tfx.resource(
       "Landing Zone Key Management Atracker",
+      'ibm_kms_key_policies.key_policy["at-test-roks-key"]',
+      {}
+    ),
+    tfx.resource(
+      "Landing Zone Key Management Atracker",
       'ibm_kms_key.key["at-test-atracker-key"]',
       {
         force_delete: true,
@@ -372,6 +378,11 @@ tfx.plan("LandingZone Mixed Pattern", () => {
         key_ring_id: "at-test-slz-ring",
         standard_key: false,
       }
+    ),
+    tfx.resource(
+      "Landing Zone Key Management Atracker",
+      'ibm_kms_key_policies.key_policy["at-test-atracker-key"]',
+      {}
     ),
     tfx.resource(
       "Landing Zone Key Management VSI Volume",
@@ -382,6 +393,11 @@ tfx.plan("LandingZone Mixed Pattern", () => {
         key_ring_id: "at-test-slz-ring",
         standard_key: false,
       }
+    ),
+    tfx.resource(
+      "Landing Zone Key Management Atracker",
+      'ibm_kms_key_policies.key_policy["at-test-vsi-volume-key"]',
+      {}
     ),
     tfx.resource(
       "Landing Zone Key Management Ring",
@@ -399,6 +415,11 @@ tfx.plan("LandingZone Mixed Pattern", () => {
         key_ring_id: "at-test-slz-ring",
         standard_key: false,
       }
+    ),
+    tfx.resource(
+      "Landing Zone Key Management Atracker",
+      'ibm_kms_key_policies.key_policy["at-test-slz-key"]',
+      {}
     ),
     tfx.resource(
       "Landing Zone Key Managment Resource Instance",

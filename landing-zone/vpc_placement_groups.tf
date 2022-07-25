@@ -8,7 +8,8 @@ module "placement_group_map" {
 }
 
 resource "ibm_is_placement_group" "placement_group" {
-  for_each       = module.placement_group_map.value
+  for_each = module.placement_group_map.value
+
   access_tags    = each.value.access_tags
   name           = "${var.prefix}-${each.value.name}"
   resource_group = each.value.resource_group == null ? null : local.resource_groups[each.value.resource_group]

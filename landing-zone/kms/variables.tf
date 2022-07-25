@@ -21,6 +21,7 @@ variable "key_management" {
     use_hs_crypto     = optional(bool) # can be hpcs or keyprotect
     use_data          = optional(bool)
     resource_group_id = optional(string)
+    tags              = list(string)
   })
 }
 
@@ -67,7 +68,7 @@ variable "keys" {
   }
 
   validation {
-    error_message = "Rotation interval month can only be from 1 to 12."
+    error_message = "Rotation interval month can only be set from 1 to 12."
     condition = length([
       for kms_key in [
         for rotation_key in [

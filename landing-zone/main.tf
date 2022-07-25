@@ -11,6 +11,7 @@ module "vpc" {
   source                      = "./vpc"
   for_each                    = local.vpc_map
   name                        = each.value.prefix
+  tags                        = var.tags
   resource_group_id           = each.value.resource_group == null ? null : local.resource_groups[each.value.resource_group]
   region                      = var.region
   prefix                      = var.prefix
@@ -36,12 +37,14 @@ module "vpc" {
 ##############################################################################
 
 resource "ibm_is_flow_log" "flow_logs" {
-  for_each       = local.flow_logs_map
+  for_each = local.flow_logs_map
+
   name           = "${each.key}-logs"
   target         = each.value.vpc_id
   active         = true
   storage_bucket = ibm_cos_bucket.buckets[each.value.bucket].bucket_name
   resource_group = each.value.resource_group == null ? null : local.resource_groups[each.value.resource_group]
+  tags           = var.tags
 
   depends_on = [ibm_cos_bucket.buckets, ibm_iam_authorization_policy.policy]
 }
