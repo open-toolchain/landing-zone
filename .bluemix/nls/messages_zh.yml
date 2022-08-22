@@ -1,18 +1,14 @@
 ---
-###############################################################################
-# Licensed Materials - Property of IBM
-# (c) Copyright IBM Corporation 2016, 2022. All Rights Reserved.
-#
-# Note to U.S. Government Users Restricted Rights:
-# Use, duplication or disclosure restricted by GSA ADP Schedule
-# Contract with IBM Corp.
-###############################################################################
-#NLS_MESSAGEFORMAT_NONE
-#NLS_ENCODING=UTF-8
 #The format for creating a link with a URL and text is [link text](link url) with no spaces or characters between the two sets of brackets- []()
 template.name: "部署基础架构作为 IBM Cloud for Financial Services 的代码"
-template.description: "通过此工具链，您可为 IBM Cloud for Financial Services 创建 IBM Cloud Virtual Private Cloud 参考架构。  此模板允许您将 IBM Cloud Virtual Private Cloud 与 IBM Cloud Virtual Servers for Virtual Private Cloud 和/或 Red Hat OpenShift on IBM Cloud 配合使用。  请参阅 [IBM Cloud Framework for Financial Services -Deployment and Configuration Guide](https://cloud.ibm.com/docs/allowlist/Framework-financial-services?topic=framework-financial-services-get-started) 以获取有关 IBM Cloud Framework for Financial Services 的更多信息。  随后，您还可触发应用程序部署工具链以进行端到端部署。\n\n此工具链通过源代码控制、交付管道和持续集成实现持续交付。\n\n要开始，请单击“创建”。\n\n有关逐步指示信息，请遵循[教程](https://github.com/open-toolchain/landing-zone)"
-wizard.welcome.description: "通过此工具链，您可为 IBM Cloud for Financial Services 创建 IBM Cloud Virtual Private Cloud 参考架构。  此模板允许您将 IBM Cloud Virtual Private Cloud 与 IBM Cloud Virtual Servers for Virtual Private Cloud 和/或 Red Hat OpenShift on IBM Cloud 配合使用。  请参阅 [IBM Cloud Framework for Financial Services -Deployment and Configuration Guide](https://cloud.ibm.com/docs/allowlist/Framework-financial-services?topic=framework-financial-services-get-started) 以获取有关 IBM Cloud Framework for Financial Services 的更多信息。  随后，您还可触发应用程序部署工具链以进行端到端部署。\n\n有关逐步指示信息，请遵循[教程](https://github.com/open-toolchain/landing-zone)"
+template.description: "通过此工具链，您可为 IBM Cloud for Financial Services 创建 IBM Cloud Virtual Private Cloud 参考架构。"
+wizard.welcome.description: "通过此工具链，您可为 IBM Cloud for Financial Services 创建 IBM Cloud Virtual Private Cloud 参考架构。"
+wizard.welcome.prereq: "**先决条件**：必须确保在 **创建工具链前** 完成以下操作。 请参阅 [工具链先决条件](https://github.com/open-toolchain/landing-zone#prerequisites) ![](https://cloud.ibm.com/media/docs/images/icons/launch-glyph.svg)。"
+wizard.welcome.template.link.text: "代码存储库"
+wizard.welcome.documentation.link.text: "财务服务框架文档"
+wizard.welcome.tutorial.link.text: "Secure Landing Zone 文档"
+wizard.welcome.info.text: "此模板的工作方式类似于向导。  在每个步骤中都要求您提供用于创建工具链的输入。\n\n此工具链允许您将 IBM Cloud Virtual Private Cloud 与 \n  - IBM Cloud Virtual Servers for Virtual Private Cloud\n  - Red Hat OpenShift on IBM Cloud\n  -  或两者结合使用。\n\n之后，还可以触发应用程序部署工具链，以进行端到端部署。  此工具链通过源代码控制、交付管道和持续集成实现持续交付。"
+
 wizard.step.deployment_pattern.title: "部署模式"
 wizard.deploymentPattern.title: "部署模式"
 wizard.deploymentPattern.longDescription: "从以下部署模式中选择一种：简单 POC、VPC 上的 VSI、VPC 上的 ROK 或混合。"
@@ -21,6 +17,7 @@ wizard.deploymentPattern.simplepoc.title: "**简单 POC**\n\n选择简单 POC �
 wizard.deploymentPattern.vsi.title: "**VPC 上的 VSI**\n\n对于符合 [VPC 上的 VSI](https://github.com/open-toolchain/landing-zone/blob/main/.docs/patterns/vsi-pattern.md) FS 的体系结构，请选择此项。"
 wizard.deploymentPattern.roks.title: "**VPC 上的 ROKS**\n\n对于符合 [VPC 上的 ROKS](https://github.com/open-toolchain/landing-zone/blob/main/.docs/patterns/roks-pattern.md) FS 的体系结构，请选择此项。"
 wizard.deploymentPattern.mixed.title: "**混合**\n\n对于符合 [VPC 上的 VSI 和 ROKS 的混合体系结构](https://github.com/open-toolchain/landing-zone/blob/main/.docs/patterns/mixed-pattern.md) FS 的体系结构，请选择此选项。"
+
 wizard.step.infrastructureRepo.title: "基础结构存储库"
 wizard.infrastructureRepo.sourceHost: "源提供者"
 wizard.infrastructureRepo.title: "基础结构存储库"
@@ -29,24 +26,33 @@ wizard.infrastructureRepo.clone: "对所选模式使用样板"
 wizard.infrastructureRepo.link: "提供您自己的 IaC 存储库"
 wizard.infrastructureRepo.repoURLPlaceholder: "https://us-south.git.cloud.ibm.com/user-id/infrastructure-XXXXXXXXXX"
 wizard.infrastructureRepo.repoNamePlaceholder: "infrastructure-XXXXXXXXXX"
+
 wizard.step.schematics.title: "身份与访问权限"
 wizard.schematics.title: "API 密钥"
 wizard.schematics.longDescription: "用于与 IBM Cloud 交互的 API 密钥"
-wizard.schematics.apikey.title: "API 密钥"
-wizard.schematics.apikey.description: "API 密钥"
+wizard.schematics.apikey.notification: "**注**：要了解有关 IBM Cloud API 密钥的更多信息，请参阅 [了解 API 密钥](https://cloud.ibm.com/docs/account?topic=account-manapikey)"
+wizard.schematics.apikey.definition: "IBM API 密钥向 IBM 云进行认证，并在此工具链中执行各种操作。"
+wizard.schematics.apikey.input: "可以使用已经创建的现有密钥。  或者，可以通过单击“新建”按钮来创建新的 API 密钥。"
+wizard.schematics.apikey.title: "IBM Cloud API 密钥"
+wizard.schematics.apikey.description: "使用 IBM Cloud API 密钥来访问 IBM Cloud 服务。 可以通过使用 [IBM Cloud 控制台](https://cloud.ibm.com/iam/apikeys)、使用 ibmcloud [iam api-key-create](https://cloud.ibm.com/docs/cli?topic=cli-ibmcloud_commands_iam#ibmcloud_iam_api_key_create) 命令或者单击“新建”按钮来创建 API"
 wizard.schematics.apikey.placeholder: "API 密钥"
+
 wizard.step.security.title: "安全性和合规性"
 wizard.security.title: "安全配置"
 wizard.security.longDescription: "工具链的安全性配置"
+
 wizard.step.kmsService.title: "密钥管理"
 wizard.kmsService.title: "密钥管理服务"
 wizard.kmsService.longDescription: "选择某个密钥管理服务以用于部署中的加密密钥。"
-wizard.kmsService.keyprotect.title: "**Key Protect(KP) ** 对于提供 IBM 控制的 HSM 的 [Key Protect](https://cloud.ibm.com/docs/key-protect)，请选择此项。 仅推荐用于开发/测试。 请使用 HPCS 以符合 IBM Cloud for Financial Services 的控制框架。"
-wizard.kmsService.hpcs.title: "**Hyper Protect Crypto Services(HPCS) **对于提供客户控制 HSM 的 [Hyper Protect Crypto Services](https://cloud.ibm.com/docs/hs-crypto?topic=hs-crypto-get-started)，请选择此项。 需要符合 IBM Cloud for Financial Services 的控制框架。"
-wizard.kmsService.preprovisioned-hpcs.title: "** 预配置 Hyper Protect Crypto Services(HPCS) **对于已配置和初始化的 [Hyper Protect Crypto Services](https://cloud.ibm.com/docs/hs-crypto?topic=hs-crypto-get-started)，请选择此项。"
+wizard.kmsService.keyprotect.title: "**Key Protect(KP)** 对于提供 IBM 控制的 HSM 的 [Key Protect](https://cloud.ibm.com/docs/key-protect)，请选择此项。 仅推荐用于开发/测试。 请使用 HPCS 以符合 IBM Cloud for Financial Services 的控制框架。"
+wizard.kmsService.hpcs.title: "**Hyper Protect Crypto Services(HPCS)**对于提供客户控制 HSM 的 [Hyper Protect Crypto Services](https://cloud.ibm.com/docs/hs-crypto?topic=hs-crypto-get-started)，请选择此项。 需要符合 IBM Cloud for Financial Services 的控制框架。"
+wizard.kmsService.preprovisioned-hpcs.title: "**预配置 Hyper Protect Crypto Services(HPCS)**对于已配置和初始化的 [Hyper Protect Crypto Services](https://cloud.ibm.com/docs/hs-crypto?topic=hs-crypto-get-started)，请选择此项。"
+
+
 wizard.step.hpcs_config.title: "HPCS 配置"
 wizard.hpcs_config.title: "HPCS 配置"
 wizard.hpcs_config.longDescription: "输入 HPCS 管理员（最多 8 个，最少 1 个）的签名密钥和相应密码。"
+
 wizard.preprovisioned_hpcs.title: "预配置的 HPCS 配置"
 wizard.preprovisioned_hpcs.longDescription: "请提供预配置的 HPCS 实例的配置"
 wizard.preprovisioned_hpcs.resource_group.title: "资源组"
@@ -55,6 +61,7 @@ wizard.preprovisioned_hpcs.resource_group.placeholder: "HPCS 资源组"
 wizard.preprovisioned_hpcs.instance_name.title: "资源实例名称"
 wizard.preprovisioned_hpcs.instance_name.description: "HPCS 资源实例的名称"
 wizard.preprovisioned_hpcs.instance_name.placeholder: "HPCS 资源实例名称"
+
 wizard.hpcs_config.admin1_sigkey.title: "管理员 1 的签名密钥"
 wizard.hpcs_config.admin1_sigkey.description: "管理员 1 的签名密钥"
 wizard.hpcs_config.admin1_sigkey.placeholder: "管理员 1 的签名密钥"
@@ -73,13 +80,16 @@ wizard.hpcs_config.admin3_sigkey.placeholder: "管理员 3 的签名密钥"
 wizard.hpcs_config.admin3_pass.title: "管理员 3 的签名密钥密码"
 wizard.hpcs_config.admin3_pass.description: "管理员 3 的签名密钥密码"
 wizard.hpcs_config.admin3_pass.placeholder: "管理员 3 的签名密钥密码"
+
 wizard.step.optionaltools.title: "可选工具"
 wizard.optional.tools.title: "其他工具"
 wizard.optional.tools.longDescription: "这些是可选工具，可包含在工具链中。"
 wizard.optional.tools.app-cicd.title: "应用程序 CICD"
-wizard.optional.tools.app-cicd.description: "使用 Webhook 触发应用程序 cicd"
+wizard.optional.tools.app-cicd.description: "这是一个可选步骤，使您能够从基础结构管道触发应用程序 CI/CD 管道。"
+wizard.optional.tools.app-cicd.parameters: "请输入请求 Webhook 和头以触发应用程序 CI/CD 管道。\n\n[查看文档](https://github.com/open-toolchain/landing-zone/blob/main/.docs/toolchain/toolchain-tmplt.md#optional-tools)"
 wizard.optional.tools.slack.title: "Slack"
 wizard.optional.tools.slack.description: "通过此工具链向 Slack 发送有关所有更新的通知"
+
 wizard.optional.tools.app-cicd.webhook.title: "Webhook URL"
 wizard.optional.tools.app-cicd.webhook.description: "Webhook URL"
 wizard.optional.tools.app-cicd.header-key.title: "标题键"
@@ -89,6 +99,7 @@ wizard.optional.tools.app-cicd.token.description: "私钥令牌"
 wizard.optional.tools.app-cicd.webhook.placeHolder: "https://devops-api.us-south.devops.cloud.ibm.com/v1/tekton-webhook/xxxx-xxxx-xxxx/run/xxxx-xxxx-xxxx"
 wizard.optional.tools.app-cicd.header-key.placeHolder: "X-CICD-TOKEN"
 wizard.optional.tools.app-cicd.token.placeHolder: "xxxx-xxxx-xxxx---xxxx-xxxx-xxxx"
+
 wizard.optional.tools.slack.webhookurl.title: "Webhook URL"
 wizard.optional.tools.slack.webhookurl.description: "您可在 Slack API Web 站点的“入局 Webhook”部分中创建或查找 Webhook。"
 wizard.optional.tools.slack.webhookurl.placeHolder: "https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX"
@@ -98,6 +109,7 @@ wizard.optional.tools.slack.channel_name.placeHolder: "some-example-channel"
 wizard.optional.tools.slack.team_url.title: "团队名称"
 wizard.optional.tools.slack.team_url.description: "是团队 URL 中 .slack.com 之前的单词或短语。"
 wizard.optional.tools.slack.team_url.placeHolder: "例如，如果您的团队 URL 为 https://team.slack.com，则团队名称为 team。"
+
 wizard.step.optionalworkarounds.title: "可选变通方法"
 wizard.optional.workarounds.title: "其他变通方法"
 wizard.optional.workarounds.longDescription: "这些是可选变通方法，可以包含在基础结构中。"
@@ -105,12 +117,16 @@ wizard.optional.workarounds.logging.title: "日志记录"
 wizard.optional.workarounds.logging.description: "在集群中配置日志记录变通方法"
 wizard.optional.workarounds.monitoring.title: "监视"
 wizard.optional.workarounds.monitoring.description: "在集群中配置监视变通方法"
+
 template.gettingStarted: " **您的工具链已就绪**\n\n**快速开始：** 将更改落实到 Git 存储库以触发新的构建管道，系统将扫描该管道以查找漏洞并部署到虚拟服务器中。 有关逐步指示信息，请参阅此工具链的[教程](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tutorial-cd-vsi)。"
+
 wizard.step.fortress.title: "Compliance"
+
 wizard.step.summary.title: "摘要"
 wizard.summary.title: "摘要"
 wizard.summary.success.title: "恭喜"
 wizard.summary.success.subtitle: "您已完成工具链的配置。 单击下面的“创建”按钮以使用所选工具和设置来创建工具链。  请参阅 [设置和配置指南](https: https://github.com/open-toolchain/landing-zone) 以了解后续步骤。"
+
 headerSVG.prPipeline: "PR 管道"
 headerSVG.cicdPipeline: "CI/CD 管道"
 headerSVG.ibm: "IBM"
@@ -124,4 +140,3 @@ headerSVG.devops: "DevOps"
 headerSVG.insights: "Insights"
 headerSVG.cloud: "Cloud"
 headerSVG.services: "Services"
-...

@@ -1,18 +1,14 @@
 ---
-###############################################################################
-# Licensed Materials - Property of IBM
-# (c) Copyright IBM Corporation 2016, 2022. All Rights Reserved.
-#
-# Note to U.S. Government Users Restricted Rights:
-# Use, duplication or disclosure restricted by GSA ADP Schedule
-# Contract with IBM Corp.
-###############################################################################
-#NLS_MESSAGEFORMAT_NONE
-#NLS_ENCODING=UTF-8
 #The format for creating a link with a URL and text is [link text](link url) with no spaces or characters between the two sets of brackets- []()
 template.name: "금융 서비스를 위한 IBM Cloud에 대한 코드로 인프라 배치"
-template.description: "이 도구 체인을 사용하면 IBM Cloud for Financial Services의 IBM Cloud Virtual Private Cloud 참조 아키텍처를 작성할 수 있습니다.  이 템플리트를 사용하면 IBM Cloud Virtual Servers for Virtual Private Cloud, Red Hat OpenShift on IBM Cloud 또는 둘 모두에서 IBM Cloud Virtual Private Cloud를 활용할 수 있습니다.  IBM Cloud Framework for Financial Services와 관련한 자세한 정보는 [IBM Cloud Framework for Financial Services - 배치 및 구성 안내서](https://cloud.ibm.com/docs/allowlist/Framework-financial-Services?topic=framework-financial-services-get-started)를 참조하십시오.  나중에 엔드-투-엔드 배치를 위해 애플리케이션 배치 도구 체인을 트리거할 수도 있습니다. \n\n도구 체인을 사용하면 소스 제어의 지속적 딜리버리, Delivery Pipeline 및 지속적 통합이 가능합니다. \n\n시작하려면 작성을 클릭하십시오. \n\n단계별 지시사항은 [학습서](https://github.com/open-toolchain/landing-zone)를 참조하십시오."
-wizard.welcome.description: "이 도구 체인을 사용하여 IBM Cloud for Financial Services의 IBM Cloud Virtual Private Cloud 참조 아키텍처를 작성할 수 있습니다.  이 템플리트를 사용하면 IBM Cloud Virtual Servers for Virtual Private Cloud, Red Hat OpenShift on IBM Cloud 또는 둘 모두에서 IBM Cloud Virtual Private Cloud를 활용할 수 있습니다.  IBM Cloud Framework for Financial Services와 관련한 자세한 정보는 [IBM Cloud Framework for Financial Services - 배치 및 구성 안내서](https://cloud.ibm.com/docs/allowlist/Framework-financial-Services?topic=framework-financial-services-get-started)를 참조하십시오.  나중에 엔드-투-엔드 배치를 위해 애플리케이션 배치 도구 체인을 트리거할 수도 있습니다.\n\n단계별 지시사항은 [학습서](https://github.com/open-toolchain/landing-zone)를 참조하십시오."
+template.description: "이 도구 체인을 사용하여 IBM Cloud for Financial Services의 IBM Cloud Virtual Private Cloud 참조 아키텍처를 작성할 수 있습니다."
+wizard.welcome.description: "이 도구 체인을 사용하여 IBM Cloud for Financial Services의 IBM Cloud Virtual Private Cloud 참조 아키텍처를 작성할 수 있습니다."
+wizard.welcome.prereq: "**전제조건**: 도구 체인을 작성하기 **전에** 다음을 완료해야 합니다. [도구 체인 전제조건](https://github.com/open-toolchain/landing-zone#prerequisites) ![](https://cloud.ibm.com/media/docs/images/icons/launch-glyph.svg)을 참조하십시오."
+wizard.welcome.template.link.text: "코드 저장소"
+wizard.welcome.documentation.link.text: "금융 서비스 프레임워크 문서"
+wizard.welcome.tutorial.link.text: "보안 랜딩 구역 문서"
+wizard.welcome.info.text: "이 템플리트는 마법사처럼 작동합니다.  사용자는 각각의 단계에서 도구 체인을 작성하기 위한 입력을 제공하도록 요청됩니다.\n\n이 도구 체인을 통해 \n  - IBM Cloud Virtual Servers for Virtual Private Cloud\n  - Red Hat OpenShift on IBM Cloud\n  -  또는 양쪽 모두에서 IBM Cloud Virtual Private Cloud를 활용할 수 있습니다.\n\n그런 다음 엔드 투 엔드 배치를 위해 애플리케이션 배치 도구 체인을 트리거할 수도 있습니다.  도구 체인을 사용하면 소스 제어의 지속적 딜리버리, 딜리버리 파이프라인 및 지속적 통합이 가능합니다."
+
 wizard.step.deployment_pattern.title: "배치 패턴"
 wizard.deploymentPattern.title: "배치 패턴"
 wizard.deploymentPattern.longDescription: "단순 POC, VPC의 VSI, VPC의 ROK 또는 혼합 등의 배치 패턴 중에서 하나를 선택하십시오."
@@ -21,6 +17,7 @@ wizard.deploymentPattern.simplepoc.title: "**단순 POC**\n\nSLZ를 체험하고
 wizard.deploymentPattern.vsi.title: "**VPC의 VSI**\n\n[VPC의 VSI](https://github.com/open-toolchain/landing-zone/blob/main/.docs/patterns/vsi-pattern.md) FS 호환 아키텍처의 경우 이를 선택하십시오."
 wizard.deploymentPattern.roks.title: "**VPC의 ROKS**\n\n[VPC의 ROKS](https://github.com/open-toolchain/landing-zone/blob/main/.docs/patterns/roks-pattern.md) FS 호환 아키텍처의 경우 이를 선택하십시오."
 wizard.deploymentPattern.mixed.title: "**혼합**\n\n[VPC의 VSI 및 ROKS의 혼합 아키텍처](https://github.com/open-toolchain/landing-zone/blob/main/.docs/patterns/mixed-pattern.md) FS 호환 아키텍처의 경우 이를 선택하십시오."
+
 wizard.step.infrastructureRepo.title: "인프라 저장소"
 wizard.infrastructureRepo.sourceHost: "소스 제공자"
 wizard.infrastructureRepo.title: "인프라 저장소"
@@ -29,24 +26,33 @@ wizard.infrastructureRepo.clone: "선택된 패턴에 대해 표준 유형 사�
 wizard.infrastructureRepo.link: "자체 IaC 저장소 가져오기"
 wizard.infrastructureRepo.repoURLPlaceholder: "https://us-south.git.cloud.ibm.com/user-id/infrastructure-XXXXXXXXXX"
 wizard.infrastructureRepo.repoNamePlaceholder: "infrastructure-XXXXXXXXXX"
+
 wizard.step.schematics.title: "ID 및 액세스"
 wizard.schematics.title: "API 키"
 wizard.schematics.longDescription: "IBM Cloud와의 상호작용을 위한 API 키"
-wizard.schematics.apikey.title: "API 키"
-wizard.schematics.apikey.description: "API 키"
+wizard.schematics.apikey.notification: "**참고**: IBM Cloud API 키에 대해 자세히 알아보려면 [API 키 이해](https://cloud.ibm.com/docs/account?topic=account-manapikey)를 참조하십시오."
+wizard.schematics.apikey.definition: "IBM API 키는 IBM 클라우드로 인증하며 이 도구 체인에서 광범위한 조작을 수행합니다."
+wizard.schematics.apikey.input: "이미 작성한 기존 키를 사용할 수 있습니다.  또는 '새로 작성' 단추를 클릭하여 새 API 키를 작성할 수 있습니다."
+wizard.schematics.apikey.title: "IBM Cloud API 키"
+wizard.schematics.apikey.description: "IBM Cloud API 키는 IBM Cloud 서비스에 액세스하는 데 사용됩니다. [IBM Cloud 콘솔](https://cloud.ibm.com/iam/apikeys)을 사용하거나, ibmcloud [iam api-key-create](https://cloud.ibm.com/docs/cli?topic=cli-ibmcloud_commands_iam#ibmcloud_iam_api_key_create) 명령을 사용하거나, '새로 작성' 단추를 클릭하여 API를 작성할 수 있습니다."
 wizard.schematics.apikey.placeholder: "API 키"
+
 wizard.step.security.title: "Security and Compliance"
 wizard.security.title: "보안 구성"
 wizard.security.longDescription: "도구 체인에 대한 보안 구성"
+
 wizard.step.kmsService.title: "키 관리"
 wizard.kmsService.title: "키 관리 서비스"
 wizard.kmsService.longDescription: "배치에서 암호화 키에 사용할 키 관리 서비스 중 하나에서 선택하십시오."
 wizard.kmsService.keyprotect.title: "**Key Protect(KP)** IBM 제어형 HSM을 제공하는[Key Protect](https://cloud.ibm.com/docs/Key-Protect)의 경우 이를 선택하십시오. 개발/테스트에서만 권장됩니다. HPCS를 사용하면 IBM Cloud for Financial Services의 제어 프레임워크와 호환이 가능합니다."
 wizard.kmsService.hpcs.title: "**Hyper Protect Crypto Services(HPCS)** 고객 제어형 HSM을 제공하는 [Hyper Protect Crypto Services](https://cloud.ibm.com/docs/hs-crypto?topic=hs-crypto-get-started)의 경우 이를 선택하십시오. IBM Cloud for Financial Services의 제어 프레임워크를 준수해야 합니다."
 wizard.kmsService.preprovisioned-hpcs.title: "**사전 프로비저닝된 Hyper Protect Crypto Services(HPCS)** 이미 프로비저닝되고 초기화된 [Hyper Protect Crypto Services](https://cloud.ibm.com/docs/hs-crypto?topic=hs-crypto-get-started)의 경우 이를 선택하십시오."
+
+
 wizard.step.hpcs_config.title: "HPCS 구성"
 wizard.hpcs_config.title: "HPCS 구성"
 wizard.hpcs_config.longDescription: "HPCS 관리자의 서명 키와 해당되는 비밀번호를 입력하십시오(최대 8, 최소 1)."
+
 wizard.preprovisioned_hpcs.title: "사전 프로비저닝된 HPCS 구성"
 wizard.preprovisioned_hpcs.longDescription: "사전 프로비저닝된 HPCS 인스턴스의 구성을 제공하십시오."
 wizard.preprovisioned_hpcs.resource_group.title: "자원 그룹"
@@ -55,6 +61,7 @@ wizard.preprovisioned_hpcs.resource_group.placeholder: "HPCS 자원 그룹"
 wizard.preprovisioned_hpcs.instance_name.title: "자원 인스턴스 이름"
 wizard.preprovisioned_hpcs.instance_name.description: "HPCS 자원 인스턴스의 이름"
 wizard.preprovisioned_hpcs.instance_name.placeholder: "HPCS 자원 인스턴스 이름"
+
 wizard.hpcs_config.admin1_sigkey.title: "관리자 1의 서명 키"
 wizard.hpcs_config.admin1_sigkey.description: "관리자 1의 서명 키"
 wizard.hpcs_config.admin1_sigkey.placeholder: "관리자 1의 서명 키"
@@ -73,13 +80,16 @@ wizard.hpcs_config.admin3_sigkey.placeholder: "관리자 3의 서명 키"
 wizard.hpcs_config.admin3_pass.title: "관리자 3의 서명 키 비밀번호"
 wizard.hpcs_config.admin3_pass.description: "관리자 3의 서명 키 비밀번호"
 wizard.hpcs_config.admin3_pass.placeholder: "관리자 3의 서명 키 비밀번호"
+
 wizard.step.optionaltools.title: "선택적 도구"
 wizard.optional.tools.title: "기타 도구"
 wizard.optional.tools.longDescription: "도구 체인에 포함될 수 있는 선택적 도구입니다."
 wizard.optional.tools.app-cicd.title: "애플리케이션 CICD"
-wizard.optional.tools.app-cicd.description: "Webhook를 사용한 애플리케이션 cicd 트리거"
+wizard.optional.tools.app-cicd.description: "인프라 파이프라인에서 애플리케이션 CI/CD 파이프라인을 트리거할 수 있는 선택적 단계입니다."
+wizard.optional.tools.app-cicd.parameters: "애플리케이션 CI/CD 파이프라인을 트리거하려면 요청 웹훅 및 헤더를 입력하십시오.\n\n[문서 보기](https://github.com/open-toolchain/landing-zone/blob/main/.docs/toolchain/toolchain-tmplt.md#optional-tools)"
 wizard.optional.tools.slack.title: "Slack"
 wizard.optional.tools.slack.description: "이 도구 체인의 업데이트에 대해 Slack에 알림 전송"
+
 wizard.optional.tools.app-cicd.webhook.title: "Webhook URL"
 wizard.optional.tools.app-cicd.webhook.description: "Webhook URL"
 wizard.optional.tools.app-cicd.header-key.title: "헤더 키"
@@ -89,6 +99,7 @@ wizard.optional.tools.app-cicd.token.description: "시크릿 토큰"
 wizard.optional.tools.app-cicd.webhook.placeHolder: "https://devops-api.us-south.devops.cloud.ibm.com/v1/tekton-webhook/xxxx-xxxx-xxxx/run/xxxx-xxxx-xxxx"
 wizard.optional.tools.app-cicd.header-key.placeHolder: "X-CICD-TOKEN"
 wizard.optional.tools.app-cicd.token.placeHolder: "xxxx-xxxx-xxxx---xxxx-xxxx-xxxx"
+
 wizard.optional.tools.slack.webhookurl.title: "Webhook URL"
 wizard.optional.tools.slack.webhookurl.description: "Slack API 웹 사이트의 수신 Webhook 섹션에서 Webhook를 작성하거나 찾을 수 있습니다."
 wizard.optional.tools.slack.webhookurl.placeHolder: "https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX"
@@ -98,6 +109,7 @@ wizard.optional.tools.slack.channel_name.placeHolder: "some-example-channel"
 wizard.optional.tools.slack.team_url.title: "팀 이름"
 wizard.optional.tools.slack.team_url.description: "팀 URL에서 .slack.com 앞의 단어 또는 문구."
 wizard.optional.tools.slack.team_url.placeHolder: "예를 들어, 팀 URL이 https://team.slack.com이면 팀 이름은 team입니다."
+
 wizard.step.optionalworkarounds.title: "선택적 임시 해결책"
 wizard.optional.workarounds.title: "기타 임시 해결책"
 wizard.optional.workarounds.longDescription: "이는 인프라에 포함될 수 있는 선택적 임시 해결책입니다."
@@ -105,12 +117,16 @@ wizard.optional.workarounds.logging.title: "로깅"
 wizard.optional.workarounds.logging.description: "클러스터 내에서의 로깅 임시 해결책의 프로비저닝"
 wizard.optional.workarounds.monitoring.title: "모니터링"
 wizard.optional.workarounds.monitoring.description: "클러스터 내에서 모니터링 임시 해결책의 프로비저닝"
+
 template.gettingStarted: " **도구 체인이 준비되었습니다!**\n\n**빠른 시작:** 새 빌드 파이프라인을 트리거하려면 Git 저장소에 대해 변경사항을 커미트하십시오. 해당 취약성이 스캔되고 가상 서버에 배치됩니다. 단계별 지시사항은 이 도구 체인에 대한 [튜토리얼](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tutorial-cd-vsi)을 참조하십시오."
+
 wizard.step.fortress.title: "규제 준수"
+
 wizard.step.summary.title: "요약"
 wizard.summary.title: "요약"
 wizard.summary.success.title: "축하합니다!"
 wizard.summary.success.subtitle: "도구 체인 구성을 완료했습니다. 아래의 '작성' 단추를 클릭하여 선택한 도구 및 설정으로 도구 체인을 작성하십시오.  다음 단계는 [설정 및 구성 안내서](https://github.com/open-toolchain/landing-zone)를 참조하십시오."
+
 headerSVG.prPipeline: "PR Pipeline"
 headerSVG.cicdPipeline: "CI/CD 파이프라인"
 headerSVG.ibm: "IBM"
@@ -124,4 +140,3 @@ headerSVG.devops: "DevOps"
 headerSVG.insights: "Insights"
 headerSVG.cloud: "Cloud"
 headerSVG.services: "Services"
-...

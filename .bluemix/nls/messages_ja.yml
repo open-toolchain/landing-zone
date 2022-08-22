@@ -1,18 +1,14 @@
 ---
-###############################################################################
-# Licensed Materials - Property of IBM
-# (c) Copyright IBM Corporation 2016, 2022. All Rights Reserved.
-#
-# Note to U.S. Government Users Restricted Rights:
-# Use, duplication or disclosure restricted by GSA ADP Schedule
-# Contract with IBM Corp.
-###############################################################################
-#NLS_MESSAGEFORMAT_NONE
-#NLS_ENCODING=UTF-8
 #The format for creating a link with a URL and text is [link text](link url) with no spaces or characters between the two sets of brackets- []()
 template.name: "IBM Cloud for Financial Services のコードとしてインフラストラクチャーをデプロイ"
-template.description: "このツールチェーンを使用して、IBM Cloud for Financial Services の IBM Cloud Virtual Private Cloud リファレンス・アーキテクチャーを作成できます。  このテンプレートを使用すると、IBM Cloud Virtual Private Cloud を、IBM Cloud Virtual Servers for Virtual Private Cloud または Red Hat OpenShift on IBM Cloud、あるいはその両方で利用できます。  IBM Cloud Framework for Financial Services について詳しくは、[IBM Cloud Framework for Financial Services - Deployment and Configuration Guide](https://cloud.ibm.com/docs/allowlist/Framework-Financial-services?topic=Framework-Financial-services-get-started) を参照してください。  作成すると、アプリケーション・デプロイメント・ツールチェーンをトリガーしてエンドツーエンドでデプロイメントすることもできます。\n\nツールチェーンは、ソース管理、デリバリー・パイプライン、および継続的統合により継続的デリバリーを可能にします。\n\n開始するには、「作成」をクリックします。\n\nステップバイステップの手順については、[チュートリアル](https://github.com/open-toolchain/landing-zone)に従ってください。"
-wizard.welcome.description: "このツールチェーンを使用して、IBM Cloud for Financial Services の IBM Cloud Virtual Private Cloud リファレンス・アーキテクチャーを作成できます。  このテンプレートを使用すると、IBM Cloud Virtual Private Cloud を、IBM Cloud Virtual Servers for Virtual Private Cloud または Red Hat OpenShift on IBM Cloud、あるいはその両方で利用できます。  IBM Cloud Framework for Financial Services について詳しくは、[IBM Cloud Framework for Financial Services - Deployment and Configuration Guide](https://cloud.ibm.com/docs/allowlist/Framework-Financial-services?topic=Framework-Financial-services-get-started) を参照してください。  作成すると、アプリケーション・デプロイメント・ツールチェーンをトリガーしてエンドツーエンドでデプロイメントすることもできます。\n\nステップバイステップの手順については、[チュートリアル](https://github.com/open-toolchain/landing-zone)に従ってください。"
+template.description: "このツールチェーンを使用して、IBM Cloud for Financial Services の IBM Cloud Virtual Private Cloud リファレンス・アーキテクチャーを作成できます。"
+wizard.welcome.description: "このツールチェーンを使用して、IBM Cloud for Financial Services の IBM Cloud Virtual Private Cloud リファレンス・アーキテクチャーを作成できます。"
+wizard.welcome.prereq: "**前提条件**: ツールチェーンを作成する**前に**、以下が完了していることを確認する必要があります。 [ツールチェーンの前提条件](https://github.com/open-toolchain/landing-zone#prerequisites) ![](https://cloud.ibm.com/media/docs/images/icons/launch-glyph.svg) を参照してください。"
+wizard.welcome.template.link.text: "コード・リポジトリー"
+wizard.welcome.documentation.link.text: "Financial Service Framework の資料"
+wizard.welcome.tutorial.link.text: "Secure Landing Zone の資料"
+wizard.welcome.info.text: "このテンプレートはウィザードのように機能します。  各ステップで、ツールチェーンを作成するための入力を行うように求められます。\n\nこのツールチェーンを使用すると、\n  - IBM Cloud Virtual Servers for Virtual Private Cloud\n  - Red Hat OpenShift on IBM Cloud\n  -  のいずれか、またはその両方で IBM Cloud Virtual Private Cloud を活用できます。\n\nその後、アプリケーション・デプロイメント・ツールチェーンをトリガーして、エンドツーエンドのデプロイメントを行うこともできます。  ツールチェーンは、ソース管理、デリバリー・パイプライン、および継続的統合により継続的デリバリーを可能にします。"
+
 wizard.step.deployment_pattern.title: "デプロイメント・パターン"
 wizard.deploymentPattern.title: "デプロイメント・パターン"
 wizard.deploymentPattern.longDescription: "「Simple POC」、「VSI on VPC」、「ROKs on VPC」、「Mixed」のいずれかのデプロイメント・パターンを選択します。"
@@ -21,6 +17,7 @@ wizard.deploymentPattern.simplepoc.title: "**Simple POC**\n\nSLZ を体験して
 wizard.deploymentPattern.vsi.title: "**VSI on VPC**\n\n[VSI on VPC](https://github.com/open-toolchain/landing-zone/blob/main/.docs/patterns/vsi-pattern.md) FS に準拠したアーキテクチャーの場合は、これを選択します。"
 wizard.deploymentPattern.roks.title: "**ROKS on VPC**\n\n[ROKS on VPC](https://github.com/open-toolchain/landing-zone/blob/main/.docs/patterns/roks-pattern.md) FS に準拠したアーキテクチャーの場合は、これを選択します。"
 wizard.deploymentPattern.mixed.title: "**Mixed**\n\n[VSI on VPC と ROKS on VPC の混合アーキテクチャー](https://github.com/open-toolchain/landing-zone/blob/main/.docs/patterns/mixed-pattern.md) FS に準拠したアーキテクチャーの場合は、これを選択します。"
+
 wizard.step.infrastructureRepo.title: "インフラストラクチャー・リポジトリー"
 wizard.infrastructureRepo.sourceHost: "ソース・プロバイダー"
 wizard.infrastructureRepo.title: "インフラストラクチャー・リポジトリー"
@@ -29,24 +26,33 @@ wizard.infrastructureRepo.clone: "選択したパターンのボイラープレ�
 wizard.infrastructureRepo.link: "独自の IaC リポジトリーの持ち込み"
 wizard.infrastructureRepo.repoURLPlaceholder: "https://us-south.git.cloud.ibm.com/user-id/infrastructure-XXXXXXXXXX"
 wizard.infrastructureRepo.repoNamePlaceholder: "infrastructure-XXXXXXXXXX"
+
 wizard.step.schematics.title: "ID とアクセス権限"
 wizard.schematics.title: "API 鍵"
 wizard.schematics.longDescription: "IBM Cloud と対話するための API 鍵"
-wizard.schematics.apikey.title: "API 鍵"
-wizard.schematics.apikey.description: "API 鍵"
+wizard.schematics.apikey.notification: "**注**: IBM Cloud API キーについて詳しくは、[API キーについて](https://cloud.ibm.com/docs/account?topic=account-manapikey) を参照してください。"
+wizard.schematics.apikey.definition: "IBM API キーは IBM クラウドで認証され、このツールチェーンで幅広い操作を実行します。"
+wizard.schematics.apikey.input: "作成済みの既存のキーを使用できます。  あるいは、「新規」ボタンをクリックして、新しい API キーを作成することもできます。"
+wizard.schematics.apikey.title: "IBM Cloud API キー"
+wizard.schematics.apikey.description: "IBM Cloud API キーは、IBM Cloud サービスにアクセスするために使用されます。 API を作成するには、[IBM Cloud コンソール](https://cloud.ibm.com/iam/apikeys) を使用するか、ibmcloud [iam api-key-create](https://cloud.ibm.com/docs/cli?topic=cli-ibmcloud_commands_iam#ibmcloud_iam_api_key_create) コマンドを使用するか、「新規」ボタンをクリックします。"
 wizard.schematics.apikey.placeholder: "API 鍵"
+
 wizard.step.security.title: "セキュリティーおよびコンプライアンス"
 wizard.security.title: "セキュリティー構成"
 wizard.security.longDescription: "ツールチェーンのセキュリティー構成"
+
 wizard.step.kmsService.title: "鍵管理"
 wizard.kmsService.title: "鍵管理サービス"
 wizard.kmsService.longDescription: "デプロイメントで暗号化鍵に使用する鍵管理サービスのいずれかを選択します。"
 wizard.kmsService.keyprotect.title: "**Key Protect(KP)**IBM 制御の HSM を提供する [Key Protect](https://cloud.ibm.com/docs/Key-Protect) の場合は、これを選択します。 開発/テストでのみ推奨されます。 IBM Cloud for Financial Services の制御フレームワークに準拠するには、HPCS を使用します。"
 wizard.kmsService.hpcs.title: "**Hyper Protect Crypto Services(HPCS)**お客様が制御する HSM を提供する [Hyper Protect Crypto Services](https://cloud.ibm.com/docs/hs-Crypto?topic=hs-Crypto-get-started) の場合は、これを選択します。 IBM Cloud for Financial Services の制御フレームワークに準拠するために必要です。"
 wizard.kmsService.preprovisioned-hpcs.title: "**事前プロビジョン済み Hyper Protect Crypto Services(HPCS)**既にプロビジョンおよび初期化済みの [Hyper Protect Crypto Services](https://cloud.ibm.com/docs/hs-Crypto?topic=hs-Crypto-get-started) の場合は、これを選択します。"
+
+
 wizard.step.hpcs_config.title: "HPCS の構成"
 wizard.hpcs_config.title: "HPCS の構成"
 wizard.hpcs_config.longDescription: "HPCS 管理者の署名鍵とそれに対応するパスワードを入力します (最大 8、最小 1)。"
+
 wizard.preprovisioned_hpcs.title: "事前プロビジョン済み HPCS の構成"
 wizard.preprovisioned_hpcs.longDescription: "事前プロビジョン済み HPCS インスタンスの構成を指定してください"
 wizard.preprovisioned_hpcs.resource_group.title: "リソース・グループ"
@@ -55,6 +61,7 @@ wizard.preprovisioned_hpcs.resource_group.placeholder: "HPCS リソース・グ�
 wizard.preprovisioned_hpcs.instance_name.title: "リソース・インスタンス名"
 wizard.preprovisioned_hpcs.instance_name.description: "HPCS リソース・インスタンスの名前"
 wizard.preprovisioned_hpcs.instance_name.placeholder: "HPCS リソース・インスタンス名"
+
 wizard.hpcs_config.admin1_sigkey.title: "管理者 1 の署名鍵"
 wizard.hpcs_config.admin1_sigkey.description: "管理者 1 の署名鍵"
 wizard.hpcs_config.admin1_sigkey.placeholder: "管理者 1 の署名鍵"
@@ -73,13 +80,16 @@ wizard.hpcs_config.admin3_sigkey.placeholder: "管理者 3 の署名鍵"
 wizard.hpcs_config.admin3_pass.title: "管理者 3 の署名鍵パスワード"
 wizard.hpcs_config.admin3_pass.description: "管理者 3 の署名鍵パスワード"
 wizard.hpcs_config.admin3_pass.placeholder: "管理者 3 の署名鍵パスワード"
+
 wizard.step.optionaltools.title: "オプション・ツール"
 wizard.optional.tools.title: "その他のツール"
 wizard.optional.tools.longDescription: "以下のツールは、ツールチェーンに組み込むことができるオプション・ツールです。"
 wizard.optional.tools.app-cicd.title: "アプリケーション CICD"
-wizard.optional.tools.app-cicd.description: "Webhook を使用してアプリケーション CICD をトリガーします"
+wizard.optional.tools.app-cicd.description: "これは、インフラストラクチャー・パイプラインからアプリケーション CI/CD パイプラインをトリガーできるようにするためのオプション・ステップです。"
+wizard.optional.tools.app-cicd.parameters: "アプリケーション CI/CD パイプラインをトリガーするには、要求 Webhook とヘッダーを入力してください。\n\n[資料の表示](https://github.com/open-toolchain/landing-zone/blob/main/.docs/toolchain/toolchain-tmplt.md#optional-tools)"
 wizard.optional.tools.slack.title: "Slack"
 wizard.optional.tools.slack.description: "このツールチェーンからの更新に関する通知を Slack に送信します"
+
 wizard.optional.tools.app-cicd.webhook.title: "Webhook URL"
 wizard.optional.tools.app-cicd.webhook.description: "Webhook URL"
 wizard.optional.tools.app-cicd.header-key.title: "ヘッダー・キー"
@@ -89,6 +99,7 @@ wizard.optional.tools.app-cicd.token.description: "シークレット・トー�
 wizard.optional.tools.app-cicd.webhook.placeHolder: "https://devops-api.us-south.devops.cloud.ibm.com/v1/tekton-webhook/xxxx-xxxx-xxxx/run/xxxx-xxxx-xxxx"
 wizard.optional.tools.app-cicd.header-key.placeHolder: "X-CICD-TOKEN"
 wizard.optional.tools.app-cicd.token.placeHolder: "xxxx-xxxx-xxxx---xxxx-xxxx-xxxx"
+
 wizard.optional.tools.slack.webhookurl.title: "Webhook URL"
 wizard.optional.tools.slack.webhookurl.description: "Webhook は、Slack API Web サイトの「Incoming Webhooks」セクションで作成または検索できます。"
 wizard.optional.tools.slack.webhookurl.placeHolder: "https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX"
@@ -98,6 +109,7 @@ wizard.optional.tools.slack.channel_name.placeHolder: "some-example-channel"
 wizard.optional.tools.slack.team_url.title: "チーム名"
 wizard.optional.tools.slack.team_url.description: "チーム URL 内の .slack.com の前の単語または句です。"
 wizard.optional.tools.slack.team_url.placeHolder: "例えば、チーム URL が https://team.slack.com の場合、チーム名は team です。"
+
 wizard.step.optionalworkarounds.title: "オプションの回避策"
 wizard.optional.workarounds.title: "その他の回避策"
 wizard.optional.workarounds.longDescription: "これらは、ご使用のインフラストラクチャーに組み込むことができるオプションの回避策です。"
@@ -105,12 +117,16 @@ wizard.optional.workarounds.logging.title: "ロギング"
 wizard.optional.workarounds.logging.description: "クラスタ内でロギングの回避策をプロビジョンします"
 wizard.optional.workarounds.monitoring.title: "モニター"
 wizard.optional.workarounds.monitoring.description: "クラスター内でモニターの回避策をプロビジョンします"
+
 template.gettingStarted: " **ツールチェーンの準備ができました。**\n\n**クイック・スタート:** Git リポジトリーに対する変更をコミットして、新しいビルド・パイプラインをトリガーしてください。このパイプラインは脆弱性についてスキャンされ、仮想サーバーにデプロイされます。 段階的な説明については、このツールチェーンの[チュートリアル](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tutorial-cd-vsi)を参照してください。"
+
 wizard.step.fortress.title: "コンプライアンス"
+
 wizard.step.summary.title: "要約"
 wizard.summary.title: "要約"
 wizard.summary.success.title: "完了しました"
 wizard.summary.success.subtitle: "ツールチェーンの構成を完了しました。 選択したツールおよび設定でツールチェーンを作成するには、下の「作成」ボタンをクリックしてください。  次のステップについては、[セットアップおよび構成ガイド](https://github.com/open-toolchain/landing-zone)を参照してください。"
+
 headerSVG.prPipeline: "PR パイプライン"
 headerSVG.cicdPipeline: "CI/CD パイプライン"
 headerSVG.ibm: "IBM"
@@ -124,4 +140,3 @@ headerSVG.devops: "DevOps"
 headerSVG.insights: "Insights"
 headerSVG.cloud: "Cloud"
 headerSVG.services: "Services"
-...

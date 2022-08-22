@@ -1,18 +1,14 @@
 ---
-###############################################################################
-# Licensed Materials - Property of IBM
-# (c) Copyright IBM Corporation 2016, 2022. All Rights Reserved.
-#
-# Note to U.S. Government Users Restricted Rights:
-# Use, duplication or disclosure restricted by GSA ADP Schedule
-# Contract with IBM Corp.
-###############################################################################
-#NLS_MESSAGEFORMAT_NONE
-#NLS_ENCODING=UTF-8
 #The format for creating a link with a URL and text is [link text](link url) with no spaces or characters between the two sets of brackets- []()
 template.name: "Déployer l'infrastructure en tant que code pour IBM Cloud for Financial Services"
-template.description: "Avec cette chaîne d'outils, vous pouvez créer l'architecture de référence du cloud privé virtuel IBM Cloud pour IBM Cloud for Financial Services. Ce modèle permet d'optimiser le cloud privé virtuel IBM Cloud avec IBM Cloud Virtual Servers for Virtual Private Cloud, Red Hat OpenShift on IBM Cloud ou les deux. Consultez le manuel [IBM Cloud Framework for Financial Services - Guide de déploiement et de configuration](https://cloud.ibm.com/docs/allowlist/Framework-financial-Services?topic=framework-financial-services-get-started) pour plus d'informations concernant IBM Cloud Framework for Financial Services. Par la suite, vous pouvez également déclencher votre chaîne d'outils de déploiement d'application, pour un déploiement de bout en bout.\n\n La chaîne d'outils permet une distribution continue avec contrôle des sources, pipelines de livraison et intégration continue. \n\nPour commencer, cliquez sur Créer.\n\n Pour des instructions pas à pas, suivez le [tutoriel](https://github.com/open-toolchain/landing-zone)"
-wizard.welcome.description: "Avec cette chaîne d'outils, vous pouvez créer l'architecture de référence du cloud privé virtuel IBM Cloud pour IBM Cloud for Financial Services. Ce modèle permet d'optimiser le cloud privé virtuel IBM Cloud avec IBM Cloud Virtual Servers for Virtual Private Cloud, Red Hat OpenShift on IBM Cloud ou les deux. Consultez le manuel [IBM Cloud Framework for Financial Services - Guide de déploiement et de configuration](https://cloud.ibm.com/docs/allowlist/Framework-financial-Services?topic=framework-financial-services-get-started) pour plus d'informations concernant IBM Cloud Framework for Financial Services. Par la suite, vous pouvez également déclencher votre chaîne d'outils de déploiement d'application, pour un déploiement de bout en bout.\n\n Pour des instructions pas à pas, suivez le [tutoriel](https://github.com/open-toolchain/landing-zone)"
+template.description: "Avec cette chaîne d'outils, vous pouvez créer l'architecture de référence IBM Cloud Virtual Private Cloud pour IBM Cloud for Financial Services."
+wizard.welcome.description: "Avec cette chaîne d'outils, vous pouvez créer l'architecture de référence IBM Cloud Virtual Private Cloud pour IBM Cloud for Financial Services."
+wizard.welcome.prereq: "**Prérequis** : vous devez vous assurer que les tâches suivantes sont exécutées **avant** de créer la chaîne d'outils. Reportez-vous aux [prérequis de la chaîne d'outils](https://github.com/open-toolchain/landing-zone#prerequisites) ![](https://cloud.ibm.com/media/docs/images/icons/launch-glyph.svg)."
+wizard.welcome.template.link.text: "Code référentiel"
+wizard.welcome.documentation.link.text: "Documents sur l'infrastructure du service financier"
+wizard.welcome.tutorial.link.text: "Documents sur la zone d'atterrissage sécurisée"
+wizard.welcome.info.text: "Ce modèle fonctionne comme un assistant.  Vous êtes invité à chaque étape à fournir une entrée pour créer une chaîne d'outils.\n\nCette chaîne d'outils vous permet d'optimiser IBM Cloud Virtual Private Cloud avec\n  - IBM Cloud Virtual Servers for Virtual Private Cloud\n  - Red Hat OpenShift on IBM Cloud\n  - ou les deux.\n\nVous pouvez ensuite également déclencher votre chaîne d'outils de déploiement d'application pour un déploiement de bout en bout.  La chaîne d'outils permet une distribution continue avec contrôle des sources, pipelines de livraison et intégration continue."
+
 wizard.step.deployment_pattern.title: "Modèle de déploiement"
 wizard.deploymentPattern.title: "Modèle de déploiement"
 wizard.deploymentPattern.longDescription: "Sélectionnez l'un des modèles de déploiement : Simple POC, VSI on VPC, ROKs on VPC ou Mixte."
@@ -21,6 +17,7 @@ wizard.deploymentPattern.simplepoc.title: "**Simple POC**\n\nSélectionnez un mo
 wizard.deploymentPattern.vsi.title: "**VSI on VPC**\n\nSélectionnez cette option pour une architecture compatible avec FS [VSI on VPC](https://github.com/open-toolchain/landing-zone/blob/main/.docs/patterns/vsi-pattern.md)."
 wizard.deploymentPattern.roks.title: "**ROKS on VPC**\n\nSélectionnez cette option pour une architecture compatible avec FS [ROKS on VPC](https://github.com/open-toolchain/landing-zone/blob/main/.docs/patterns/roks-pattern.md)."
 wizard.deploymentPattern.mixed.title: "**Mixte**\n\nSélectionnez cette option pour une architecture compatible avec FS de type [Architecture combinant VSI et ROKS on VPC](https://github.com/open-toolchain/landing-zone/blob/main/.docs/patterns/mixed-pattern.md)."
+
 wizard.step.infrastructureRepo.title: "Référentiel d'infrastructure"
 wizard.infrastructureRepo.sourceHost: "Fournisseur source"
 wizard.infrastructureRepo.title: "Référentiel d'infrastructure"
@@ -29,24 +26,33 @@ wizard.infrastructureRepo.clone: "Utiliser le conteneur boilerplate pour le mod�
 wizard.infrastructureRepo.link: "Apporter votre propre référentiel IaC"
 wizard.infrastructureRepo.repoURLPlaceholder: "https://us-south.git.cloud.ibm.com/user-id/infrastructure-XXXXXXXXXX"
 wizard.infrastructureRepo.repoNamePlaceholder: "Infrastructure-XXXXXXXXXX"
+
 wizard.step.schematics.title: "Identité et accès"
 wizard.schematics.title: "Clé d'API"
 wizard.schematics.longDescription: "Clé d'API pour l'interaction avec IBM Cloud"
-wizard.schematics.apikey.title: "Clé d'API"
-wizard.schematics.apikey.description: "Clé d'API"
+wizard.schematics.apikey.notification: "**Remarque** : pour en savoir plus sur les clés d'API IBM Cloud, voir [Présentation des clés d'API](https://cloud.ibm.com/docs/account?topic=account-manapikey)"
+wizard.schematics.apikey.definition: "Une clé d'API IBM s'authentifie auprès d'IBM Cloud et effectue une large gamme d'opérations dans cette chaîne d'outils."
+wizard.schematics.apikey.input: "Vous pouvez utiliser une clé existante que vous avez déjà créée.  Sinon, vous pouvez créer une clé d'API en cliquant sur le bouton 'Nouveau'."
+wizard.schematics.apikey.title: "Clé d'API IBM Cloud"
+wizard.schematics.apikey.description: "La clé d'API IBM Cloud est utilisée pour accéder aux services IBM Cloud. Vous pouvez créer votre API à l'aide de la console [IBM Cloud](https://cloud.ibm.com/iam/apikeys), à l'aide de la commande ibmcloud [iam api-key-create](https://cloud.ibm.com/docs/cli?topic=cli-ibmcloud_commands_iam#ibmcloud_iam_api_key_create) ou en cliquant sur le bouton 'Nouveau'."
 wizard.schematics.apikey.placeholder: "Clé d'API"
+
 wizard.step.security.title: "Sécurité et conformité"
 wizard.security.title: "Configuration de la sécurité"
 wizard.security.longDescription: "Configuration de la sécurité pour la chaîne d'outils"
+
 wizard.step.kmsService.title: "Gestion des clés"
 wizard.kmsService.title: "Service de gestion de clés"
 wizard.kmsService.longDescription: "Sélectionnez l'un des services de gestion de clés à utiliser pour les clés de chiffrement dans le déploiement."
 wizard.kmsService.keyprotect.title: "**Key Protect(KP)**Sélectionnez cette option pour [Key Protect](https://cloud.ibm.com/docs/key-protect) qui fournit des modules HSM contrôlés par IBM. Uniquement recommandé en développement/test. Utilisez HPCS pour être conforme à la structure de contrôle IBM Cloud for Financial Services."
 wizard.kmsService.hpcs.title: "**Hyper Protect Crypto Services(HPCS)**Sélectionnez cette option pour [Hyper Protect Crypto Services](https://cloud.ibm.com/docs/hs-crypto?topic=hs-crypto-get-started) qui fournit des modules HSM contrôlés par le client. Obligatoire pour être conforme à la structure de contrôle IBM Cloud for Financial Services."
 wizard.kmsService.preprovisioned-hpcs.title: "**Pre-provisioned Hyper Protect Crypto Services(HPCS)**Sélectionnez cette option pour [Hyper Protect Crypto Services](https://cloud.ibm.com/docs/hs-crypto?topic=hs-crypto-get-started) qui a déjà été initialisé et initialisé."
+
+
 wizard.step.hpcs_config.title: "Configuration HPCS"
 wizard.hpcs_config.title: "Configuration HPCS"
 wizard.hpcs_config.longDescription: "Entrez les clés de signature et les mots de passe correspondants pour les administrateurs HPCS (max. 8, min. 1)."
+
 wizard.preprovisioned_hpcs.title: "Configuration HPCS pré-provisionnée"
 wizard.preprovisioned_hpcs.longDescription: "Indiquez la configuration d'une instance HPCS pré-provisionnée"
 wizard.preprovisioned_hpcs.resource_group.title: "Groupe de ressources"
@@ -55,6 +61,7 @@ wizard.preprovisioned_hpcs.resource_group.placeholder: "Groupe de ressources HPC
 wizard.preprovisioned_hpcs.instance_name.title: "Nom d'instance de ressource"
 wizard.preprovisioned_hpcs.instance_name.description: "Nom de l'instance de ressource HPCS"
 wizard.preprovisioned_hpcs.instance_name.placeholder: "Nom d'instance de ressource HPCS"
+
 wizard.hpcs_config.admin1_sigkey.title: "Clé de signature pour l'administrateur 1"
 wizard.hpcs_config.admin1_sigkey.description: "Clé de signature pour l'administrateur 1"
 wizard.hpcs_config.admin1_sigkey.placeholder: "Clé de signature pour l'administrateur 1"
@@ -73,13 +80,16 @@ wizard.hpcs_config.admin3_sigkey.placeholder: "Clé de signature pour l'administ
 wizard.hpcs_config.admin3_pass.title: "Mot de passe de la clé de signature pour l'administrateur 3"
 wizard.hpcs_config.admin3_pass.description: "Mot de passe de la clé de signature pour l'administrateur 3"
 wizard.hpcs_config.admin3_pass.placeholder: "Mot de passe de la clé de signature pour l'administrateur 3"
+
 wizard.step.optionaltools.title: "Outils facultatifs"
 wizard.optional.tools.title: "Autres outils"
 wizard.optional.tools.longDescription: "Voici des outils facultatifs pouvant être inclus dans votre chaîne d'outils."
 wizard.optional.tools.app-cicd.title: "IC/DC de l'application"
-wizard.optional.tools.app-cicd.description: "Déclencher l'intégration et la distribution continues de l'application avec un webhook"
+wizard.optional.tools.app-cicd.description: "Il s'agit d'une étape facultative qui vous permet de déclencher un pipeline CI/CD d'application à partir de votre pipeline d'infrastructure."
+wizard.optional.tools.app-cicd.parameters: "Entrez le webhook et l'en-tête de la demande pour déclencher le pipeline CI/CD de l'application.\n\n[Afficher les documents](https://github.com/open-toolchain/landing-zone/blob/main/.docs/toolchain/toolchain-tmplt.md#optional-tools)"
 wizard.optional.tools.slack.title: "Slack"
 wizard.optional.tools.slack.description: "Envoyer une notification à Slack sur les mises à jour de cette chaîne d'outils"
+
 wizard.optional.tools.app-cicd.webhook.title: "URL du webhook"
 wizard.optional.tools.app-cicd.webhook.description: "URL du webhook"
 wizard.optional.tools.app-cicd.header-key.title: "Clé d'en-tête"
@@ -89,6 +99,7 @@ wizard.optional.tools.app-cicd.token.description: "Jeton secret"
 wizard.optional.tools.app-cicd.webhook.placeHolder: "https://devops-api.us-south.devops.cloud.ibm.com/v1/tekton-webhook/xxxx-xxxx-xxxx/run/xxxx-xxxx-xxxx"
 wizard.optional.tools.app-cicd.header-key.placeHolder: "X-CICD-JETON"
 wizard.optional.tools.app-cicd.token.placeHolder: "xxxx-xxxx-xxxx---xxxx-xxxx-xxxx"
+
 wizard.optional.tools.slack.webhookurl.title: "URL du webhook"
 wizard.optional.tools.slack.webhookurl.description: "Vous pouvez créer ou trouver votre webhook dans la section des webhooks entrants du site Web d'API Slack."
 wizard.optional.tools.slack.webhookurl.placeHolder: "https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX"
@@ -98,6 +109,7 @@ wizard.optional.tools.slack.channel_name.placeHolder: "exemple-de-canal"
 wizard.optional.tools.slack.team_url.title: "Nom de l'équipe"
 wizard.optional.tools.slack.team_url.description: "Mot ou phrase avant .slack.com dans votre URL d'équipe."
 wizard.optional.tools.slack.team_url.placeHolder: "Par exemple, si votre URL d'équipe est https://team.slack.com, le nom de l'équipe est team."
+
 wizard.step.optionalworkarounds.title: "Solutions de contournement facultatives"
 wizard.optional.workarounds.title: "Autres solutions de contournement"
 wizard.optional.workarounds.longDescription: "Il s'agit de solutions de contournement facultatives qui peuvent être incluses dans votre infrastructure."
@@ -105,12 +117,16 @@ wizard.optional.workarounds.logging.title: "Journalisation"
 wizard.optional.workarounds.logging.description: "Mettre à disposition une solution de contournement de la journalisation dans votre cluster"
 wizard.optional.workarounds.monitoring.title: "Surveillance"
 wizard.optional.workarounds.monitoring.description: "Mettre à disposition une solution de contournement de la surveillance dans votre cluster"
+
 template.gettingStarted: " **Votre chaîne d'outils est prête !**\n\n**Démarrage rapide :** Validez une modification de référentiel Git pour déclencher un nouveau pipeline de génération, qui sera analysé à la recherche de vulnérabilités et déployé sur votre serveur virtuel. Pour des instructions détaillées, suivez le [tutoriel](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tutorial-cd-vsi) de cette chaîne d'outils."
+
 wizard.step.fortress.title: "Conformité"
+
 wizard.step.summary.title: "Récapitulatif"
 wizard.summary.title: "Récapitulatif"
 wizard.summary.success.title: "Félicitations !"
 wizard.summary.success.subtitle: "Vous avez terminé la configuration de votre chaîne d'outils. Cliquez sur le bouton 'Créer' ci-dessous pour créer la chaîne d'outils avec les outils et les paramètres de votre choix.  Voir le [Guide d'installation et de configuration](https://github.com/open-toolchain/landing-zone) pour les étapes suivantes."
+
 headerSVG.prPipeline: "Pipeline DE"
 headerSVG.cicdPipeline: "Pipeline IC/DC"
 headerSVG.ibm: "IBM"
@@ -124,4 +140,3 @@ headerSVG.devops: "DevOps"
 headerSVG.insights: "Insights"
 headerSVG.cloud: "Cloud"
 headerSVG.services: "Services"
-...

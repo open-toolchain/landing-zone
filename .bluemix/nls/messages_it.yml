@@ -1,18 +1,14 @@
 ---
-###############################################################################
-# Licensed Materials - Property of IBM
-# (c) Copyright IBM Corporation 2016, 2022. All Rights Reserved.
-#
-# Note to U.S. Government Users Restricted Rights:
-# Use, duplication or disclosure restricted by GSA ADP Schedule
-# Contract with IBM Corp.
-###############################################################################
-#NLS_MESSAGEFORMAT_NONE
-#NLS_ENCODING=UTF-8
 #The format for creating a link with a URL and text is [link text](link url) with no spaces or characters between the two sets of brackets- []()
 template.name: "Distribuisci l'infrastruttura come codice per IBM Cloud for Financial Services"
-template.description: "Con questa toolchain puoi creare l'architettura di riferimento IBM Cloud Virtual Private Cloud per IBM Cloud for Financial Services.  Questo modello ti consente di utilizzare IBM Cloud Virtual Private Cloud con IBM Cloud Virtual Servers for Virtual Private Cloud e/o Red Hat OpenShift on IBM Cloud. Consulta [IBM Cloud Framework for Financial Services - Guida alla distribuzione e alla configurazione](https://cloud.ibm.com/docs/allowlist/framework-financial-services?topic=framework-financial-services-get-started) per ulteriori informazioni relative a IBM Cloud Framework for Financial Services.  Successivamente, potrai anche attivare la tua toolchain di distribuzione delle applicazioni, per una distribuzione end-to-end.\n\nLa toolchain abilita la consegna continua con il controllo origini, le pipeline di distribuzione e l'integrazione continua.\n\nPer iniziare, fai clic su Crea.\n\nPer istruzioni dettagliate, segui il [tutorial](https://github.com/open-toolchain/landing-zone)"
-wizard.welcome.description: "Con questa toolchain, puoi creare l'architettura di riferimento IBM Cloud Virtual Private Cloud per IBM Cloud for Financial Services.  Questo modello ti consente di utilizzare IBM Cloud Virtual Private Cloud con IBM Cloud Virtual Servers for Virtual Private Cloud e/o Red Hat OpenShift on IBM Cloud. Consulta [IBM Cloud Framework for Financial Services - Guida alla distribuzione e alla configurazione](https://cloud.ibm.com/docs/allowlist/framework-financial-services?topic=framework-financial-services-get-started) per ulteriori informazioni relative a IBM Cloud Framework for Financial Services.  Successivamente, potrai anche attivare la tua toolchain di distribuzione delle applicazioni, per una distribuzione end-to-end. \n\nPer istruzioni dettagliate, segui il [tutorial](https://github.com/open-toolchain/landing-zone)"
+template.description: "Con questa toolchain è possibile creare l'architettura di riferimento IBM Cloud Virtual Private Cloud per IBM Cloud for Financial Services."
+wizard.welcome.description: "Con questa toolchain è possibile creare l'architettura di riferimento IBM Cloud Virtual Private Cloud per IBM Cloud for Financial Services."
+wizard.welcome.prereq: "**Prerequisiti**: completare i seguenti passi **prima** di creare la toolchain. Fare riferimento ai [prerequisiti della toolchain](https://github.com/open-toolchain/landing-zone#prerequisites) ![](https://cloud.ibm.com/media/docs/images/icons/launch-glyph.svg)."
+wizard.welcome.template.link.text: "Repository di codice"
+wizard.welcome.documentation.link.text: "Documentazione del framework dei servizi finanziari"
+wizard.welcome.tutorial.link.text: "Documentazione della zona di esplorazione sicura"
+wizard.welcome.info.text: "Questo modello funziona come una procedura guidata.  In ogni passo viene richiesto di fornire un input per creare una toolchain.\n\nQuesta toolchain consente di utilizzare al meglio IBM Cloud Virtual Private Cloud con \n  - IBM Cloud Virtual Servers for Virtual Private Cloud,\n  - Red Hat OpenShift on IBM Cloud\n  - o entrambi.\n\nIn seguito è possibile attivare anche la toolchain di distribuzione delle applicazioni, per una distribuzione end-to-end.  La toolchain abilita la consegna continua con il controllo origini, le pipeline di distribuzione e l'integrazione continua."
+
 wizard.step.deployment_pattern.title: "Pattern di distribuzione"
 wizard.deploymentPattern.title: "Pattern di distribuzione"
 wizard.deploymentPattern.longDescription: "Seleziona da uno dei pattern di distribuzione POC semplice, VSI su VPC, ROKs su VPC o Misto."
@@ -21,6 +17,7 @@ wizard.deploymentPattern.simplepoc.title: "**POC semplice**\n\nSelezionare un pa
 wizard.deploymentPattern.vsi.title: "**VSI su VPC**\n\nSeleziona questa opzione per un'architettura [VSI su VPC](https://github.com/open-toolchain/landing-zone/blob/main/.docs/patterns/vsi-pattern.md) conforme a FS."
 wizard.deploymentPattern.roks.title: "**ROKS su VPC**\n\nSeleziona questa opzione per un'architettura [ROKS su VPC](https://github.com/open-toolchain/landing-zone/blob/main/.docs/patterns/roks-pattern.md) conforme a FS."
 wizard.deploymentPattern.mixed.title: "**Misto**\n\nSeleziona questa opzione per un'[architettura mista di VSI e ROKS su VPC](https://github.com/open-toolchain/landing-zone/blob/main/.docs/patterns/mixed-pattern.md) conforme a FS."
+
 wizard.step.infrastructureRepo.title: "Repository di infrastrutture"
 wizard.infrastructureRepo.sourceHost: "Provider origine"
 wizard.infrastructureRepo.title: "Repository di infrastrutture"
@@ -29,24 +26,33 @@ wizard.infrastructureRepo.clone: "Utilizza boilerplate per il pattern selezionat
 wizard.infrastructureRepo.link: "Utilizza il tuo repository IaC"
 wizard.infrastructureRepo.repoURLPlaceholder: "https://us-south.git.cloud.ibm.com/user-id/infrastructure-XXXXXXXXXX"
 wizard.infrastructureRepo.repoNamePlaceholder: "infrastructure-XXXXXXXXXX"
+
 wizard.step.schematics.title: "Identità e Accessi"
 wizard.schematics.title: "Chiave API"
 wizard.schematics.longDescription: "Chiave API per interagire con IBM Cloud"
-wizard.schematics.apikey.title: "Chiave API"
-wizard.schematics.apikey.description: "Chiave API"
+wizard.schematics.apikey.notification: "**Nota**: per ulteriori informazioni sulle chiavi API IBM Cloud, consultare [Comprensione delle chiavi API](https://cloud.ibm.com/docs/account?topic=account-manapikey)"
+wizard.schematics.apikey.definition: "Una chiave API IBM esegue l'autenticazione con il cloud IBM e svolge un'ampia serie di operazioni in questa toolchain."
+wizard.schematics.apikey.input: "È possibile utilizzare una chiave esistente già creata.  In alternativa, è possibile creare una nuova chiave API facendo clic sul pulsante 'Nuovo'."
+wizard.schematics.apikey.title: "Chiave API IBM Cloud"
+wizard.schematics.apikey.description: "La chiave API IBM Cloud viene utilizzata per accedere ai servizi IBM Cloud. È possibile creare la propria API utilizzando la [console IBM Cloud](https://cloud.ibm.com/iam/apikeys)o il comando ibmcloud [iam api-key-create](https://cloud.ibm.com/docs/cli?topic=cli-ibmcloud_commands_iam#ibmcloud_iam_api_key_create) oppure facendo clic sul pulsante 'Nuovo'"
 wizard.schematics.apikey.placeholder: "Chiave API"
+
 wizard.step.security.title: "Sicurezza e conformità"
 wizard.security.title: "Configurazione della sicurezza"
 wizard.security.longDescription: "Configurazione della sicurezza per la toolchain"
+
 wizard.step.kmsService.title: "Gestione chiavi"
 wizard.kmsService.title: "Servizio di gestione chiavi"
 wizard.kmsService.longDescription: "Selezionare da uno dei servizi di gestione chiavi da utilizzare per le chiavi di crittografia nella distribuzione."
 wizard.kmsService.keyprotect.title: "**Key Protect (KP)**Selezionare questo per [Key Protect](https://cloud.ibm.com/docs/key-protect) che forniscono HSM controllati da IBM. Consigliato solo in sviluppo/test. Utilizzare HPCS per essere conforme al framework di controllo per IBM Cloud for Financial Services."
 wizard.kmsService.hpcs.title: "**Hyper Protect Crypto Services (HPCS)**Selezionare questo per [Hyper Protect Crypto Services](https://cloud.ibm.com/docs/hs-crypto?topic=hs-crypto-get-started) che forniscono HSM controllati dai clienti. Richiesto per essere conforme al framework di controllo per IBM Cloud for Financial Services."
 wizard.kmsService.preprovisioned-hpcs.title: "**Hyper Protect Crypto Services (HPCS) con pre-provisioning**Selezionare questo per [Hyper Protect Crypto Services](https://cloud.ibm.com/docs/hs-crypto?topic=hs-crypto-get-started) di cui è già stato eseguito il provisioning e l'inizializzazione."
+
+
 wizard.step.hpcs_config.title: "Configurazione HPCS"
 wizard.hpcs_config.title: "Configurazione HPCS"
 wizard.hpcs_config.longDescription: "Immettere le chiavi firma e le password corrispondenti per gli Amministratori HPCS (fino a 8, minimo 1)."
+
 wizard.preprovisioned_hpcs.title: "Configurazione HPCS con pre-provisioning"
 wizard.preprovisioned_hpcs.longDescription: "Fornire la configurazione per un'istanza HPCS con pre-provisioning"
 wizard.preprovisioned_hpcs.resource_group.title: "Gruppo di risorse"
@@ -55,6 +61,7 @@ wizard.preprovisioned_hpcs.resource_group.placeholder: "Gruppo di risorse HPCS"
 wizard.preprovisioned_hpcs.instance_name.title: "Nome istanza di risorsa"
 wizard.preprovisioned_hpcs.instance_name.description: "Nome dell'istanza di risorsa HPCS"
 wizard.preprovisioned_hpcs.instance_name.placeholder: "Nome istanza di risorsa HPCS"
+
 wizard.hpcs_config.admin1_sigkey.title: "Chiave di firma per amministratore 1"
 wizard.hpcs_config.admin1_sigkey.description: "Chiave di firma per amministratore 1"
 wizard.hpcs_config.admin1_sigkey.placeholder: "Chiave di firma per amministratore 1"
@@ -73,13 +80,16 @@ wizard.hpcs_config.admin3_sigkey.placeholder: "Chiave di firma per amministrator
 wizard.hpcs_config.admin3_pass.title: "Password della chiave di firma per amministratore 3"
 wizard.hpcs_config.admin3_pass.description: "Password della chiave di firma per amministratore 3"
 wizard.hpcs_config.admin3_pass.placeholder: "Password della chiave di firma per amministratore 3"
+
 wizard.step.optionaltools.title: "Strumenti facoltativi"
 wizard.optional.tools.title: "Altri strumenti"
 wizard.optional.tools.longDescription: "Si tratta di strumenti facoltativi che possono essere inclusi nella tua toolchain."
 wizard.optional.tools.app-cicd.title: "CICD applicazione"
-wizard.optional.tools.app-cicd.description: "Attiva il CICD dell'applicazione utilizzando il webhook"
+wizard.optional.tools.app-cicd.description: "Si tratta di un passo facoltativo che consente di attivare una pipeline CI/CD dell'applicazione dalla pipeline dell'infrastruttura."
+wizard.optional.tools.app-cicd.parameters: "Immettere il webhook della richiesta e l'intestazione per attivare la pipeline CI/CD dell'applicazione.\n\n[Visualizza la documentazione](https://github.com/open-toolchain/landing-zone/blob/main/.docs/toolchain/toolchain-tmplt.md#optional-tools)"
 wizard.optional.tools.slack.title: "Slack"
 wizard.optional.tools.slack.description: "Invia una notifica a slack sugli aggiornamenti da questa toolchain"
+
 wizard.optional.tools.app-cicd.webhook.title: "URL webhook"
 wizard.optional.tools.app-cicd.webhook.description: "URL webhook"
 wizard.optional.tools.app-cicd.header-key.title: "Chiave intestazione"
@@ -89,6 +99,7 @@ wizard.optional.tools.app-cicd.token.description: "Token segreto"
 wizard.optional.tools.app-cicd.webhook.placeHolder: "https://devops-api.us-south.devops.cloud.ibm.com/v1/tekton-webhook/xxxx-xxxx-xxxx/run/xxxx-xxxx-xxxx"
 wizard.optional.tools.app-cicd.header-key.placeHolder: "X-CICD-TOKEN"
 wizard.optional.tools.app-cicd.token.placeHolder: "xxxx-xxxx-xxxx---xxxx-xxxx-xxxx"
+
 wizard.optional.tools.slack.webhookurl.title: "URL webhook"
 wizard.optional.tools.slack.webhookurl.description: "È possibile creare o trovare il proprio webhook nella sezione Webhook in entrata del sito web dell'API Slack."
 wizard.optional.tools.slack.webhookurl.placeHolder: "https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX"
@@ -98,6 +109,7 @@ wizard.optional.tools.slack.channel_name.placeHolder: "some-example-channel"
 wizard.optional.tools.slack.team_url.title: "Nome team"
 wizard.optional.tools.slack.team_url.description: "È la parola o la frase prima di .slack.com nel proprio URL del team."
 wizard.optional.tools.slack.team_url.placeHolder: "Ad esempio, se l'URL del team è https://team.slack.com, il nome del team è \"team\"."
+
 wizard.step.optionalworkarounds.title: "Soluzioni temporanee facoltative"
 wizard.optional.workarounds.title: "Altre soluzioni temporanee"
 wizard.optional.workarounds.longDescription: "Queste sono soluzioni temporanee facoltative che possono essere incluse nell'infrastruttura."
@@ -105,12 +117,16 @@ wizard.optional.workarounds.logging.title: "Registrazione"
 wizard.optional.workarounds.logging.description: "Eseguire il provisioning della soluzione temporanea di registrazione nel cluster"
 wizard.optional.workarounds.monitoring.title: "Monitoraggio"
 wizard.optional.workarounds.monitoring.description: "Eseguire il provisioning della soluzione temporanea di monitoraggio nel cluster"
+
 template.gettingStarted: " **La toolchain è pronta!**\n\n**Avvio rapido:** Eseguire il commit di una modifica nel repository Git per attivare la creazione di una nuova pipeline, di cui verrà eseguita la scansione per le vulnerabilità e che verrà distribuita nel server virtuale. Per le istruzioni passo dopo passo fare riferimento a [tutorial](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tutorial-cd-vsi) per questa toolchain."
+
 wizard.step.fortress.title: "Conformità"
+
 wizard.step.summary.title: "Riepilogo"
 wizard.summary.title: "Riepilogo"
 wizard.summary.success.title: "Congratulazioni"
 wizard.summary.success.subtitle: "È stata completata la configurazione della toolchain. Fare clic sul pulsante 'Crea' per creare la toolchain con gli strumenti e le impostazioni scelte.  Per i passi successivi, consultare la [Guida alla configurazione](https://github.com/open-toolchain/landing-zone)."
+
 headerSVG.prPipeline: "Pipeline PR"
 headerSVG.cicdPipeline: "Pipeline CI/CD"
 headerSVG.ibm: "IBM"
@@ -124,4 +140,3 @@ headerSVG.devops: "DevOps"
 headerSVG.insights: "Insights"
 headerSVG.cloud: "Cloud"
 headerSVG.services: "Services"
-...
