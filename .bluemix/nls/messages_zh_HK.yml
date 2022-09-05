@@ -7,7 +7,7 @@ wizard.welcome.prereq: "**必要條件**：您必須確保在建立工具鏈 **�
 wizard.welcome.template.link.text: "程式碼儲存庫"
 wizard.welcome.documentation.link.text: "金融服務架構文件"
 wizard.welcome.tutorial.link.text: "安全登入區文件"
-wizard.welcome.info.text: "此範本的運作方式類似於精靈。  系統會在每一個步驟中要求您提供輸入以建立工具鏈。\n\n此工具鏈可讓您利用 IBM Cloud Virtual Private Cloud 與 \n  - IBM Cloud Virtual Servers for Virtual Private Cloud\n  -  及/或 Red Hat OpenShift on IBM Cloud\n  - 。\n\n隨後您還可以觸發應用程式部署工具鏈，以進行端對端部署。  工具鏈可透過「來源控制」、Delivery Pipeline 及持續整合來啟用持續交付。"
+wizard.welcome.info.text: "此範本的運作方式類似於精靈。  系統會在每一個步驟中要求您提供輸入以建立工具鏈。\n\n此工具鏈可讓您利用 IBM Cloud Virtual Private Cloud 與 \n  - IBM Cloud Virtual Servers for Virtual Private Cloud\n  - Red Hat OpenShift on IBM Cloud\n  - 或兩者。\n\n隨後您還可以觸發應用程式部署工具鏈，以進行端對端部署。  工具鏈可透過「來源控制」、Delivery Pipeline 及持續整合來啟用持續交付。"
 
 wizard.step.deployment_pattern.title: "部署型樣"
 wizard.deploymentPattern.title: "部署型樣"
