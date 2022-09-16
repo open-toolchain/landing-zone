@@ -34,7 +34,7 @@ wizard.schematics.apikey.notification: "**Nota**: per ulteriori informazioni sul
 wizard.schematics.apikey.definition: "Una chiave API IBM esegue l'autenticazione con il cloud IBM e svolge un'ampia serie di operazioni in questa toolchain."
 wizard.schematics.apikey.input: "È possibile utilizzare una chiave esistente già creata.  In alternativa, è possibile creare una nuova chiave API facendo clic sul pulsante 'Nuovo'."
 wizard.schematics.apikey.title: "Chiave API IBM Cloud"
-wizard.schematics.apikey.description: "La chiave API IBM Cloud viene utilizzata per accedere ai servizi IBM Cloud. È possibile creare la propria API utilizzando la [console IBM Cloud](https://cloud.ibm.com/iam/apikeys)o il comando ibmcloud [iam api-key-create](https://cloud.ibm.com/docs/cli?topic=cli-ibmcloud_commands_iam#ibmcloud_iam_api_key_create) oppure facendo clic sul pulsante 'Nuovo'"
+wizard.schematics.apikey.description: "La chiave API IBM Cloud viene utilizzata per accedere ai servizi IBM Cloud. È possibile creare la propria API utilizzando la [console IBM Cloud](https://cloud.ibm.com/iam/apikeys), utilizzando il comando ibmcloud [iam api-key-create](https://cloud.ibm.com/docs/cli?topic=cli-ibmcloud_commands_iam#ibmcloud_iam_api_key_create) oppure facendo clic sul pulsante 'Nuovo'"
 wizard.schematics.apikey.placeholder: "Chiave API"
 
 wizard.step.security.title: "Sicurezza e conformità"

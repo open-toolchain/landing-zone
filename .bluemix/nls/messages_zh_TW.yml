@@ -3,11 +3,11 @@
 template.name: "將基礎架構部署為 IBM Cloud for Financial Services 的程式碼"
 template.description: "使用此工具鏈，您可以為 IBM Cloud for Financial Services 建立 IBM Cloud Virtual Private Cloud 參照架構。"
 wizard.welcome.description: "使用此工具鏈，您可以為 IBM Cloud for Financial Services 建立 IBM Cloud Virtual Private Cloud 參照架構。"
-wizard.welcome.prereq: "**必要條件**：您必須確保在建立工具鏈 **之前** 完成下列各項。 請參閱 [工具鏈必要條件](https://github.com/open-toolchain/landing-zone#prerequisites) ![](https://cloud.ibm.com/media/docs/images/icons/launch-glyph.svg)。"
+wizard.welcome.prereq: "**必要條件**：您必須確保在建立工具鏈**之前**完成下列各項。 請參閱[工具鏈必要條件](https://github.com/open-toolchain/landing-zone#prerequisites) ![](https://cloud.ibm.com/media/docs/images/icons/launch-glyph.svg)。"
 wizard.welcome.template.link.text: "程式碼儲存庫"
 wizard.welcome.documentation.link.text: "金融服務架構文件"
 wizard.welcome.tutorial.link.text: "安全登入區文件"
-wizard.welcome.info.text: "此範本的運作方式類似於精靈。  系統會在每一個步驟中要求您提供輸入以建立工具鏈。\n\n此工具鏈可讓您利用 IBM Cloud Virtual Private Cloud 與 \n  - IBM Cloud Virtual Servers for Virtual Private Cloud\n  - Red Hat OpenShift on IBM Cloud\n  - 或兩者。\n\n隨後您還可以觸發應用程式部署工具鏈，以進行端對端部署。  工具鏈可透過「來源控制」、Delivery Pipeline 及持續整合來啟用持續交付。"
+wizard.welcome.info.text: "此範本的運作方式類似於精靈。  系統會在每一個步驟中要求您提供輸入以建立工具鏈。\n\n此工具鏈可讓您善用 IBM Cloud Virtual Private Cloud 與 \n  - IBM Cloud Virtual Servers for Virtual Private Cloud\n  - Red Hat OpenShift on IBM Cloud\n  - 或兩者。\n\n隨後您還可以觸發應用程式部署工具鏈，以進行端對端部署。  該工具鏈可透過「來源控制」、Delivery Pipeline 及持續整合來啟用持續交付。"
 
 wizard.step.deployment_pattern.title: "部署型樣"
 wizard.deploymentPattern.title: "部署型樣"
