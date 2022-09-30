@@ -16,7 +16,7 @@ wizard.deploymentPattern.text: "Geeignetes Muster für Ihre Implementierung ausw
 wizard.deploymentPattern.simplepoc.title: "**Einfaches POC**\n\nWählen Sie ein einfaches POC-Muster aus, um das SLZ zu testen."
 wizard.deploymentPattern.vsi.title: "**VSI on VPC**\n\nWählen Sie dies für [VSI on VPC](https://github.com/open-toolchain/landing-zone/blob/main/.docs/patterns/vsi-pattern.md) FS-konforme Architekturen aus."
 wizard.deploymentPattern.roks.title: "**ROKS on VPC**\n\nWählen Sie dies für [ROKS on VPC](https://github.com/open-toolchain/landing-zone/blob/main/.docs/patterns/roks-pattern.md) FS-konforme Architekturen aus."
-wizard.deploymentPattern.mixed.title: "**Mixed**\n\nWählen Sie diese Option für die [gemischte Architektur mit VSI und ROKS on VPC](https://github.com/open-toolchain/landing-zone/blob/main/.docs/patterns/Mixed-pattern.md) FS-konforme Architekturen aus."
+wizard.deploymentPattern.mixed.title: "**Mixed**\n\nWählen Sie diese Option für die [gemischte Architektur mit VSI und ROKS on VPC](https://github.com/open-toolchain/landing-zone/blob/main/.docs/patterns/mixed-pattern.md) FS-konforme Architekturen aus."
 
 wizard.step.infrastructureRepo.title: "Infrastrukturrepository"
 wizard.infrastructureRepo.sourceHost: "Quellenprovider"
@@ -44,9 +44,9 @@ wizard.security.longDescription: "Sicherheitskonfiguration für die Toolchain"
 wizard.step.kmsService.title: "Schlüsselverwaltung"
 wizard.kmsService.title: "Schlüsselmanagementservice"
 wizard.kmsService.longDescription: "Wählen Sie einen Schlüsselmanagementservice aus, der für Verschlüsselungsschlüssel in der Implementierung verwendet werden soll."
-wizard.kmsService.keyprotect.title: "**Key Protect(KP)**Wählen Sie dies für [Key Protect](https://cloud.ibm.com/docs/Key-Protect) aus, die von IBM gesteuerte HSMs bereitstellen. Nur für Entwicklung/Test empfohlen. Verwenden Sie HPCS, um mit dem Steuerungs-Framework für IBM Cloud for Financial Services konform zu sein."
-wizard.kmsService.hpcs.title: "**Hyper Protect Crypto Services(HPCS)**Wählen Sie dies für [Hyper Protect Crypto Services](https://cloud.ibm.com/docs/hs-crypto?topic=hs-crypto-get-started) aus, die vom Kunden gesteuerte HSMs bereitstellen. Muss mit dem Kontrollframework für IBM Cloud for Financial Services konform sein."
-wizard.kmsService.preprovisioned-hpcs.title: "**Vorab bereitgestellte Hyper Protect Crypto Services(HPCS)**Wählen Sie dies für [Hyper Protect Crypto Services](https://cloud.ibm.com/docs/hs-crypto?topic=hs-crypto-get-started) aus, das bereits implementiert und initialisiert wurde."
+wizard.kmsService.keyprotect.title: "**Key Protect(KP)**\n\nWählen Sie dies für [Key Protect](https://cloud.ibm.com/docs/key-protect) aus, die von IBM gesteuerte HSMs bereitstellen. Nur für Entwicklung/Test empfohlen. Verwenden Sie HPCS, um mit dem Steuerungs-Framework für IBM Cloud for Financial Services konform zu sein."
+wizard.kmsService.hpcs.title: "**Hyper Protect Crypto Services(HPCS)**\n\nWählen Sie dies für [Hyper Protect Crypto Services](https://cloud.ibm.com/docs/hs-crypto?topic=hs-crypto-get-started) aus, die vom Kunden gesteuerte HSMs bereitstellen. Muss mit dem Kontrollframework für IBM Cloud for Financial Services konform sein."
+wizard.kmsService.preprovisioned-hpcs.title: "**Vorab bereitgestellte Hyper Protect Crypto Services(HPCS)**\n\nWählen Sie dies für [Hyper Protect Crypto Services](https://cloud.ibm.com/docs/hs-crypto?topic=hs-crypto-get-started) aus, das bereits implementiert und initialisiert wurde."
 
 
 wizard.step.hpcs_config.title: "HPCS-Konfiguration"
@@ -120,7 +120,7 @@ wizard.optional.workarounds.monitoring.description: "Problemumgehung für die Ü
 
 template.gettingStarted: " **Ihre Toolchain ist bereit!**\n\n**Schnelleinstieg:** Führen Sie einen Commit für eine Änderung im Git-Repository durch, um eine neue Build-Pipeline auszulösen, die auf Sicherheitslücken geprüft und in Ihrem virtuellen Server implementiert wird. Schritt-für-Schritt-Anweisungen finden Sie im [Lernprogramm](https://cloud.ibm.com/docs/ContinuousDelivery?topic=ContinuousDelivery-tutorial-cd-vsi) für diese Toolchain."
 
-wizard.step.fortress.title: "Konformität"
+wizard.step.fortress.title: "Compliance"
 
 wizard.step.summary.title: "Zusammenfassung"
 wizard.summary.title: "Zusammenfassung"
