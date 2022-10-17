@@ -9,7 +9,7 @@ locals {
 ##############################################################################
 
 module "landing_zone" {
-  source                              = "git::https://github.com/terraform-ibm-modules/terraform-ibm-landing-zone.git//patterns/roks?ref=v1.8.1"
+  source                              = "git::https://github.com/terraform-ibm-modules/terraform-ibm-landing-zone.git//patterns/roks?ref=v1.8.0"
   ibmcloud_api_key                    = var.ibmcloud_api_key
   prefix                              = var.prefix
   region                              = var.region
