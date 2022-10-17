@@ -3,8 +3,7 @@
 ##############################################################################
 
 output "config" {
-  description = "Output configuration as encoded JSON"
-  value       = data.external.format_output.result.data
+  value       = module.landing_zone.config
+  description = "Landing zone configuration"
 }
-
 ##############################################################################

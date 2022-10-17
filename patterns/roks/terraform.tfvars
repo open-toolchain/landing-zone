@@ -1,6 +1,5 @@
-TF_VERSION               = "1.0"
-prefix                   = "< add user data here >"
-region                   = "< add user data here >"
+prefix                   = "arg"
+region                   = "us-east"
 ssh_public_key           = null
 tags                     = []
 vpcs                     = ["management", "workload"]
