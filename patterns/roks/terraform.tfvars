@@ -1,5 +1,5 @@
-prefix                   = "arg"
-region                   = "us-east"
+prefix                   = "< add user data here >"
+region                   = "< add user data here >"
 ssh_public_key           = null
 tags                     = []
 vpcs                     = ["management", "workload"]
