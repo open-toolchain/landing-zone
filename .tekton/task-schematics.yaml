@@ -23,7 +23,7 @@ spec:
       description: (optional) Pattern will only apply when set to apply
       default: "apply"
     - name: schematics-wksp
-      description: The schematics workspace name 
+      description: The schematics workspace name
       default: ""
 
   results:
@@ -33,10 +33,10 @@ spec:
       description: success or failure status of "terraform apply"
   stepTemplate:
     envFrom:
-    - configMapRef:
-        name: environment-properties
-    - secretRef:
-        name: secure-properties
+      - configMapRef:
+          name: environment-properties
+      - secretRef:
+          name: secure-properties
     env:
       - name: PIPELINE_RUN_ID
         valueFrom:
@@ -85,10 +85,21 @@ spec:
 
           ibmcloud config --check-version=false
           ibmcloud login --apikey ${TF_VAR_ibmcloud_api_key} --no-region
-        
+
           function find_workspace() {
-            ibmcloud resource search "type:workspace AND name:$1" --output json | \
-            jq -e ".items[0] | select(.name==\"$1\") | {"id":.resource_id, "name": .name, "attr": .}"
+            WKSP_OUTPUT=$(ibmcloud schematics workspace list --output JSON)
+
+            # verify only one workspace with that name exists
+            NUM_OF_RESULTS=$(echo $WKSP_OUTPUT | jq -e "[.workspaces[] | select(.name==\"$1\")] | length")
+            if [[ $NUM_OF_RESULTS -eq 0 ]]; then
+              echo "No workspaces found"
+              return 1;
+            elif [[ $NUM_OF_RESULTS -gt 1 ]]; then
+              echo "There are multiple workspaces with the same name.  Please delete one and try again"
+              exit 2;
+            fi
+
+            echo $WKSP_OUTPUT | jq -e ".workspaces[] | select(.name==\"$1\") | {"id":.id, "name": .name, "attr": .}"
           }
 
           function get_toolchain_region() {
@@ -114,12 +125,15 @@ spec:
             esac
           }
 
+          # schematics workspace must exist in the region of the toolchain
+          SCHEMATICS_REGION=$(get_toolchain_region)
+          echo "Switching to target region $SCHEMATICS_REGION"
+          ibmcloud target -r $SCHEMATICS_REGION
+
           #Search to see if workspace exists 
           echo "Verifying if schematics workspace ${SCHEMATICS_WKSP} exists"
           find_workspace $SCHEMATICS_WKSP
           if [[ $? -ne 0 ]]; then 
-             SCHEMATICS_REGION=$(get_toolchain_region)
-
              echo "Creating schematics workspace ${SCHEMATICS_WKSP} in region ${SCHEMATICS_REGION}"
              sed -i'' "s/<IBMCLOUD_API_KEY>/${TF_VAR_ibmcloud_api_key}/" schematics.json
              sed -i'' "s/<WORKSPACE_NAME>/${SCHEMATICS_WKSP}/" schematics.json
@@ -134,7 +148,6 @@ spec:
              fi
              GIT_TOKEN=$(cat $GIT_CREDENTIALS_FILE | jq -r .GIT_TOKEN)
 
-             ibmcloud target -r $SCHEMATICS_REGION
              ibmcloud schematics workspace new --github-token "${GIT_TOKEN}" --file schematics.json
              if [[ $? -ne 0 ]]; then
                echo "Failed to create workspace"
@@ -159,22 +172,19 @@ spec:
           fi 
 
           # Store the region
-          REGION=$(cat /artifacts/wrksp_$SCHEMATICS_WKSP.json | jq -r .attr.resource_id | sed -nE 's/^([a-zA-Z]+-[a-zA-Z]+).*/\1/p')
+          REGION=$(cat /artifacts/wrksp_$SCHEMATICS_WKSP.json | jq -r .id | sed -nE 's/^([a-zA-Z]+-[a-zA-Z]+).*/\1/p')
           echo "Schematics region: ${REGION}"
           echo $REGION > /artifacts/wrksp_region
 
           WORKSPACE_ID=$(echo "${OUTPUT}" | jq -r .id)
           echo "Workspace $WORKSPACE_ID"
-        
-          # change to ibmcloud cli to the region the workspace was created in
-          ibmcloud target -r $REGION
 
           # make sure workspace is not locked / frozen
           # poll until locked/frozen is no longer true or if there is an error or timeout of ~30 secs
           i="0"
           while :
           do
-            STATUS=$(ibmcloud schematics workspace get --id $WORKSPACE_ID --json)
+            STATUS=$(ibmcloud schematics workspace get --id $WORKSPACE_ID --output JSON)
             
             RET_VAL=$?
             if [ $RET_VAL -ne 0 ]; then
@@ -209,7 +219,7 @@ spec:
           #!/bin/bash
 
           REGION=$(cat /artifacts/wrksp_region)
-         
+
           # force login (required by schematics cli)
           ibmcloud login --apikey $TF_VAR_ibmcloud_api_key -r $REGION
 
@@ -227,13 +237,13 @@ spec:
           echo "Workspace $WORKSPACE_ID"
 
           # run schematics update
-          echo "ibmcloud schematics workspace update --id $WORKSPACE_ID --pull-latest --json"
-          ibmcloud schematics workspace update --id $WORKSPACE_ID --pull-latest --json
+          echo "ibmcloud schematics workspace update --id $WORKSPACE_ID --pull-latest --output JSON"
+          ibmcloud schematics workspace update --id $WORKSPACE_ID --pull-latest --output JSON
           # poll until locked/frozen is no longer true or if there is an error or timeout of ~30 secs
           i="0"
           while :
           do
-            STATUS=$(ibmcloud schematics workspace get --id $WORKSPACE_ID --json)
+            STATUS=$(ibmcloud schematics workspace get --id $WORKSPACE_ID --output JSON)
             
             RET_VAL=$?
             if [ $RET_VAL -ne 0 ]; then
@@ -254,7 +264,7 @@ spec:
             # sleep for 5 seconds, while waiting for completion
             sleep 15
           done
-          
+
       volumeMounts:
         - mountPath: /config
           name: cd-config-volume
@@ -274,7 +284,7 @@ spec:
           fi
 
           REGION=$(cat /artifacts/wrksp_region)
-         
+
           # force login (required by schematics cli)
           ibmcloud login --apikey $TF_VAR_ibmcloud_api_key -r $REGION
 
@@ -293,14 +303,14 @@ spec:
 
           # run terraform refresh
           echo "ibmcloud schematics refresh --id $WORKSPACE_ID "
-          ACTIVITY=$(ibmcloud schematics refresh -id $WORKSPACE_ID --json)
+          ACTIVITY=$(ibmcloud schematics refresh -id $WORKSPACE_ID --output JSON)
           ACTIVITY_ID=$(echo $ACTIVITY | jq -r ".activityid")
           echo "Activity ID   $ACTIVITY_ID"
           # poll until status is no longer INPROGRESS, or if there is an error
           error_count=0
           while :
           do
-            STATUS=$(ibmcloud schematics workspace action --id $WORKSPACE_ID --act-id $ACTIVITY_ID --json)
+            STATUS=$(ibmcloud schematics workspace action --id $WORKSPACE_ID --act-id $ACTIVITY_ID --output JSON)
             
             RET_VAL=$?
             if [ $RET_VAL -ne 0 ]; then
@@ -323,7 +333,7 @@ spec:
             # sleep for 5 seconds, while waiting for completion
             sleep 5
           done
-          
+
           ibmcloud schematics logs --id $WORKSPACE_ID --act-id $ACTIVITY_ID
       volumeMounts:
         - mountPath: /config
@@ -339,7 +349,7 @@ spec:
           #!/bin/bash
 
           REGION=$(cat /artifacts/wrksp_region)
-         
+
           # force login (required by schematics cli)
           ibmcloud login --apikey $TF_VAR_ibmcloud_api_key -r $REGION
 
@@ -358,14 +368,14 @@ spec:
 
           # run terraform plan
           echo "ibmcloud schematics plan --id $WORKSPACE_ID"
-          ACTIVITY=$(ibmcloud schematics plan -id $WORKSPACE_ID --json)
+          ACTIVITY=$(ibmcloud schematics plan -id $WORKSPACE_ID --output JSON)
           ACTIVITY_ID=$(echo $ACTIVITY | jq -r ".activityid")
           echo "Activity ID   $ACTIVITY_ID"
           # poll until status is no longer INPROGRESS, or if there is an error
           error_count=0
           while :
           do
-            STATUS=$(ibmcloud schematics workspace action --id $WORKSPACE_ID --act-id $ACTIVITY_ID --json)
+            STATUS=$(ibmcloud schematics workspace action --id $WORKSPACE_ID --act-id $ACTIVITY_ID --output JSON)
             
             RET_VAL=$?
             if [ $RET_VAL -ne 0 ]; then
@@ -408,7 +418,7 @@ spec:
           fi
 
           REGION=$(cat /artifacts/wrksp_region)
-         
+
           # force login (required by schematics cli)
           ibmcloud login --apikey $TF_VAR_ibmcloud_api_key -r $REGION
 
@@ -424,17 +434,17 @@ spec:
 
           WORKSPACE_ID=$(echo "${OUTPUT}" | jq -r .id)
           echo "Workspace $WORKSPACE_ID"
-         
+
           # run terraform apply
           echo "ibmcloud schematics apply --id $WORKSPACE_ID --force"
-          ACTIVITY=$(ibmcloud schematics apply -id $WORKSPACE_ID --json --force)
+          ACTIVITY=$(ibmcloud schematics apply -id $WORKSPACE_ID --output JSON --force)
           ACTIVITY_ID=$(echo $ACTIVITY | jq -r ".activityid")
           echo "Activity ID   $ACTIVITY_ID"
           # poll until status is no longer INPROGRESS, or if there is an error
           error_count=0
           while :
           do
-            STATUS=$(ibmcloud schematics workspace action --id $WORKSPACE_ID --act-id $ACTIVITY_ID --json)
+            STATUS=$(ibmcloud schematics workspace action --id $WORKSPACE_ID --act-id $ACTIVITY_ID --output JSON)
             
             RET_VAL=$?
             if [ $RET_VAL -ne 0 ]; then
@@ -463,7 +473,7 @@ spec:
 
           #retrieve the json output for override.json
           echo "Results for override.json:"
-          ibmcloud schematics output --id $WORKSPACE_ID --json | jq .[0].output_values[0].config.value > /tmp/override.json
+          ibmcloud schematics output --id $WORKSPACE_ID --output JSON | jq .[0].output_values[0].config.value > /tmp/override.json
           jq -r < /tmp/override.json
       volumeMounts:
         - mountPath: /config

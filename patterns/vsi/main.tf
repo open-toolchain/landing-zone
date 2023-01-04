@@ -9,7 +9,7 @@ locals {
 ##############################################################################
 
 module "landing_zone" {
-  source                              = "git::https://github.com/terraform-ibm-modules/terraform-ibm-landing-zone.git//patterns/vsi?ref=v1.8.0"
+  source                              = "git::https://github.com/terraform-ibm-modules/terraform-ibm-landing-zone.git//patterns/vsi?ref=v1.13.0"
   ibmcloud_api_key                    = var.ibmcloud_api_key
   prefix                              = var.prefix
   region                              = var.region
@@ -72,8 +72,6 @@ module "landing_zone" {
   create_secrets_manager              = var.create_secrets_manager
   enable_scc                          = var.enable_scc
   scc_cred_name                       = var.scc_cred_name
-  scc_group_id                        = var.scc_group_id
-  scc_group_passphrase                = var.scc_group_passphrase
   scc_cred_description                = var.scc_cred_description
   scc_collector_description           = var.scc_collector_description
   scc_scope_description               = var.scc_scope_description

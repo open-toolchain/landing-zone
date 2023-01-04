@@ -9,7 +9,7 @@ spec:
       description: toggles debug mode for the pipeline
       default: "false"
     - name: schematics-wksp
-      description: The schematics workspace name 
+      description: The schematics workspace name
       default: ""
     - name: confirm-deletion
       description: Confirmation to delete resources
@@ -50,14 +50,53 @@ spec:
           fi
 
           REGION="--no-region"
-         
+
           # force login (required by schematics cli)
           ibmcloud login --apikey $IBMCLOUD_API_KEY $REGION
 
           function find_workspace() {
-            ibmcloud resource search "type:workspace AND name:$1" --output json | \
-            jq -e ".items[0] | select(.name==\"$1\") | {"id":.resource_id, "name": .name, "attr": .}"
+            WKSP_OUTPUT=$(ibmcloud schematics workspace list --output JSON)
+
+            # verify only one workspace with that name exists
+            NUM_OF_RESULTS=$(echo $WKSP_OUTPUT | jq -e "[.workspaces[] | select(.name==\"$1\")] | length")
+            if [[ $NUM_OF_RESULTS -eq 0 ]]; then
+              echo "No workspaces found"
+              return 0;
+            elif [[ $NUM_OF_RESULTS -gt 1 ]]; then
+              echo "There are multiple workspaces with the same name.  Please delete one and try again"
+              exit 1;
+            fi
+
+            echo $WKSP_OUTPUT | jq -e ".workspaces[] | select(.name==\"$1\") | {"id":.id, "name": .name, "attr": .}"
           }
+
+          function get_toolchain_region() {
+            REGION_ID=$(jq -r '.region_id' /config/toolchain.json)
+
+            case $REGION_ID in 
+              ibm:yp:eu-de)
+                echo "eu-de"
+                ;;
+                
+              ibm:yp:eu-gb)
+                echo "eu-gb"
+                ;;
+
+              ibm:yp:us-east)
+                echo "us-east"
+                ;;
+
+              # default to us-south
+              *)
+                echo "us-south"
+                ;;
+            esac
+          }
+
+          # schematics workspace must exist in the region of the toolchain
+          SCHEMATICS_REGION=$(get_toolchain_region)
+          echo "Switching to target region $SCHEMATICS_REGION"
+          ibmcloud target -r $SCHEMATICS_REGION
 
           echo "Retrieving workspace id"
           # ibmcloud schematics workspace list may produce invalid JSON in some cases, caused by incorrectly formatted resource data
@@ -71,20 +110,16 @@ spec:
           WORKSPACE_ID=$(echo "${OUTPUT}" | jq -r .id)
           echo "Workspace $WORKSPACE_ID"
 
-          REGION=$(echo "${OUTPUT}" | jq -r .attr.resource_id | sed -nE 's/^([a-zA-Z]+-[a-zA-Z]+).*/\1/p')
-          echo "Schematics region: ${REGION}"
-          ibmcloud target -r $REGION
-         
           # run terraform destroy resource
           echo "ibmcloud schematics destroy --id $WORKSPACE_ID --force"
-          ACTIVITY=$(ibmcloud schematics destroy -id $WORKSPACE_ID --json --force)
+          ACTIVITY=$(ibmcloud schematics destroy -id $WORKSPACE_ID --output JSON --force)
           ACTIVITY_ID=$(echo $ACTIVITY | jq -r ".activityid")
           echo "Activity ID   $ACTIVITY_ID"
           # poll until status is no longer INPROGRESS, or if there is an error
           error_count=0
           while :
           do
-            STATUS=$(ibmcloud schematics workspace action --id $WORKSPACE_ID --act-id $ACTIVITY_ID --json)
+            STATUS=$(ibmcloud schematics workspace action --id $WORKSPACE_ID --act-id $ACTIVITY_ID --output JSON)
             
             RET_VAL=$?
             if [ $RET_VAL -ne 0 ]; then
@@ -110,4 +145,13 @@ spec:
             sleep 5
           done
           ibmcloud schematics logs --id $WORKSPACE_ID --act-id $ACTIVITY_ID
-    
+      volumeMounts:
+        - mountPath: /config
+          name: cd-config-volume
+  volumes:
+    - name: cd-config-volume
+      configMap:
+        name: toolchain
+        items:
+          - key: toolchain.json
+            path: toolchain.json

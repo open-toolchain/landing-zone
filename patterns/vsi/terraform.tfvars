@@ -19,7 +19,7 @@ add_edge_vpc                        = false
 provision_teleport_in_f5            = false
 create_f5_network_on_management_vpc = false
 vpn_firewall_type                   = null
-f5_image_name                       = "f5-bigip-16-1-2-2-0-0-28-all-1slot"
+f5_image_name                       = "f5-bigip-17-0-0-1-0-0-4-all-1slot"
 f5_instance_profile                 = "cx2-4x8"
 hostname                            = "f5-ve-01"
 domain                              = "local"
@@ -47,7 +47,5 @@ teleport_management_zones = 0
 # Security and Compliance Center
 ##############################################################################
 enable_scc                = false
-scc_group_id              = null
-scc_group_passphrase      = null
 scc_collector_description = null
 scc_scope_description     = null
