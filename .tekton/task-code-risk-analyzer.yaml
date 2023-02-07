@@ -20,7 +20,7 @@ spec:
       description: Infrastructure pattern to provision
       default: ""
     - name: cra-skip-failure
-      description: (optional) flag to skip cra failure 
+      description: (optional) flag to skip cra failure
       default: "false"
   results:
     - name: apply-output
@@ -29,10 +29,10 @@ spec:
       description: success or failure status of "code risk analyzer"
   stepTemplate:
     envFrom:
-    - configMapRef:
-        name: environment-properties
-    - secretRef:
-        name: secure-properties
+      - configMapRef:
+          name: environment-properties
+      - secretRef:
+          name: secure-properties
     env:
       - name: PIPELINE_RUN_ID
         valueFrom:
@@ -76,17 +76,17 @@ spec:
           echo "TOOLCHAIN ID => ${TOOLCHAIN_ID}"
           REGION_ID=$(jq -r '.region_id' /config/toolchain.json)
           REGION=$(echo "${REGION_ID}" | grep -oP '.+:.+:\K[\w-]+')
-          
+
           TF_DIR="/tmp"
           TF_CMD="${TF_DIR}/terraform"
-          wget -q https://releases.hashicorp.com/terraform/1.0.10/terraform_1.0.10_linux_amd64.zip -O "${TF_CMD}.zip"
+          wget -q https://releases.hashicorp.com/terraform/1.3.7/terraform_1.3.7_linux_amd64.zip -O "${TF_CMD}.zip"
           unzip -d "${TF_DIR}" -u "${TF_CMD}.zip"
           ibmcloud plugin install cra -f; 
           ibmcloud login --apikey ${IBMCLOUD_API_KEY} -r "${REGION}";  
           cd /artifacts/patterns/"${PATTERN}"
           echo "Issuing terraform init";
           "${TF_CMD}" init;
-          
+
           echo "Issuing terraform plan";
           "${TF_CMD}" plan -lock=false -out=./tfplan > tfout.txt 2>&1;
           rc=$?
@@ -115,12 +115,12 @@ spec:
              fi 
           fi
           echo "Successfully saved plan in JSON format"
-          
+
           echo "Issuing cra scan";
           export TOOLCHAIN_ID="${TOOLCHAIN_ID}"; 
           ibmcloud cra terraform-validate --tf-plan ./tfplan.json --policy-file /artifacts/code_risk_analyzer/goals.json --report ./report --verbose --strict
           rc=$?
-          
+
           echo "flag set to ${CRA_SKIP_FAILURE}"
           if [[ $rc -ne 0 ]]; then
             if [[ "${CRA_SKIP_FAILURE}" == "true" ]]; then
@@ -128,7 +128,7 @@ spec:
                exit 0;
             fi
             exit $rc
-          fi 
+          fi
       volumeMounts:
         - mountPath: /config
           name: cd-config-volume

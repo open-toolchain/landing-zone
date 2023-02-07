@@ -10,7 +10,7 @@ locals {
 ##############################################################################
 
 module "landing_zone" {
-  source                              = "git::https://github.com/terraform-ibm-modules/terraform-ibm-landing-zone.git//patterns/mixed?ref=v1.13.0"
+  source                              = "git::https://github.com/terraform-ibm-modules/terraform-ibm-landing-zone.git//patterns/mixed?ref=v2.0.0"
   ibmcloud_api_key                    = var.ibmcloud_api_key
   prefix                              = var.prefix
   ssh_public_key                      = var.ssh_public_key

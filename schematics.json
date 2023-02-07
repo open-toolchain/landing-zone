@@ -1,7 +1,7 @@
 {
    "name": "<WORKSPACE_NAME>",
    "type": [
-       "terraform_v1.0"
+       "terraform_v1.3"
    ],
    "location": "<SCHEMATICS_LOCATION>",
    "description": "SLZ Pattern Schematics",
@@ -12,7 +12,7 @@
    "template_data": [
        {
        "folder": "patterns/<SCHEMATICS_PATTERN>",
-       "type": "terraform_v1.0",
+       "type": "terraform_v1.3",
        "env_values":[
        ],
        "variablestore": [
