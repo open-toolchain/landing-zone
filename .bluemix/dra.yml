@@ -1,4 +1,0 @@
-parameters:
-  criteria:
-    $ref: criteria.json
-    $refType: text
